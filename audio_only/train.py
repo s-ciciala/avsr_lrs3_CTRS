@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import os, shutil
 
 from config import args
-from models.video_net import VideoNet
+from models.audio_net import AudioNet
 from data.lrs3_dataset import LRS3Main
 from data.utils import collate_fn
 from utils.general import num_params, train, evaluate
@@ -25,27 +25,29 @@ def set_device():
     torch.backends.cudnn.benchmark = False
     return device,kwargs
 
+##TODO no noise params
 def get_training_data(device,kwargs):
 
-    videoParams = {"videoFPS": args["VIDEO_FPS"]}
     dataset = "train"
     datadir = args["DATA_DIRECTORY"]
     reqInpLen = args["MAIN_REQ_INPUT_LENGTH"]
     charToIx = args["CHAR_TO_INDEX"]
     stepSize = args["STEP_SIZE"]
 
-    trainData = LRS3Main(dataset, datadir, reqInpLen, charToIx, stepSize, videoParams)
+    # declaring the train and validation datasets and their corresponding dataloaders
+    audioParams = {"stftWindow": args["STFT_WINDOW"], "stftWinLen": args["STFT_WIN_LENGTH"],"stftOverlap": args["STFT_OVERLAP"]}
+    noiseParams = {"noiseFile": args["DATA_DIRECTORY"] + "/noise.wav", "noiseProb": args["NOISE_PROBABILITY"],"noiseSNR": args["NOISE_SNR_DB"]}
 
+    trainData = LRS3Main(dataset, datadir, reqInpLen, charToIx, stepSize, audioParams, noiseParams)
     trainLoader = DataLoader(trainData, batch_size=args["BATCH_SIZE"], collate_fn=collate_fn, shuffle=True, **kwargs)
-
-    valData = LRS3Main("val", args["DATA_DIRECTORY"], args["MAIN_REQ_INPUT_LENGTH"], args["CHAR_TO_INDEX"],
-                       args["STEP_SIZE"],
-                       videoParams)
+    noiseParams = {"noiseFile": args["DATA_DIRECTORY"] + "/noise.wav", "noiseProb": 0, "noiseSNR": args["NOISE_SNR_DB"]}
+    valData = LRS3Main("val", args["DATA_DIRECTORY"], args["MAIN_REQ_INPUT_LENGTH"], args["CHAR_TO_INDEX"],args["STEP_SIZE"],audioParams, noiseParams)
 
     valLoader = DataLoader(valData, batch_size=args["BATCH_SIZE"], collate_fn=collate_fn, shuffle=True, **kwargs)
 
-    model = VideoNet(args["TX_NUM_FEATURES"], args["TX_ATTENTION_HEADS"], args["TX_NUM_LAYERS"], args["PE_MAX_LENGTH"],
-                     args["TX_FEEDFORWARD_DIM"], args["TX_DROPOUT"], args["NUM_CLASSES"])
+    # declaring the model, optimizer, scheduler and the loss function
+    model = AudioNet(args["TX_NUM_FEATURES"], args["TX_ATTENTION_HEADS"], args["TX_NUM_LAYERS"], args["PE_MAX_LENGTH"],
+                     args["AUDIO_FEATURE_SIZE"], args["TX_FEEDFORWARD_DIM"], args["TX_DROPOUT"], args["NUM_CLASSES"])
     model.to(device)
     return trainData,trainLoader,valData,valLoader,model
 
@@ -68,12 +70,12 @@ def get_optimiser_and_checkpoint_dir(model):
                     print("Invalid input")
             shutil.rmtree(args["CODE_DIRECTORY"] + "/checkpoints")
 
-    if not os.path.exists(args["CODE_DIRECTORY"] + "video_only_checkpoints/"):
-        os.makedirs(args["CODE_DIRECTORY"] + "video_only_checkpoints/")
-    if not os.path.exists(args["CODE_DIRECTORY"] + "video_only_checkpoints/models"):
-        os.makedirs(args["CODE_DIRECTORY"] + "video_only_checkpoints/models")
-    if not os.path.exists(args["CODE_DIRECTORY"] + "video_only_checkpoints/plots"):
-        os.makedirs(args["CODE_DIRECTORY"] + "video_only_checkpoints/plots")
+    if not os.path.exists(args["CODE_DIRECTORY"] + "audio_only_checkpoints/"):
+        os.makedirs(args["CODE_DIRECTORY"] + "audio_only_checkpoints/")
+    if not os.path.exists(args["CODE_DIRECTORY"] + "audio_only_checkpoints/models"):
+        os.makedirs(args["CODE_DIRECTORY"] + "audio_only_checkpoints/models")
+    if not os.path.exists(args["CODE_DIRECTORY"] + "audio_only_checkpoints/plots"):
+        os.makedirs(args["CODE_DIRECTORY"] + "audio_only_checkpoints/plots")
 
     return optimizer,scheduler,loss_function
 
@@ -83,6 +85,11 @@ def train_model(model,trainLoader,valLoader,optimizer,loss_function,device):
     trainParams = {"spaceIx": args["CHAR_TO_INDEX"][" "], "eosIx": args["CHAR_TO_INDEX"]["<EOS>"]}
     valParams = {"decodeScheme": "greedy", "spaceIx": args["CHAR_TO_INDEX"][" "],
                  "eosIx": args["CHAR_TO_INDEX"]["<EOS>"]}
+
+    trainingLossCurve = list()
+    validationLossCurve = list()
+    trainingWERCurve = list()
+    validationWERCurve = list()
 
     for step in range(args["NUM_STEPS"]):
         # train the model for one step
@@ -105,7 +112,7 @@ def train_model(model,trainLoader,valLoader,optimizer,loss_function,device):
 
         # saving the model weights and loss/metric curves in the checkpoints directory after every few steps
         if ((step % args["SAVE_FREQUENCY"] == 0) or (step == args["NUM_STEPS"] - 1)) and (step != 0):
-            savePath = args["CODE_DIRECTORY"] + "/video_only_checkpoints/models/train-step_{:04d}-wer_{:.3f}.pt".format(step,
+            savePath = args["CODE_DIRECTORY"] + "/audio_only_checkpoints/models/train-step_{:04d}-wer_{:.3f}.pt".format(step,
                                                                                                              validationWER)
             torch.save(model.state_dict(), savePath)
 
@@ -116,7 +123,7 @@ def train_model(model,trainLoader,valLoader,optimizer,loss_function,device):
             plt.plot(list(range(1, len(trainingLossCurve) + 1)), trainingLossCurve, "blue", label="Train")
             plt.plot(list(range(1, len(validationLossCurve) + 1)), validationLossCurve, "red", label="Validation")
             plt.legend()
-            plt.savefig(args["CODE_DIRECTORY"] + "/video_only_checkpoints/plots/train-step_{:04d}-loss.png".format(step))
+            plt.savefig(args["CODE_DIRECTORY"] + "/audio_only_checkpoints/plots/train-step_{:04d}-loss.png".format(step))
             plt.close()
 
             plt.figure()
@@ -126,21 +133,15 @@ def train_model(model,trainLoader,valLoader,optimizer,loss_function,device):
             plt.plot(list(range(1, len(trainingWERCurve) + 1)), trainingWERCurve, "blue", label="Train")
             plt.plot(list(range(1, len(validationWERCurve) + 1)), validationWERCurve, "red", label="Validation")
             plt.legend()
-            plt.savefig(args["CODE_DIRECTORY"] + "/video_only_checkpoints/plots/train-step_{:04d}-wer.png".format(step))
+            plt.savefig(args["CODE_DIRECTORY"] + "/audio_only_checkpoints/plots/train-step_{:04d}-wer.png".format(step))
             plt.close()
 
     print("\nTraining Done.\n")
 
 if __name__ == "__main__":
     device,kwargs = set_device()
-    videoParams = {"videoFPS": args["VIDEO_FPS"]}
     trainData, trainLoader, valData, valLoader, model = get_training_data(device,kwargs)
     optimizer, scheduler, loss_function = get_optimiser_and_checkpoint_dir(model)
-
-    trainingLossCurve = list()
-    validationLossCurve = list()
-    trainingWERCurve = list()
-    validationWERCurve = list()
 
     numTotalParams, numTrainableParams = num_params(model)
     print("\nNumber of total parameters in the model = %d" % (numTotalParams))

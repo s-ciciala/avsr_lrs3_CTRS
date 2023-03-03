@@ -9,13 +9,13 @@ args = dict()
 
 
 #project structure
-args["CODE_DIRECTORY"] = "../avsr_lr3_CTRS/"   #absolute path to the code directory
+args["CODE_DIRECTORY"] = "../../avsr_lr3_CTRS/"   #absolute path to the code directory
 args["DATA_DIRECTORY"] = "../../lrs3"  #absolute path to the data directory
 args["TRAIN_DIRECTORY"] = "../../lrs3/" + "train_mini/"
 args["TEST_DIRECTORY"] = "../../lrs3/" + "test_mini/"
 args["VAL_DIRECTORY"] = "../../lrs3/" + "val_mini/"
 args["TRAINVAL_DIRECTORY"] = "../../lrs3/" + "trainval_mini/"
-args["DEMO_DIRECTORY"] = "../../avsr_lr3_CTRS/visual_only/demo/"   #absolute path to the demo directory
+args["DEMO_DIRECTORY"] = "../../avsr_lrs3_CTRS/audio_only/demo/"   #absolute path to the demo directory
 args["PRETRAINED_MODEL_FILE"] = "/final/models/pretrained_model.pt"     #relative path to the pretrained model file
 args["TRAINED_MODEL_FILE"] = "/final/models/trained_model.pt"   #relative path to the trained model file
 args["TRAINED_FRONTEND_FILE"] = "../../deep_avsr_models/visual_frontend/visual_frontend.pt" #absolute path to the trained language model file
@@ -43,22 +43,14 @@ args["STFT_WINDOW"] = "hamming" #window to use while computing STFT
 args["STFT_WIN_LENGTH"] = 0.040 #window size in secs for computing STFT
 args["STFT_OVERLAP"] = 0.030    #consecutive window overlap in secs while computing STFT
 
-
-#video preprocessing
-args["VIDEO_FPS"] = 25  #frame rate of the video clips
-args["ROI_SIZE"] = 112  #height and width of input greyscale lip region patch
-args["NORMALIZATION_MEAN"] = 0.4161 #mean value for normalization of greyscale lip region patch
-args["NORMALIZATION_STD"] = 0.1688  #standard deviation value for normalization of greyscale lip region patch
-
-
 #training
 args["SEED"] = 19220297 #seed for random number generators
 args["BATCH_SIZE"] = 16 #minibatch size
 args["STEP_SIZE"] = 16384   #number of samples in one step (virtual epoch)
-# args["NUM_STEPS"] = 1000 #maximum number of steps to train for (early stopping is used)
 args["NUM_STEPS"] = 1000 #maximum number of steps to train for (early stopping is used)
 args["SAVE_FREQUENCY"] = 10 #saving the model weights and loss/metric plots after every these many steps
 args["CHECKPOINTS"] = False
+
 #optimizer and scheduler
 args["INIT_LR"] = 1e-4  #initial learning rate for scheduler
 args["FINAL_LR"] = 1e-6 #final learning rate for scheduler
@@ -70,7 +62,9 @@ args["MOMENTUM2"] = 0.999   #optimizer momentum 2 value
 
 
 #model
+args["AUDIO_FEATURE_SIZE"] = 321    #feature size of audio features
 args["NUM_CLASSES"] = 40    #number of output characters
+
 
 
 #transformer architecture
