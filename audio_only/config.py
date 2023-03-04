@@ -1,9 +1,4 @@
-"""
-Author: Smeet Shah
-Copyright (c) 2020 Smeet Shah
-File part of 'deep_avsr' GitHub repository available at -
-https://github.com/lordmartian/deep_avsr
-"""
+
 
 args = dict()
 
