@@ -181,7 +181,6 @@ def generate_val_file():
 if __name__ == "__main__":
     device = set_device()
     fileList = get_filelist()
-    remove_lrs3_nuggets(fileList)
     #preprocess_all_samples(fileList)
     # generate_noise_file(fileList)
     generate_train_file()
