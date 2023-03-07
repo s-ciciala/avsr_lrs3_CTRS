@@ -47,7 +47,8 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
             loss = loss_function(outputBatch, targetBatch, inputLenBatch, targetLenBatch)
         loss.backward()
         optimizer.step()
-
+        print("LOSS")
+        print(loss.item())
         trainingLoss = trainingLoss + loss.item()
         predictionBatch, predictionLenBatch = ctc_greedy_decode(outputBatch.detach(), inputLenBatch, trainParams["eosIx"])
         trainingCER = trainingCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
