@@ -21,12 +21,14 @@ def prepare_main_input(audioFile, targetFile, noise, reqInpLen, charToIx, noiseS
     """
 
     if targetFile is not None:
-        print("FILE")
-        print(targetFile)
+        # print("FILE")
+        # print(targetFile)
         #reading the target from the target file and converting each character to its corresponding index
         with open(targetFile, "r") as f:
             trgt = f.readline().strip()[7:]
-        print(trgt)
+        if "{" in trgt:
+            trgt = trgt.split("{")[0]
+        # print(trgt)
         trgt = [charToIx[char] for char in trgt]
         trgt.append(charToIx["<EOS>"])
         trgt = np.array(trgt)
