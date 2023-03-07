@@ -18,17 +18,17 @@ args["TRAINED_LM_FILE"] = "../../deep_avsr_models/language_model/language_model.
 
 #data
 args["PRETRAIN_VAL_SPLIT"] = 0.01   #validation set size fraction during pretraining
-args["NUM_WORKERS"] = 8 #dataloader num_workers argument
+args["NUM_WORKERS"] = 4 #dataloader num_workers argument
 args["PRETRAIN_NUM_WORDS"] = 1  #number of words limit in current curriculum learning iteration
 args["MAIN_REQ_INPUT_LENGTH"] = 145 #minimum input length while training
 args["CHAR_TO_INDEX"] = {" ":1, "'":22, "1":30, "0":29, "3":37, "2":32, "5":34, "4":38, "7":36, "6":35, "9":31, "8":33,
                          "A":5, "C":17, "B":20, "E":2, "D":12, "G":16, "F":19, "I":6, "H":9, "K":24, "J":25, "M":18,
                          "L":11, "O":4, "N":7, "Q":27, "P":21, "S":8, "R":10, "U":13, "T":3, "W":15, "V":23, "Y":14,
-                         "X":26, "Z":28, "<EOS>":39}    #character to index mapping
+                         "X":26, "Z":28, "<EOS>":39 , "}":40,"{":41}    #character to index mapping
 args["INDEX_TO_CHAR"] = {1:" ", 22:"'", 30:"1", 29:"0", 37:"3", 32:"2", 34:"5", 38:"4", 36:"7", 35:"6", 31:"9", 33:"8",
                          5:"A", 17:"C", 20:"B", 2:"E", 12:"D", 16:"G", 19:"F", 6:"I", 9:"H", 24:"K", 25:"J", 18:"M",
                          11:"L", 4:"O", 7:"N", 27:"Q", 21:"P", 8:"S", 10:"R", 13:"U", 3:"T", 15:"W", 23:"V", 14:"Y",
-                         26:"X", 28:"Z", 39:"<EOS>"}    #index to character reverse mapping
+                         26:"X", 28:"Z", 39:"<EOS>",40:"}",41:"{"}    #index to character reverse mapping
 
 
 #audio preprocessing
@@ -42,7 +42,7 @@ args["STFT_OVERLAP"] = 0.030    #consecutive window overlap in secs while comput
 args["SEED"] = 19220297 #seed for random number generators
 args["BATCH_SIZE"] = 16 #minibatch size
 args["STEP_SIZE"] = 16384   #number of samples in one step (virtual epoch)
-args["NUM_STEPS"] = 2 #maximum number of steps to train for (early stopping is used)
+args["NUM_STEPS"] = 1000 #maximum number of steps to train for (early stopping is used)
 args["SAVE_FREQUENCY"] = 10 #saving the model weights and loss/metric plots after every these many steps
 args["CHECKPOINTS"] = False
 
