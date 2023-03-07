@@ -19,6 +19,9 @@ def set_device():
 
 def remove_lrs3_nuggets(filesList):
     print("Removing `{LG}` and such")
+    for file in filesList:
+        print("File")
+        print(file)
 
 
 def get_filelist():
