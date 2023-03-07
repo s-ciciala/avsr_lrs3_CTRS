@@ -23,12 +23,15 @@ def remove_lrs3_nuggets(filesList):
         txt = file + ".txt"
         print("File")
         current_example = open(txt, 'r')
-        lines = file1.readlines()
+        lines = current_example.readlines()
+        need_to_write = False
         for line in lines:
             if "{" in line:
+                need_to_write = True
                 line = line.split("{")[0]
-        with open(txt, "w") as f:
-            f.writelines(lines)
+        if need_to_write:
+            with open(txt, "w") as f:
+                f.writelines(lines)
 
 
 def get_filelist():
