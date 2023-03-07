@@ -17,6 +17,10 @@ def set_device():
     device = torch.device("cuda" if gpuAvailable else "cpu")
     return device
 
+def remove_lrs3_nuggets(filesList):
+    print("Removing `{LG}` and such")
+
+
 def get_filelist():
     # walking through the data directory and obtaining a list of all files in the dataset
     filesList = list()
@@ -167,8 +171,9 @@ def generate_val_file():
 if __name__ == "__main__":
     device = set_device()
     fileList = get_filelist()
+    remove_lrs3_nuggets(fileList)
     #preprocess_all_samples(fileList)
-    generate_noise_file(fileList)
-    generate_train_file()
-    generate_val_file()
+    # generate_noise_file(fileList)
+    # generate_train_file()
+    # generate_val_file()
     print("Completed")
