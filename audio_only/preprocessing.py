@@ -17,21 +17,18 @@ def set_device():
     device = torch.device("cuda" if gpuAvailable else "cpu")
     return device
 
-def remove_lrs3_nuggets(filesList):
-    print("Removing `{LG}` and such")
-    for file in filesList:
-        txt = file + ".txt"
-        print("File")
-        current_example = open(txt, 'r')
-        lines = current_example.readlines()
-        need_to_write = False
-        for line in lines:
-            if "{" in line:
-                need_to_write = True
-                line = line.split("{")[0]
-        if need_to_write:
-            with open(txt, "w") as f:
-                f.writelines(lines)
+# def remove_lrs3_nuggets(filesList):
+#     print("Removing `{LG}` and such")
+#     for file in filesList:
+#         txt = file + ".txt"
+#         print("File")
+#         current_example = open(txt, 'r')
+#         lines = file1.readlines()
+#         for line in lines:
+#             if "{" in line:
+#                 line = line.split("{")[0]
+#         with open("test.txt", "w") as f:
+#             f.writelines(lines)
 
 
 def get_filelist():
@@ -83,6 +80,12 @@ def preprocess_all_samples(filesList):
         preprocess_sample(file)
     print("\nPreprocessing Done.")
 
+def lrs3_parse(example):
+    splt = example.split("{")
+    print("SPLIT")
+    print(splt)
+    return splt[0]
+
 def generate_train_file():
     # Generating train.txt for splitting the pretrain set into train sets
     train_dir = args["TRAIN_DIRECTORY"]
@@ -120,6 +123,8 @@ def generate_train_file():
 
                 example_dict["ID"].append(examples_npy_dir)
                 string_to_add = str(lines[0][6: -1])
+                if "{" in string_to_add:
+                    string_to_add = lrs3_parse(string_to_add)
                 print(string_to_add)
                 example_dict["TEXT"].append(string_to_add)
 
@@ -162,6 +167,8 @@ def generate_val_file():
                 examples_npy_dir = examples_textonly_dir.split("txt")[0][:-1]
                 example_dict["ID"].append(examples_npy_dir)
                 string_to_add = str(lines[0][6: -1])
+                if "{" in string_to_add:
+                    string_to_add = lrs3_parse(string_to_add)
                 example_dict["TEXT"].append(string_to_add)
 
     with open(val_dir_file, "w") as f:
@@ -177,6 +184,6 @@ if __name__ == "__main__":
     remove_lrs3_nuggets(fileList)
     #preprocess_all_samples(fileList)
     # generate_noise_file(fileList)
-    # generate_train_file()
-    # generate_val_file()
+    generate_train_file()
+    generate_val_file()
     print("Completed")
