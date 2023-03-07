@@ -80,12 +80,6 @@ def preprocess_all_samples(filesList):
         preprocess_sample(file)
     print("\nPreprocessing Done.")
 
-def lrs3_parse(example):
-    splt = example.split("{")
-    print("SPLIT")
-    print(splt)
-    return splt[0]
-
 def generate_train_file():
     # Generating train.txt for splitting the pretrain set into train sets
     train_dir = args["TRAIN_DIRECTORY"]
@@ -123,8 +117,6 @@ def generate_train_file():
 
                 example_dict["ID"].append(examples_npy_dir)
                 string_to_add = str(lines[0][6: -1])
-                if "{" in string_to_add:
-                    string_to_add = lrs3_parse(string_to_add)
                 print(string_to_add)
                 example_dict["TEXT"].append(string_to_add)
 
@@ -167,8 +159,6 @@ def generate_val_file():
                 examples_npy_dir = examples_textonly_dir.split("txt")[0][:-1]
                 example_dict["ID"].append(examples_npy_dir)
                 string_to_add = str(lines[0][6: -1])
-                if "{" in string_to_add:
-                    string_to_add = lrs3_parse(string_to_add)
                 example_dict["TEXT"].append(string_to_add)
 
     with open(val_dir_file, "w") as f:
