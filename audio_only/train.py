@@ -15,6 +15,9 @@ from utils.general import num_params, train, evaluate
 from tqdm import tqdm
 from sys import exit
 
+import torch
+torch.cuda.is_available = lambda : False
+
 def set_device():
     matplotlib.use("Agg")
     np.random.seed(args["SEED"])
