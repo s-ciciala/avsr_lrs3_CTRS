@@ -9,13 +9,13 @@ args = dict()
 
 
 #project structure
-args["CODE_DIRECTORY"] = "../avsr_lr3_CTRS/"   #absolute path to the code directory
+args["CODE_DIRECTORY"] = "../avsr_lrs3_CTRS/"   #absolute path to the code directory
 args["DATA_DIRECTORY"] = "../../lrs3"  #absolute path to the data directory
-args["TRAIN_DIRECTORY"] = "../../lrs3/" + "train_mini/"
-args["TEST_DIRECTORY"] = "../../lrs3/" + "test_mini/"
-args["VAL_DIRECTORY"] = "../../lrs3/" + "val_mini/"
-args["TRAINVAL_DIRECTORY"] = "../../lrs3/" + "trainval_mini/"
-args["DEMO_DIRECTORY"] = "../../avsr_lr3_CTRS/visual_only/demo/"   #absolute path to the demo directory
+args["TRAIN_DIRECTORY"] = "../../lrs3/" + "trainval/"
+args["TEST_DIRECTORY"] = "../../lrs3/" + "test/"
+args["VAL_DIRECTORY"] = "../../lrs3/" + "test/"
+args["TRAINVAL_DIRECTORY"] = "../../lrs3/" + "pretrain/"
+args["DEMO_DIRECTORY"] = "../../avsr_lrs3_CTRS/visual_only/demo/"   #absolute path to the demo directory
 args["PRETRAINED_MODEL_FILE"] = "/final/models/pretrained_model.pt"     #relative path to the pretrained model file
 args["TRAINED_MODEL_FILE"] = "/final/models/trained_model.pt"   #relative path to the trained model file
 args["TRAINED_FRONTEND_FILE"] = "../../deep_avsr_models/visual_frontend/visual_frontend.pt" #absolute path to the trained language model file
