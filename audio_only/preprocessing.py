@@ -41,6 +41,7 @@ def filer_lengths(fileList,ln):
                 string_to_add = lrs3_parse(string_to_add)
                 if len([ele for ele in string_to_add if ele.isalpha()]) < ln:
                     filesListFiltered.append(file)
+    print("\nNumber of data samples to after filtering = %d" % (len(filesListFiltered)))
     return filesListFiltered
 
 
