@@ -30,7 +30,7 @@ def set_device():
 #         with open("test.txt", "w") as f:
 #             f.writelines(lines)
 
-def filer_lengths(fileList,len):
+def filer_lengths(fileList,ln):
     filesListFiltered = list()
     for file in fileList:
         text = file + ".txt"
@@ -39,7 +39,7 @@ def filer_lengths(fileList,len):
             string_to_add = str(lines[0][6: -1])
             if "{" in string_to_add:
                 string_to_add = lrs3_parse(string_to_add)
-                if len(string_to_add) < len:
+                if len([ele for ele in string_to_add if ele.isalpha()]) < ln:
                     filesListFiltered.append(file)
     return filesListFiltered
 
@@ -96,8 +96,6 @@ def preprocess_all_samples(filesList):
 
 def lrs3_parse(example):
     splt = example.split("{")
-    print("SPLIT")
-    print(splt)
     return splt[0]
 
 def generate_train_file():
