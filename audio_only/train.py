@@ -69,8 +69,10 @@ def get_training_data(device,kwargs):
     model = AudioNet(args["TX_NUM_FEATURES"], args["TX_ATTENTION_HEADS"], args["TX_NUM_LAYERS"], args["PE_MAX_LENGTH"],
                      args["AUDIO_FEATURE_SIZE"], args["TX_FEEDFORWARD_DIM"], args["TX_DROPOUT"], args["NUM_CLASSES"])
     ##added multiprocessing
-    model = nn.DataParallel(model, device_ids= args["GPUID"])
-
+    if args["LIMITGPU"]:
+        model = nn.DataParallel(model, device_ids= args["GPUID"])
+    else:
+        model = nn.DataParallel(model)
     model.to(device)
     return trainData,trainLoader,valData,valLoader,model
 
