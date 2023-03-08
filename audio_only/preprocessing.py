@@ -30,6 +30,17 @@ def set_device():
 #         with open("test.txt", "w") as f:
 #             f.writelines(lines)
 
+def check_len(file,len):
+    txt = file.split(".")
+    text = txt[0] + ".txt"
+    with open(text, "r") as f:
+        lines = f.readlines()
+        string_to_add = str(lines[0][6: -1])
+        if "{" in string_to_add:
+            string_to_add = lrs3_parse(string_to_add)
+            if len(string_to_add) < len:
+                return True
+    return False
 
 def get_filelist():
     # walking through the data directory and obtaining a list of all files in the dataset
@@ -38,7 +49,8 @@ def get_filelist():
         #     print(root,dirs,files)
         for file in files:
             if file.endswith(".mp4"):
-                filesList.append(os.path.join(root, file[:-4]))
+                if check_len(file,args["MAX_CHAR_LEN"]):
+                    filesList.append(os.path.join(root, file[:-4]))
     print(filesList)
     # Preprocessing each sample
     print("\nNumber of data samples to be processed = %d" % (len(filesList)))
@@ -118,6 +130,7 @@ def generate_train_file():
             with open(examples_textonly_dir, "r") as f:
                 lines = f.readlines()
                 print(examples_textonly_dir)
+
                 examples_npy_dir = examples_textonly_dir.split("txt")[0][:-1]
                 print(examples_npy_dir)
 

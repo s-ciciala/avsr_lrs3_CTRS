@@ -17,7 +17,7 @@ from sys import exit
 
 def set_device():
     print("GPU on?:" + str(torch.cuda.is_available()))
-    print("GPU on?:" + str(torch.backends.cudnn.enabled))
+    print("Backend on?:" + str(torch.backends.cudnn.enabled))
     available_gpus = [torch.cuda.device(i) for i in range(torch.cuda.device_count())]
     print("available_gpus: " + str(len(available_gpus)))
     print("device_count: " + str(torch.cuda.device_count()) )
@@ -47,10 +47,6 @@ def get_training_data(device,kwargs):
     noiseParams = {"noiseFile": args["DATA_DIRECTORY"] + "/noise.wav", "noiseProb": args["NOISE_PROBABILITY"],"noiseSNR": args["NOISE_SNR_DB"]}
 
     trainData = LRS3Main(dataset, datadir, reqInpLen, charToIx, stepSize, audioParams, noiseParams)
-    # broken_example = [24978]
-    # for exmpl in broken_example:
-    #     trainData.datalist.pop(exmpl)
-
 
     trainLoader = DataLoader(trainData, batch_size=args["BATCH_SIZE"], collate_fn=collate_fn, shuffle=True, **kwargs)
     ###CHECK BATCH INDEX

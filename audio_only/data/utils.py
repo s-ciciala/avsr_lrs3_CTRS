@@ -39,7 +39,6 @@ def prepare_main_input(audioFile, targetFile, noise, reqInpLen, charToIx, noiseS
 #             print("Target length more than 100 characters. Exiting")
 #             exit()
 
-
     #STFT feature extraction
     stftWindow = audioParams["stftWindow"]
     stftWinLen = audioParams["stftWinLen"]
