@@ -23,10 +23,6 @@ def set_device():
     np.random.seed(args["SEED"])
     torch.manual_seed(args["SEED"])
     available_gpus = [torch.cuda.device(i) for i in range(torch.cuda.device_count())]
-
-    num_gpus = os.environ['CUDA_VISIBLE_DEVICES'].split(',').__len__()
-    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join(f'{i}' for i in range(num_gpus))
-
     print("available_gpus: " + str(len(available_gpus)))
     device = torch.device(str(args["GPU"]) if len(available_gpus) != 0 else "cpu")
     kwargs = {"num_workers": args["NUM_WORKERS"], "pin_memory": True} if torch.cuda.is_available() else {}
