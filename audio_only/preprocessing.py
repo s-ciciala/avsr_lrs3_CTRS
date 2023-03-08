@@ -30,7 +30,7 @@ def set_device():
 #         with open("test.txt", "w") as f:
 #             f.writelines(lines)
 
-def filer_lengths(fileList,ln):
+def filer_lengths(fileList):
     filesListFiltered = list()
     for file in fileList:
         text = file + ".txt"
@@ -39,7 +39,7 @@ def filer_lengths(fileList,ln):
             string_to_add = str(lines[0][6: -1])
             if "{" in string_to_add:
                 string_to_add = lrs3_parse(string_to_add)
-                if len([ele for ele in string_to_add if ele.isalpha()]) < ln:
+                if len([ele for ele in string_to_add if ele.isalpha()]) <= args["MAX_CHAR_LEN"]:
                     filesListFiltered.append(file)
     print("\nNumber of data samples to after filtering = %d" % (len(filesListFiltered)))
     return filesListFiltered
@@ -195,7 +195,7 @@ def generate_val_file():
 if __name__ == "__main__":
     device = set_device()
     fileList = get_filelist()
-    fileList = filer_lengths(fileList,args["MAX_CHAR_LEN"])
+    fileList = filer_lengths(fileList)
     print("File List complete")
     #preprocess_all_samples(fileList)
     # generate_noise_file(fileList)
