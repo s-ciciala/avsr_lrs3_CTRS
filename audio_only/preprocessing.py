@@ -49,7 +49,7 @@ def get_filelist():
     filesList = list()
     for root, dirs, files in os.walk(args["DATA_DIRECTORY"]):
         # print(root,dirs,files)
-        for file in files:
+        for file in tqdm(files):
             if file.endswith(".mp4"):
                 # if check_len(file,args["MAX_CHAR_LEN"]):
                 filesList.append(os.path.join(root, file[:-4]))
