@@ -151,8 +151,6 @@ def generate_train_file():
 
                 examples_npy_dir = examples_textonly_dir.split("txt")[0][:-1]
                 print(examples_npy_dir)
-
-                example_dict["ID"].append(examples_npy_dir)
                 string_to_add = str(lines[0][6: -1])
                 if "{" in string_to_add:
                     string_to_add = lrs3_parse(string_to_add)
