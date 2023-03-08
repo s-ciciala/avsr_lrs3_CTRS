@@ -30,17 +30,19 @@ def set_device():
 #         with open("test.txt", "w") as f:
 #             f.writelines(lines)
 
-def check_len(root,dirs,file,len):
-    txt = file.split(".")
-    text = txt[0] + ".txt"
-    with open(text, "r") as f:
-        lines = f.readlines()
-        string_to_add = str(lines[0][6: -1])
-        if "{" in string_to_add:
-            string_to_add = lrs3_parse(string_to_add)
-            if len(string_to_add) < len:
-                return True
-    return False
+def filer_lengths(fileList,len):
+    filesListFiltered = list()
+    for file in fileList:
+        text = file + ".txt"
+        with open(text, "r") as f:
+            lines = f.readlines()
+            string_to_add = str(lines[0][6: -1])
+            if "{" in string_to_add:
+                string_to_add = lrs3_parse(string_to_add)
+                if len(string_to_add) < len:
+                    filesListFiltered.append(file)
+    return filesListFiltered
+
 
 def get_filelist():
     # walking through the data directory and obtaining a list of all files in the dataset
@@ -194,6 +196,7 @@ def generate_val_file():
 if __name__ == "__main__":
     device = set_device()
     fileList = get_filelist()
+    fileList = filer_lengths(fileList,args["MAX_CHAR_LEN"])
     print(fileList)
     exit()
     #preprocess_all_samples(fileList)
