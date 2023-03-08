@@ -43,6 +43,16 @@ def get_training_data(device,kwargs):
 
     trainData = LRS3Main(dataset, datadir, reqInpLen, charToIx, stepSize, audioParams, noiseParams)
     trainLoader = DataLoader(trainData, batch_size=args["BATCH_SIZE"], collate_fn=collate_fn, shuffle=True, **kwargs)
+    ###CHECK BATCH INDEX
+    # myiter = iter(trainLoader)
+    # myiter.__next__()
+    # one, two, three, four, five = next(iter(trainLoader))
+    # print(one,two,three,four,five)
+    # print("*"*80)
+    # print(five)
+    # exit()
+    ###CHECK BATCH INDEX
+
     noiseParams = {"noiseFile": args["DATA_DIRECTORY"] + "/noise.wav", "noiseProb": 0, "noiseSNR": args["NOISE_SNR_DB"]}
     valData = LRS3Main("val", args["DATA_DIRECTORY"], args["MAIN_REQ_INPUT_LENGTH"], args["CHAR_TO_INDEX"],args["STEP_SIZE"],audioParams, noiseParams)
 

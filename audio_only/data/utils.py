@@ -216,8 +216,15 @@ def collate_fn(dataBatch):
         targetLenBatch = torch.stack([data[3] for data in dataBatch])
     else:
         targetLenBatch = None
+    # print("*"*80)
+    # print(dataBatch)
+    # print("*" * 80)
 
-    return inputBatch, targetBatch, inputLenBatch, targetLenBatch
+    if not any(data[4] is None for data in dataBatch):
+        index = [data[4] for data in dataBatch][-1]
+        # print(index)
+
+    return inputBatch, targetBatch, inputLenBatch, targetLenBatch, index
 
 
 

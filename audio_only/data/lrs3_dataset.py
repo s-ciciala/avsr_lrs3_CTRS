@@ -30,11 +30,11 @@ class LRS3Main(Dataset):
 
     def __getitem__(self, index):
         #using the same procedure as in pretrain dataset class only for the train dataset
-        if self.dataset == "train":
-            base = self.stepSize * np.arange(int(len(self.datalist)/self.stepSize)+1)
-            ixs = base + index
-            ixs = ixs[ixs < len(self.datalist)]
-            index = np.random.choice(ixs)
+        # if self.dataset == "train":
+        base = self.stepSize * np.arange(int(len(self.datalist)/self.stepSize)+1)
+        ixs = base + index
+        ixs = ixs[ixs < len(self.datalist)]
+        index = np.random.choice(ixs)
 
         #passing the audio file and the target file paths to the prepare function to obtain the input tensors
         audioFile = self.datalist[index] + ".wav"
@@ -45,7 +45,7 @@ class LRS3Main(Dataset):
             noise = None
         inp, trgt, inpLen, trgtLen = prepare_main_input(audioFile, targetFile, noise, self.reqInpLen, self.charToIx, self.noiseSNR,
                                                         self.audioParams)
-        return inp, trgt, inpLen, trgtLen, index
+        return  inp, trgt, inpLen, trgtLen,index
 
 
     def __len__(self):
