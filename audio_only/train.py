@@ -68,6 +68,9 @@ def get_training_data(device,kwargs):
     # declaring the model, optimizer, scheduler and the loss function
     model = AudioNet(args["TX_NUM_FEATURES"], args["TX_ATTENTION_HEADS"], args["TX_NUM_LAYERS"], args["PE_MAX_LENGTH"],
                      args["AUDIO_FEATURE_SIZE"], args["TX_FEEDFORWARD_DIM"], args["TX_DROPOUT"], args["NUM_CLASSES"])
+    ##added multiprocessing
+    model = nn.DataParallel(model, device_ids= args["GPUID"])
+
     model.to(device)
     return trainData,trainLoader,valData,valLoader,model
 
@@ -162,6 +165,8 @@ if __name__ == "__main__":
     device,kwargs = set_device()
     print("Training using :" + str(device))
     trainData, trainLoader, valData, valLoader, model = get_training_data(device,kwargs)
+
+
     optimizer, scheduler, loss_function = get_optimiser_and_checkpoint_dir(model)
 
     numTotalParams, numTrainableParams = num_params(model)
