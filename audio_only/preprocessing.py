@@ -30,7 +30,7 @@ def set_device():
 #         with open("test.txt", "w") as f:
 #             f.writelines(lines)
 
-def check_len(file,len):
+def check_len(root,dirs,file,len):
     txt = file.split(".")
     text = txt[0] + ".txt"
     with open(text, "r") as f:
@@ -46,7 +46,7 @@ def get_filelist():
     # walking through the data directory and obtaining a list of all files in the dataset
     filesList = list()
     for root, dirs, files in os.walk(args["DATA_DIRECTORY"]):
-        #     print(root,dirs,files)
+        print(root,dirs,files)
         for file in files:
             if file.endswith(".mp4"):
                 if check_len(file,args["MAX_CHAR_LEN"]):
