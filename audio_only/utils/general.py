@@ -34,7 +34,7 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
     trainingCER = 0
     trainingWER = 0
 
-    for batch, (inputBatch, targetBatch, inputLenBatch, targetLenBatch) in enumerate(tqdm(trainLoader, leave=False, desc="Train",
+    for batch, (inputBatch, targetBatch, inputLenBatch, targetLenBatch, index) in enumerate(tqdm(trainLoader, leave=False, desc="Train",
                                                                                           ncols=75)):
 
         inputBatch, targetBatch = (inputBatch.float()).to(device), (targetBatch.int()).to(device)
@@ -46,6 +46,7 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
             loss = loss_function(outputBatch, targetBatch, inputLenBatch, targetLenBatch)
         loss.backward()
         optimizer.step()
+        print(index)
         print("LOSS")
         print(loss.item())
         trainingLoss = trainingLoss + loss.item()
