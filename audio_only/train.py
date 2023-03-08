@@ -24,6 +24,7 @@ def set_device():
     torch.manual_seed(args["SEED"])
 
     available_gpus = [torch.cuda.device(i) for i in range(torch.cuda.device_count())]
+    print("GPU on?:" + str(torch.cuda.is_available()))
     print("available_gpus: " + str(len(available_gpus)))
     print("device_count: " + str(torch.cuda.device_count()) )
 
