@@ -4,6 +4,7 @@ Copyright (c) 2020 Smeet Shah
 File part of 'deep_avsr' GitHub repository available at -
 https://github.com/lordmartian/deep_avsr
 """
+import math
 
 import torch
 from tqdm import tqdm
@@ -50,6 +51,8 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
         print(index)
         print(trainLoader.dataset.datalist[index])
         print(loss.item())
+        if (loss.item() == math.inf):
+            exit()
         trainingLoss = trainingLoss + loss.item()
         predictionBatch, predictionLenBatch = ctc_greedy_decode(outputBatch.detach(), inputLenBatch, trainParams["eosIx"])
         trainingCER = trainingCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
