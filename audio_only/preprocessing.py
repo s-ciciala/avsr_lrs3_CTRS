@@ -61,7 +61,6 @@ def filer_lengths(fileList):
             if "{" in string_to_add:
                 string_to_add = lrs3_parse(string_to_add)
                 characters = len([ele for ele in string_to_add if ele.isalpha()])
-                print(characters,args["MAX_CHAR_LEN"])
                 if characters <= args["MAX_CHAR_LEN"]:
                     filesListFiltered.append(file)
 
