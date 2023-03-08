@@ -39,7 +39,6 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
 
         inputBatch, targetBatch = (inputBatch.float()).to(device), (targetBatch.int()).to(device)
         inputLenBatch, targetLenBatch = (inputLenBatch.int()).to(device), (targetLenBatch.int()).to(device)
-
         optimizer.zero_grad()
         model.train()
         outputBatch = model(inputBatch)
