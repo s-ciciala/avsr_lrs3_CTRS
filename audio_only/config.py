@@ -62,7 +62,7 @@ args["MOMENTUM2"] = 0.999   #optimizer momentum 2 value
 
 #model
 args["AUDIO_FEATURE_SIZE"] = 321    #feature size of audio features
-args["NUM_CLASSES"] = 42    #number of output characters
+args["NUM_CLASSES"] = 40    #number of output characters
 
 
 
