@@ -22,8 +22,11 @@ def set_device():
     matplotlib.use("Agg")
     np.random.seed(args["SEED"])
     torch.manual_seed(args["SEED"])
+
     available_gpus = [torch.cuda.device(i) for i in range(torch.cuda.device_count())]
     print("available_gpus: " + str(len(available_gpus)))
+    print("device_count: " + str(torch.cuda.device_count()) )
+
     device = torch.device(str(args["GPU"]) if len(available_gpus) != 0 else "cpu")
     kwargs = {"num_workers": args["NUM_WORKERS"], "pin_memory": True} if torch.cuda.is_available() else {}
     torch.backends.cudnn.deterministic = True
