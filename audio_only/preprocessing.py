@@ -50,9 +50,10 @@ def check_valid_dirs(fileList):
     for file in fileList:
         if args["TRAIN_DIRECTORY"] in file:
             print(file)
-            print(file[:-5])
+            print(file)
             print(os.path.isdir(file[:-5]))
-            if (os.path.isdir(file[:-5])):
+            txt = file + ".txt"
+            if (os.path.isdir(file[:-5]) and os.path.isfile(txt)):
                 valid_dirs.append(file)
         # os.path.isdir()
     return valid_dirs
