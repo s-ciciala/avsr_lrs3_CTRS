@@ -197,8 +197,6 @@ if __name__ == "__main__":
     device = set_device()
     fileList = get_filelist()
     fileList = filer_lengths(fileList,args["MAX_CHAR_LEN"])
-    print(fileList)
-    exit()
     #preprocess_all_samples(fileList)
     # generate_noise_file(fileList)
     generate_train_file()
