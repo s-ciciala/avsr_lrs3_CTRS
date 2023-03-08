@@ -47,7 +47,7 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
             loss = loss_function(outputBatch, targetBatch, inputLenBatch, targetLenBatch)
         loss.backward()
         optimizer.step()
-        print("LOSS" * 50)
+        print("LOSS" * 10)
         print(index)
         print(trainLoader.dataset.datalist[index])
         print(loss.item())
