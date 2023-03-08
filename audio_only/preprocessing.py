@@ -39,10 +39,17 @@ def string_filter(file,folder):
         if "{" in string_to_add:
             string_to_add = lrs3_parse(string_to_add)
             characters = len([ele for ele in string_to_add if ele.isalpha()])
-            print(characters,args["MAX_CHAR_LEN"])
+            # print(characters,args["MAX_CHAR_LEN"])
             if characters <= args["MAX_CHAR_LEN"]:
                 return True
     return False
+
+
+def check_valid_dirs(fileList):
+    for file in fileList:
+        print(file)
+        exit()
+        # os.path.isdir()
 
 def filer_lengths(fileList):
     filesListFiltered = list()
@@ -128,6 +135,8 @@ def generate_train_file():
     dirs = [d for d in os.listdir(train_dir) if os.path.isdir(os.path.join(train_dir, d))]
     print("\nAvaliable folders include: " + str(dirs))
     print("\nTotal number of folders included: " + str(len(dirs)))
+
+
 
     print("\nFor each folder we will extract the number of txt examples")
     for folder in tqdm(dirs):
