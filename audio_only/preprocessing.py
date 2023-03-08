@@ -46,13 +46,16 @@ def string_filter(file,folder):
 
 
 def check_valid_dirs(fileList):
+    valid_dirs = list()
     for file in fileList:
         if args["TRAIN_DIRECTORY"] in file:
             print(file)
             print(file[:-5])
             print(os.path.isdir(file[:-5]))
-            exit()
+            if (os.path.isdir(file[:-5])):
+                valid_dirs.append(file)
         # os.path.isdir()
+    return valid_dirs
 
 def filer_lengths(fileList):
     filesListFiltered = list()
@@ -225,7 +228,7 @@ if __name__ == "__main__":
     device = set_device()
     fileList = get_filelist()
     # fileList = filer_lengths(fileList)
-    check_valid_dirs(fileList)
+    fileList = check_valid_dirs(fileList)
     print("File List complete")
     #preprocess_all_samples(fileList)
     # generate_noise_file(fileList)
