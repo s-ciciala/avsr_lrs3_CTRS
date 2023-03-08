@@ -41,8 +41,8 @@ args["STFT_OVERLAP"] = 0.030    #consecutive window overlap in secs while comput
 #training
 # args["GPU"] = "cuda"
 args["LIMITGPU"] = True
-args["GPU"] = "cuda:0,1"
-args["GPUID"] = [0,1]
+args["GPU"] = "cuda:1,2"
+args["GPUID"] = [1,2]
 args["SEED"] = 19220297 #seed for random number generators
 args["BATCH_SIZE"] = 16 #minibatch size
 args["STEP_SIZE"] = 16384   #number of samples in one step (virtual epoch)
