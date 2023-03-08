@@ -50,8 +50,11 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
         print("LOSS" * 10)
         print(index)
         print(trainLoader.dataset.datalist[index])
+        print(trainLoader.dataset)
         print(loss.item())
         if (loss.item() == math.inf):
+            print(trainLoader.dataset.datalist[index])
+            print(trainLoader.dataset[index])
             exit()
         trainingLoss = trainingLoss + loss.item()
         predictionBatch, predictionLenBatch = ctc_greedy_decode(outputBatch.detach(), inputLenBatch, trainParams["eosIx"])
