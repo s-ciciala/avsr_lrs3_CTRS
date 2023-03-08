@@ -31,8 +31,11 @@ def set_device():
 #             f.writelines(lines)
 
 
-def string_filter(file,folder):
-    dir = args["TRAIN_DIRECTORY"] + folder +"/" + file
+def string_filter(file,folder,val = False):
+    if val:
+        dir = args["TEST_DIRECTORY"] + folder + "/" + file
+    else:
+        dir = args["TRAIN_DIRECTORY"] + folder +"/" + file
     with open(dir, "r") as f:
         lines = f.readlines()
         string_to_add = str(lines[0][6: -1])
@@ -170,7 +173,7 @@ def generate_train_file():
                 if "{" in string_to_add:
                     string_to_add = lrs3_parse(string_to_add)
                 print(string_to_add)
-                if string_filter(ex,folder):
+                if string_filter(ex,folder,False):
                     example_dict["ID"].append(examples_npy_dir)
                     example_dict["TEXT"].append(string_to_add)
 
@@ -214,7 +217,7 @@ def generate_val_file():
                 string_to_add = str(lines[0][6: -1])
                 if "{" in string_to_add:
                     string_to_add = lrs3_parse(string_to_add)
-                if string_filter(ex, folder):
+                if string_filter(ex, folder,True):
                     example_dict["ID"].append(examples_npy_dir)
                     example_dict["TEXT"].append(string_to_add)
 
@@ -229,7 +232,7 @@ if __name__ == "__main__":
     device = set_device()
     fileList = get_filelist()
     # fileList = filer_lengths(fileList)
-    fileList = check_valid_dirs(fileList)
+    # fileList = check_valid_dirs(fileList)
     print("File List complete")
     #preprocess_all_samples(fileList)
     # generate_noise_file(fileList)
