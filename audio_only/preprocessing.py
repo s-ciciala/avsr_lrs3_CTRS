@@ -30,6 +30,20 @@ def set_device():
 #         with open("test.txt", "w") as f:
 #             f.writelines(lines)
 
+
+def string_filter(file,folder):
+    dir = args["TRAIN_DIRECTORY"] + folder +"/" + file
+    with open(dir, "r") as f:
+        lines = f.readlines()
+        string_to_add = str(lines[0][6: -1])
+        if "{" in string_to_add:
+            string_to_add = lrs3_parse(string_to_add)
+            characters = len([ele for ele in string_to_add if ele.isalpha()])
+            print(characters,args["MAX_CHAR_LEN"])
+            if characters <= args["MAX_CHAR_LEN"]:
+                return True
+    return False
+
 def filer_lengths(fileList):
     filesListFiltered = list()
     for file in fileList:
@@ -143,7 +157,9 @@ def generate_train_file():
                 if "{" in string_to_add:
                     string_to_add = lrs3_parse(string_to_add)
                 print(string_to_add)
-                example_dict["TEXT"].append(string_to_add)
+                if string_filter(ex,folder):
+                    example_dict["ID"].append(examples_npy_dir)
+                    example_dict["TEXT"].append(string_to_add)
 
     with open(train_dir_file, "w") as f:
         for i in range(len(example_dict["ID"])):
