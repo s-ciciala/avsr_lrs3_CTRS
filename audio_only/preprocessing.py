@@ -49,8 +49,8 @@ def get_filelist():
         print(root,dirs,files)
         for file in files:
             if file.endswith(".mp4"):
-                if check_len(file,args["MAX_CHAR_LEN"]):
-                    filesList.append(os.path.join(root, file[:-4]))
+                # if check_len(file,args["MAX_CHAR_LEN"]):
+                filesList.append(os.path.join(root, file[:-4]))
     print(filesList)
     # Preprocessing each sample
     print("\nNumber of data samples to be processed = %d" % (len(filesList)))
@@ -194,6 +194,8 @@ def generate_val_file():
 if __name__ == "__main__":
     device = set_device()
     fileList = get_filelist()
+    print(fileList)
+    exit()
     #preprocess_all_samples(fileList)
     # generate_noise_file(fileList)
     generate_train_file()
