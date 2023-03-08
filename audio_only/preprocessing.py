@@ -39,8 +39,11 @@ def filer_lengths(fileList):
             string_to_add = str(lines[0][6: -1])
             if "{" in string_to_add:
                 string_to_add = lrs3_parse(string_to_add)
-                if len([ele for ele in string_to_add if ele.isalpha()]) <= args["MAX_CHAR_LEN"]:
+                characters = len([ele for ele in string_to_add if ele.isalpha()])
+                print(characters,args["MAX_CHAR_LEN"])
+                if characters <= args["MAX_CHAR_LEN"]:
                     filesListFiltered.append(file)
+
     print("\nNumber of data samples to after filtering = %d" % (len(filesListFiltered)))
     return filesListFiltered
 
