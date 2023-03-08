@@ -50,7 +50,7 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
         print("LOSS" * 10)
         print(index)
         print(trainLoader.dataset.datalist[index])
-        trainLoader.dataset[index]
+        print(trainLoader.dataset[index])
         print(loss.item())
         if (loss.item() == math.inf):
             print(trainLoader.dataset.datalist[index])
