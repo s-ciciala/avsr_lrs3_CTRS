@@ -47,8 +47,10 @@ def string_filter(file,folder):
 
 def check_valid_dirs(fileList):
     for file in fileList:
-        print(file)
-        exit()
+        if args["TRAIN_DIRECTORY"] in file:
+            print(file)
+            print(file[:-5])
+            exit()
         # os.path.isdir()
 
 def filer_lengths(fileList):
