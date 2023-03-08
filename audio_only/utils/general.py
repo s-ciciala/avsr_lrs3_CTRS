@@ -5,6 +5,7 @@ File part of 'deep_avsr' GitHub repository available at -
 https://github.com/lordmartian/deep_avsr
 """
 import math
+import numpy as np
 
 import torch
 from tqdm import tqdm
@@ -50,7 +51,8 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
         print("LOSS" * 10)
         print(index)
         print(trainLoader.dataset.datalist[index])
-        print(trainLoader.dataset[index])
+        print(trainLoader.dataset[index][0].sum())
+        print(trainLoader.dataset[index][1].sum())
         print(loss.item())
         if (loss.item() == math.inf):
             print(trainLoader.dataset.datalist[index])

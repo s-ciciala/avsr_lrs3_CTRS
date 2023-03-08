@@ -42,9 +42,9 @@ def get_training_data(device,kwargs):
     noiseParams = {"noiseFile": args["DATA_DIRECTORY"] + "/noise.wav", "noiseProb": args["NOISE_PROBABILITY"],"noiseSNR": args["NOISE_SNR_DB"]}
 
     trainData = LRS3Main(dataset, datadir, reqInpLen, charToIx, stepSize, audioParams, noiseParams)
-    broken_example = [24978]
-    for exmpl in broken_example:
-        trainData.datalist.pop(exmpl)
+    # broken_example = [24978]
+    # for exmpl in broken_example:
+    #     trainData.datalist.pop(exmpl)
 
 
     trainLoader = DataLoader(trainData, batch_size=args["BATCH_SIZE"], collate_fn=collate_fn, shuffle=True, **kwargs)
