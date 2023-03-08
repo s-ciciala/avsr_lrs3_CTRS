@@ -158,12 +158,12 @@ def train_model(model,trainLoader,valLoader,optimizer,loss_function,device):
 
 if __name__ == "__main__":
     device,kwargs = set_device()
+    print("Training using :" + str(device))
     trainData, trainLoader, valData, valLoader, model = get_training_data(device,kwargs)
     optimizer, scheduler, loss_function = get_optimiser_and_checkpoint_dir(model)
 
     numTotalParams, numTrainableParams = num_params(model)
     print("\nNumber of total parameters in the model = %d" % (numTotalParams))
     print("Number of trainable parameters in the model = %d\n" % (numTrainableParams))
-
     train_model(model, trainLoader, valLoader, optimizer, loss_function, device)
     print("Completed")
