@@ -32,7 +32,7 @@ args["INDEX_TO_CHAR"] = {1:" ", 22:"'", 30:"1", 29:"0", 37:"3", 32:"2", 34:"5", 
 
 
 #audio preprocessing
-args["MAX_CHAR_LEN"] = 95 #Characters
+args["MAX_CHAR_LEN"] = 100 #Characters
 args["NOISE_PROBABILITY"] = 0.25    #noise addition probability while training
 args["NOISE_SNR_DB"] = 0    #noise level in dB SNR
 args["STFT_WINDOW"] = "hamming" #window to use while computing STFT
@@ -69,10 +69,10 @@ args["NUM_CLASSES"] = 40    #number of output characters
 
 #transformer architecture
 args["PE_MAX_LENGTH"] = 2500    #length up to which we calculate positional encodings
-args["TX_NUM_FEATURES"] = 258   #transformer input feature size
+args["TX_NUM_FEATURES"] = 512   #transformer input feature size
 args["TX_ATTENTION_HEADS"] = 4  #number of attention heads in multihead attention layer
 args["TX_NUM_LAYERS"] = 3   #number of Transformer Encoder blocks in the stack
-args["TX_FEEDFORWARD_DIM"] = 1024   #hidden layer size in feedforward network of transformer
+args["TX_FEEDFORWARD_DIM"] = 2048   #hidden layer size in feedforward network of transformer
 args["TX_DROPOUT"] = 0.1    #dropout probability in the transformer
 
 
