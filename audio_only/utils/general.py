@@ -54,13 +54,14 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
             print("targetBatch " + str(targetBatch))
             print("outputLenBatch " + str(len(outputBatch)))
             print("targetLenBatch " + str(len(targetBatch)))
-            if (len(outputBatch) < inputLenBatch):
+            if len(outputBatch) < inputLenBatch:
                 print("CATCH")
                 print(outputBatch)
                 print(inputLenBatch)
-                print(len(outputBatch),inputLenBatch[0][0])
-
-            loss = loss_function(outputBatch, targetBatch, inputLenBatch, targetLenBatch)
+                new_inputLenBatch = torch.tensor([len(outputBatch)], dtype=torch.int32, device=device)
+                loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
+            else:
+                loss = loss_function(outputBatch, targetBatch, inputLenBatch, targetLenBatch)
         loss.backward()
         optimizer.step()
         # print("LOSS" * 10)
