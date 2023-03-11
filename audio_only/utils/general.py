@@ -55,7 +55,7 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
             print("targetLenBatch " + str(len(targetBatch)))
             print("outputBatch " + str(outputBatch))
             print("outputLenBatch " + str(len(outputBatch)))
-            for btch in inputLenBatch.item():
+            for btch in inputLenBatch:
                 print(btch)
                 arry = []
                 if len(outputBatch) < btch:
