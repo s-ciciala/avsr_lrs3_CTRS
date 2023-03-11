@@ -10,12 +10,14 @@ import numpy as np
 from config import args
 from utils.preprocessing import preprocess_sample
 
+
 def set_device():
     np.random.seed(args["SEED"])
     torch.manual_seed(args["SEED"])
     gpuAvailable = torch.cuda.is_available()
     device = torch.device("cuda" if gpuAvailable else "cpu")
     return device
+
 
 # def remove_lrs3_nuggets(filesList):
 #     print("Removing `{LG}` and such")
@@ -31,11 +33,11 @@ def set_device():
 #             f.writelines(lines)
 
 
-def string_filter(file,folder,val = False):
+def string_filter(file, folder, val=False):
     if val:
         dir = args["TEST_DIRECTORY"] + folder + "/" + file
     else:
-        dir = args["TRAIN_DIRECTORY"] + folder +"/" + file
+        dir = args["TRAIN_DIRECTORY"] + folder + "/" + file
     with open(dir, "r") as f:
         lines = f.readlines()
         string_to_add = str(lines[0][6: -1])
@@ -60,6 +62,7 @@ def check_valid_dirs(fileList):
                 valid_dirs.append(file)
         # os.path.isdir()
     return valid_dirs
+
 
 def filer_lengths(fileList):
     filesListFiltered = list()
@@ -93,6 +96,7 @@ def get_filelist():
     print("\n\nStarting preprocessing ....\n")
     return filesList
 
+
 def generate_noise_file(filesList):
     # Generating a 1 hour noise file
     # Fetching audio samples from 20 random files in the dataset and adding them up to generate noise
@@ -119,6 +123,7 @@ def generate_noise_file(filesList):
 
     print("\nNoise file generated.")
 
+
 def preprocess_all_samples(filesList):
     # declaring the visual frontend module
     # Preprocessing each sample
@@ -128,9 +133,11 @@ def preprocess_all_samples(filesList):
         preprocess_sample(file)
     print("\nPreprocessing Done.")
 
+
 def lrs3_parse(example):
     splt = example.split("{")
     return splt[0]
+
 
 def generate_train_file():
     # Generating train.txt for splitting the pretrain set into train sets
@@ -144,8 +151,6 @@ def generate_train_file():
     dirs = [d for d in os.listdir(train_dir) if os.path.isdir(os.path.join(train_dir, d))]
     print("\nAvaliable folders include: " + str(dirs))
     print("\nTotal number of folders included: " + str(len(dirs)))
-
-
 
     print("\nFor each folder we will extract the number of txt examples")
     for folder in tqdm(dirs):
@@ -173,7 +178,7 @@ def generate_train_file():
                 if "{" in string_to_add:
                     string_to_add = lrs3_parse(string_to_add)
                 print(string_to_add)
-                if string_filter(ex,folder,False):
+                if string_filter(ex, folder, False):
                     example_dict["ID"].append(examples_npy_dir)
                     example_dict["TEXT"].append(string_to_add)
 
@@ -182,6 +187,7 @@ def generate_train_file():
             f.writelines(example_dict["ID"][i])
             f.writelines(example_dict["TEXT"][i])
             f.writelines("\n")
+
 
 def generate_val_file():
     # Generating val.txt for splitting the pretrain set into validation sets
@@ -217,7 +223,7 @@ def generate_val_file():
                 string_to_add = str(lines[0][6: -1])
                 if "{" in string_to_add:
                     string_to_add = lrs3_parse(string_to_add)
-                if string_filter(ex, folder,True):
+                if string_filter(ex, folder, True):
                     example_dict["ID"].append(examples_npy_dir)
                     example_dict["TEXT"].append(string_to_add)
 
@@ -234,7 +240,7 @@ if __name__ == "__main__":
     # fileList = filer_lengths(fileList)
     # fileList = check_valid_dirs(fileList)
     print("File List complete")
-    #preprocess_all_samples(fileList)
+    # preprocess_all_samples(fileList)
     # generate_noise_file(fileList)
     generate_train_file()
     generate_val_file()
