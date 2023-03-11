@@ -18,7 +18,7 @@ args["TRAINED_LM_FILE"] = "../../deep_avsr_models/language_model/language_model.
 
 #data
 args["PRETRAIN_VAL_SPLIT"] = 0.01   #validation set size fraction during pretraining
-args["NUM_WORKERS"] = 8 #dataloader num_workers argument
+args["NUM_WORKERS"] = 4 #dataloader num_workers argument
 args["PRETRAIN_NUM_WORDS"] = 1  #number of words limit in current curriculum learning iteration
 args["MAIN_REQ_INPUT_LENGTH"] = 145 #minimum input length while training
 args["CHAR_TO_INDEX"] = {" ":1, "'":22, "1":30, "0":29, "3":37, "2":32, "5":34, "4":38, "7":36, "6":35, "9":31, "8":33,
