@@ -40,8 +40,8 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
                                                                                           ncols=75)):
 
 
-        if inputBatch == 145:
-            inputBatch = 144
+        if inputBatch.float() == float(145):
+            inputBatch = float(144)
 
         inputBatch, targetBatch = (inputBatch.float()).to(device), (targetBatch.float()).to(device)
         inputLenBatch, targetLenBatch = (inputLenBatch.int()).to(device), (targetLenBatch.int()).to(device)
