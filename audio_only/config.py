@@ -32,7 +32,7 @@ args["INDEX_TO_CHAR"] = {1:" ", 22:"'", 30:"1", 29:"0", 37:"3", 32:"2", 34:"5", 
 
 
 #audio preprocessing
-args["MAX_CHAR_LEN"] = 100 #Characters
+args["MAX_CHAR_LEN"] = 95 #Characters
 args["NOISE_PROBABILITY"] = 0.25    #noise addition probability while training
 args["NOISE_SNR_DB"] = 0    #noise level in dB SNR
 args["STFT_WINDOW"] = "hamming" #window to use while computing STFT
