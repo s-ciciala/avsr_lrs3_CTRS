@@ -20,7 +20,7 @@ args["TRAINED_LM_FILE"] = "../../deep_avsr_models/language_model/language_model.
 args["PRETRAIN_VAL_SPLIT"] = 0.01   #validation set size fraction during pretraining
 args["NUM_WORKERS"] = 8 #dataloader num_workers argument
 args["PRETRAIN_NUM_WORDS"] = 1  #number of words limit in current curriculum learning iteration
-args["MAIN_REQ_INPUT_LENGTH"] = 145 #minimum input length while training
+args["MAIN_REQ_INPUT_LENGTH"] = 120 #minimum input length while training
 args["CHAR_TO_INDEX"] = {" ":1, "'":22, "1":30, "0":29, "3":37, "2":32, "5":34, "4":38, "7":36, "6":35, "9":31, "8":33,
                          "A":5, "C":17, "B":20, "E":2, "D":12, "G":16, "F":19, "I":6, "H":9, "K":24, "J":25, "M":18,
                          "L":11, "O":4, "N":7, "Q":27, "P":21, "S":8, "R":10, "U":13, "T":3, "W":15, "V":23, "Y":14,
@@ -70,8 +70,8 @@ args["NUM_CLASSES"] = 40    #number of output characters
 #transformer architecture
 args["PE_MAX_LENGTH"] = 2500    #length up to which we calculate positional encodings
 args["TX_NUM_FEATURES"] = 512   #transformer input feature size
-args["TX_ATTENTION_HEADS"] = 4  #number of attention heads in multihead attention layer
-args["TX_NUM_LAYERS"] = 3   #number of Transformer Encoder blocks in the stack
+args["TX_ATTENTION_HEADS"] = 8  #number of attention heads in multihead attention layer
+args["TX_NUM_LAYERS"] = 6   #number of Transformer Encoder blocks in the stack
 args["TX_FEEDFORWARD_DIM"] = 2048   #hidden layer size in feedforward network of transformer
 args["TX_DROPOUT"] = 0.1    #dropout probability in the transformer
 

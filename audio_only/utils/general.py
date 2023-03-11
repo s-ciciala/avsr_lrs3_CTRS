@@ -37,11 +37,15 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
             tqdm(trainLoader, leave=False, desc="Train",
                  ncols=75)):
 
+
         inputBatch, targetBatch = (inputBatch.float()).to(device), (targetBatch.float()).to(device)
         inputLenBatch, targetLenBatch = (inputLenBatch.int()).to(device), (targetLenBatch.int()).to(device)
         optimizer.zero_grad()
         model.train()
+        # if len(inputBatch) >
         outputBatch = model(inputBatch)
+
+        print(inputBatch, len(outputBatch))
         with torch.backends.cudnn.flags(enabled=True):
             print("\n")
             print("inputLenBatch " + str(inputLenBatch))
