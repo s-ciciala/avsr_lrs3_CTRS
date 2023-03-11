@@ -61,6 +61,7 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
                     arry.append(len(outputBatch))
                 else:
                     arry.append(btch)
+            print("new_inputLenBatch " + str(new_inputLenBatch))
             new_inputLenBatch = torch.tensor(arry, dtype=torch.int32, device=device)
             loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
             # if len(outputBatch) < inputLenBatch:
