@@ -18,7 +18,7 @@ args["TRAINED_LM_FILE"] = "../../deep_avsr_models/language_model/language_model.
 
 #data
 args["PRETRAIN_VAL_SPLIT"] = 0.01   #validation set size fraction during pretraining
-args["NUM_WORKERS"] = 2 #dataloader num_workers argument
+args["NUM_WORKERS"] = 8 #dataloader num_workers argument
 args["PRETRAIN_NUM_WORDS"] = 1  #number of words limit in current curriculum learning iteration
 args["MAIN_REQ_INPUT_LENGTH"] = 145 #minimum input length while training
 args["CHAR_TO_INDEX"] = {" ":1, "'":22, "1":30, "0":29, "3":37, "2":32, "5":34, "4":38, "7":36, "6":35, "9":31, "8":33,
@@ -45,7 +45,7 @@ args["LIMITGPU"] = True
 # args["GPU"] = "cuda:1,2"
 args["GPUID"] = [0,1]
 args["SEED"] = 19220297 #seed for random number generators
-args["BATCH_SIZE"] = 2 #minibatch size
+args["BATCH_SIZE"] = 1 #minibatch size
 args["STEP_SIZE"] = 16384   #number of samples in one step (virtual epoch)
 args["NUM_STEPS"] = 1000 #maximum number of steps to train for (early stopping is used)
 args["SAVE_FREQUENCY"] = 10 #saving the model weights and loss/metric plots after every these many steps
@@ -70,8 +70,8 @@ args["NUM_CLASSES"] = 40    #number of output characters
 #transformer architecture
 args["PE_MAX_LENGTH"] = 2500    #length up to which we calculate positional encodings
 args["TX_NUM_FEATURES"] = 512   #transformer input feature size
-args["TX_ATTENTION_HEADS"] = 8  #number of attention heads in multihead attention layer
-args["TX_NUM_LAYERS"] = 6   #number of Transformer Encoder blocks in the stack
+args["TX_ATTENTION_HEADS"] = 4  #number of attention heads in multihead attention layer
+args["TX_NUM_LAYERS"] = 3   #number of Transformer Encoder blocks in the stack
 args["TX_FEEDFORWARD_DIM"] = 2048   #hidden layer size in feedforward network of transformer
 args["TX_DROPOUT"] = 0.1    #dropout probability in the transformer
 
