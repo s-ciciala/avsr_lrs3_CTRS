@@ -54,7 +54,7 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
             print("outputLenBatch " + str(len(outputBatch)))
             print("targetLenBatch " + str(len(targetBatch)))
             print("outputBatch " + str(outputBatch))
-            if len(outputBatch[0]) < inputLenBatch:
+            if len(outputBatch[0][0]) < inputLenBatch:
                 # print("CATCH")
                 # print(outputBatch)
                 # print(inputLenBatch)
