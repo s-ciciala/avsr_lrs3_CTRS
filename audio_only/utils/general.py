@@ -55,14 +55,22 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
             print("targetLenBatch " + str(len(targetBatch)))
             print("outputBatch " + str(outputBatch))
             print("outputLenBatch " + str(len(outputBatch)))
-            if len(outputBatch) < inputLenBatch:
-                # print("CATCH")
-                # print(outputBatch)
-                # print(inputLenBatch)
-                new_inputLenBatch = torch.tensor([len(outputBatch)], dtype=torch.int32, device=device)
-                loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
-            else:
-                loss = loss_function(outputBatch, targetBatch, inputLenBatch, targetLenBatch)
+            for btch in inputLenBatch:
+                arry = []
+                if len(outputBatch) < inputLenBatch:
+                    arry.append(len(outputBatch))
+                else:
+                    arry.append(btch)
+            new_inputLenBatch = torch.tensor(arry, dtype=torch.int32, device=device)
+            loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
+            # if len(outputBatch) < inputLenBatch:
+            #     # print("CATCH")
+            #     # print(outputBatch)
+            #     # print(inputLenBatch)
+            #     new_inputLenBatch = torch.tensor([len(outputBatch)], dtype=torch.int32, device=device)
+            #     loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
+            # else:
+            #     loss = loss_function(outputBatch, targetBatch, inputLenBatch, targetLenBatch)
         loss.backward()
         optimizer.step()
         # print("LOSS" * 10)
