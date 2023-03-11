@@ -47,6 +47,10 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
         with torch.backends.cudnn.flags(enabled=False):
             print("inputLenBatch" + str(inputLenBatch))
             print("inputLenBatch" + str(targetLenBatch))
+            print("outputBatch" + str(outputBatch))
+            print("targetBatch" + str(targetBatch))
+            print("outputLenBatch" + str(len(outputBatch)))
+            print("targetLenBatch" + str(len(targetBatch)))
             loss = loss_function(outputBatch, targetBatch, inputLenBatch, targetLenBatch)
         loss.backward()
         optimizer.step()
