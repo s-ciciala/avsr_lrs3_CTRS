@@ -252,5 +252,5 @@ if __name__ == "__main__":
     # preprocess_all_samples(fileList)
     # generate_noise_file(fileList)
     generate_train_file()
-    # generate_val_file()
+    generate_val_file()
     print("Completed")
