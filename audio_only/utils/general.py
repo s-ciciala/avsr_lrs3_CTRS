@@ -45,7 +45,7 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
         # if len(inputBatch) >
         outputBatch = model(inputBatch)
 
-        # print(inputBatch, len(outputBatch))
+        print(inputBatch, len(outputBatch))
         with torch.backends.cudnn.flags(enabled=True):
             print("\n")
             print("inputLenBatch " + str(inputLenBatch))
