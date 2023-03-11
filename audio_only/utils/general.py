@@ -45,19 +45,19 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
         # if len(inputBatch) >
         outputBatch = model(inputBatch)
 
-        print(inputBatch, len(outputBatch))
+        # print(inputBatch, len(outputBatch))
         with torch.backends.cudnn.flags(enabled=True):
-            print("\n")
-            print("inputLenBatch " + str(inputLenBatch))
-            print("targetLenBatch " + str(targetLenBatch))
-            print("inputBatch " + str(inputBatch))
-            print("targetBatch " + str(targetBatch))
-            print("outputLenBatch " + str(len(outputBatch)))
-            print("targetLenBatch " + str(len(targetBatch)))
+            # print("\n")
+            # print("inputLenBatch " + str(inputLenBatch))
+            # print("targetLenBatch " + str(targetLenBatch))
+            # print("inputBatch " + str(inputBatch))
+            # print("targetBatch " + str(targetBatch))
+            # print("outputLenBatch " + str(len(outputBatch)))
+            # print("targetLenBatch " + str(len(targetBatch)))
             if len(outputBatch) < inputLenBatch:
-                print("CATCH")
-                print(outputBatch)
-                print(inputLenBatch)
+                # print("CATCH")
+                # print(outputBatch)
+                # print(inputLenBatch)
                 new_inputLenBatch = torch.tensor([len(outputBatch)], dtype=torch.int32, device=device)
                 loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
             else:
