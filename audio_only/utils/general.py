@@ -58,7 +58,7 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
                 print("CATCH")
                 print(outputBatch)
                 print(inputLenBatch)
-                print(len(outputBatch),inputLenBatch[0])
+                print(len(outputBatch),inputLenBatch[0][0])
 
             loss = loss_function(outputBatch, targetBatch, inputLenBatch, targetLenBatch)
         loss.backward()
