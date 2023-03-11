@@ -83,7 +83,7 @@ def get_optimiser_and_checkpoint_dir(model):
                                                      patience=args["LR_SCHEDULER_WAIT"],
                                                      threshold=args["LR_SCHEDULER_THRESH"],
                                                      threshold_mode="abs", min_lr=args["FINAL_LR"], verbose=True)
-    loss_function = nn.CTCLoss(blank=0, zero_infinity=True)
+    loss_function = nn.CTCLoss(blank=0, zero_infinity=False)
     if args["CHECKPOINTS"]:
         if os.path.exists(args["CODE_DIRECTORY"] + "/checkpoints"):
             while True:
