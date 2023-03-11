@@ -39,12 +39,16 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
     for batch, (inputBatch, targetBatch, inputLenBatch, targetLenBatch, index) in enumerate(tqdm(trainLoader, leave=False, desc="Train",
                                                                                           ncols=75)):
 
+
+        if inputBatch == 145:
+            inputBatch = 144
+
         inputBatch, targetBatch = (inputBatch.float()).to(device), (targetBatch.float()).to(device)
         inputLenBatch, targetLenBatch = (inputLenBatch.int()).to(device), (targetLenBatch.int()).to(device)
         optimizer.zero_grad()
         model.train()
         outputBatch = model(inputBatch)
-        with torch.backends.cudnn.flags(enabled=False):
+        with torch.backends.cudnn.flags(enabled=True):
             print("\n")
             print("inputLenBatch " + str(inputLenBatch))
             print("inputLenBatch " + str(targetLenBatch))
