@@ -46,25 +46,25 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
         outputBatch = model(inputBatch)
 
         with torch.backends.cudnn.flags(enabled=True):
-            print("\n")
-            print("inputLenBatch " + str(inputLenBatch))
-            print("targetLenBatch " + str(targetLenBatch))
-            print("inputBatch " + str(inputBatch))
-            print("targetBatch " + str(targetBatch))
-            print("outputLenBatch " + str(len(outputBatch)))
-            print("targetLenBatch " + str(len(targetBatch)))
-            print("outputBatch " + str(outputBatch))
-            print("outputLenBatch " + str(len(outputBatch)))
+            # print("\n")
+            # print("inputLenBatch " + str(inputLenBatch))
+            # print("targetLenBatch " + str(targetLenBatch))
+            # print("inputBatch " + str(inputBatch))
+            # print("targetBatch " + str(targetBatch))
+            # print("outputLenBatch " + str(len(outputBatch)))
+            # print("targetLenBatch " + str(len(targetBatch)))
+            # print("outputBatch " + str(outputBatch))
+            # print("outputLenBatch " + str(len(outputBatch)))
             arry = []
             for btch in inputLenBatch:
-                print("HERE")
-                print(btch)
+                # print("HERE")
+                # print(btch)
                 if len(outputBatch) < btch:
                     arry.append(len(outputBatch))
                 else:
                     arry.append(btch)
             new_inputLenBatch = torch.tensor(arry, dtype=torch.int32, device=device)
-            print("new_inputLenBatch " + str(new_inputLenBatch))
+            # print("new_inputLenBatch " + str(new_inputLenBatch))
             loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
             # if len(outputBatch) < inputLenBatch:
             #     # print("CATCH")
