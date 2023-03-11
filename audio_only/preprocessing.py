@@ -43,10 +43,12 @@ def string_filter(file, folder, val=False):
         string_to_add = str(lines[0][6: -1])
         if "{" in string_to_add:
             string_to_add = lrs3_parse(string_to_add)
-            characters = len([ele for ele in string_to_add if ele.isalpha()])
+        characters = len([ele for ele in string_to_add if ele.isalpha()])
+        print("String :" + str(string_to_add))
+        print("characters :" + str(characters) + " and MAX is " + str(args["MAX_CHAR_LEN"]))
             # print(characters,args["MAX_CHAR_LEN"])
-            if characters <= args["MAX_CHAR_LEN"]:
-                return True
+        if characters <= args["MAX_CHAR_LEN"]:
+            return True
     return False
 
 
@@ -90,7 +92,7 @@ def get_filelist():
             if file.endswith(".mp4"):
                 # if check_len(file,args["MAX_CHAR_LEN"]):
                 filesList.append(os.path.join(root, file[:-4]))
-    print(filesList)
+    # print(filesList)
     # Preprocessing each sample
     print("\nNumber of data samples to be processed = %d" % (len(filesList)))
     print("\n\nStarting preprocessing ....\n")
@@ -136,6 +138,9 @@ def preprocess_all_samples(filesList):
 
 def lrs3_parse(example):
     splt = example.split("{")
+    print("Had to split")
+    print("Was " + str(example))
+    print("Is "+ str(splt))
     return splt[0]
 
 
