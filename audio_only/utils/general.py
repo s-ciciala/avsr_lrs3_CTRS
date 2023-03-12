@@ -112,7 +112,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
     evalCER = 0
     evalWER = 0
 
-    for batch, (inputBatch, targetBatch, inputLenBatch, targetLenBatch) in enumerate(
+    for batch, (inputBatch, targetBatch, inputLenBatch, targetLenBatch, index) in enumerate(
             tqdm(evalLoader, leave=False, desc="Eval",
                  ncols=75)):
 
