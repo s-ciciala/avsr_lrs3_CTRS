@@ -119,16 +119,14 @@ def train_model(model,trainLoader,valLoader,optimizer,loss_function,device):
 
     for step in range(args["NUM_STEPS"]):
         # train the model for one step
-        # trainingLoss, trainingCER, trainingWER = train(model, trainLoader, optimizer, loss_function, device,trainParams)
-        # trainingLossCurve.append(trainingLoss)
-        # trainingWERCurve.append(trainingWER)
+        trainingLoss, trainingCER, trainingWER = train(model, trainLoader, optimizer, loss_function, device,trainParams)
+        trainingLossCurve.append(trainingLoss)
+        trainingWERCurve.append(trainingWER)
 
         # evaluate the model on validation set
         validationLoss, validationCER, validationWER = evaluate(model, valLoader, loss_function, device, valParams)
         validationLossCurve.append(validationLoss)
         validationWERCurve.append(validationWER)
-        print("made it ")
-        exit()
         # printing the stats after each step
         print(
             "Step: %03d || Tr.Loss: %.6f  Val.Loss: %.6f || Tr.CER: %.3f  Val.CER: %.3f || Tr.WER: %.3f  Val.WER: %.3f"
@@ -162,7 +160,6 @@ def train_model(model,trainLoader,valLoader,optimizer,loss_function,device):
             plt.legend()
             plt.savefig(args["CODE_DIRECTORY"] + "/audio_only_checkpoints/plots/train-step_{:04d}-wer.png".format(step))
             plt.close()
-
     print("\nTraining Done.\n")
 
 if __name__ == "__main__":
