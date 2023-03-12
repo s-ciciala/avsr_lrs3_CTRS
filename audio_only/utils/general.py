@@ -116,7 +116,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             tqdm(evalLoader, leave=False, desc="Eval",
                  ncols=75)):
 
-        inputBatch, targetBatch = (inputBatch.float()).to(device), (targetBatch.int()).to(device)
+        inputBatch, targetBatch = (inputBatch.float()).to(device), (targetBatch.float()).to(device)
         inputLenBatch, targetLenBatch = (inputLenBatch.int()).to(device), (targetLenBatch.int()).to(device)
 
         model.eval()
