@@ -94,8 +94,8 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
         trainingWER = trainingWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch,
                                                 trainParams["spaceIx"])
 
-    print("LEN OF TRAIN lOADER")
-    print(len(trainLoader))
+    # print("LEN OF TRAIN lOADER")
+    # print(len(trainLoader))
     trainingLoss = trainingLoss / len(trainLoader)
     trainingCER = trainingCER / len(trainLoader)
     trainingWER = trainingWER / len(trainLoader)
