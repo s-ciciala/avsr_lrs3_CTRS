@@ -122,8 +122,30 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         model.eval()
         with torch.no_grad():
             outputBatch = model(inputBatch)
-            with torch.backends.cudnn.flags(enabled=False):
-                loss = loss_function(outputBatch, targetBatch, inputLenBatch, targetLenBatch)
+            with torch.backends.cudnn.flags(enabled=True):
+                # print("\n")
+                # print("inputLenBatch " + str(inputLenBatch))
+                # print("targetLenBatch " + str(targetLenBatch))
+                # print("inputBatch " + str(inputBatch))
+                # print("targetBatch " + str(targetBatch))
+                # print("outputLenBatch " + str(len(outputBatch)))
+                # print("targetLenBatch " + str(len(targetBatch)))
+                # print("outputBatch " + str(outputBatch))
+                # print("outputLenBatch " + str(len(outputBatch)))
+                arry = []
+                for btch in inputLenBatch:
+                    if len(outputBatch) < btch:
+                        arry.append(len(outputBatch))
+                    else:
+                        arry.append(btch)
+                new_inputLenBatch = torch.tensor(arry, dtype=torch.int32, device=device)
+                # print("new_inputLenBatch " + str(new_inputLenBatch))
+                loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
+
+        # with torch.no_grad():
+        #     outputBatch = model(inputBatch)
+        #     with torch.backends.cudnn.flags(enabled=False):
+        #         loss = loss_function(outputBatch, targetBatch, inputLenBatch, targetLenBatch)
 
         evalLoss = evalLoss + loss.item()
         if evalParams["decodeScheme"] == "greedy":
