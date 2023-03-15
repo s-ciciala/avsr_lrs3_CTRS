@@ -38,6 +38,9 @@ def get_filelist():
 def preprocess_all_samples(filesList, device):
     # declaring the visual frontend module
     vf = VisualFrontend()
+    print("Device is " + str(device))
+    if device == "cuda":
+        device = "cuda:0,1,2,3"
     vf.load_state_dict(torch.load(args["TRAINED_FRONTEND_FILE"], map_location=device))
     vf.to(device)
     params = {"roiSize": args["ROI_SIZE"], "normMean": args["NORMALIZATION_MEAN"], "normStd": args["NORMALIZATION_STD"],
@@ -137,7 +140,6 @@ def generate_val_file():
 
 if __name__ == "__main__":
     device = set_device()
-    print("added")
     fileList = get_filelist()
     preprocess_all_samples(fileList,device)
     # generate_train_file()
