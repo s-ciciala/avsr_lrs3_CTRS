@@ -41,10 +41,11 @@ def preprocess_all_samples(filesList, device):
     torch.cuda.empty_cache()
     print("Device is " + str(device))
     os.environ["CUDA_AVAILABLE_DEVICES"] = "0,1,2,3"
-    device = "cuda:0"
     print("Device is " + str(device))
     print(len(args["TRAINED_FRONTEND_FILE"]))
-    vf.load_state_dict(torch.load(args["TRAINED_FRONTEND_FILE"], map_location=device))
+    map_location = {'cuda:0': 'cuda:1'}
+    # vf.load_state_dict(torch.load(args["TRAINED_FRONTEND_FILE"], map_location=device))
+    vf.load_state_dict(torch.load(args["TRAINED_FRONTEND_FILE"], map_location=map_location))
     vf.to(device)
     params = {"roiSize": args["ROI_SIZE"], "normMean": args["NORMALIZATION_MEAN"], "normStd": args["NORMALIZATION_STD"],
               "vf": vf}
