@@ -27,7 +27,7 @@ def preprocess_sample(file, params):
     normStd = params["normStd"]
     vf = params["vf"]
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+    device= "cuda:0 cuda:1"
 
     #for each frame, resize to 224x224 and crop the central 112x112 region
     captureObj = cv.VideoCapture(videoFile)
