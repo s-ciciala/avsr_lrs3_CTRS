@@ -9,6 +9,9 @@ import cv2 as cv
 import numpy as np
 import torch
 import os
+import torch.nn as nn
+import torch.distributed as dist
+
 
 
 
@@ -27,7 +30,6 @@ def preprocess_sample(file, params):
     normStd = params["normStd"]
     vf = params["vf"]
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    device= "cuda:0 cuda:1"
 
     #for each frame, resize to 224x224 and crop the central 112x112 region
     captureObj = cv.VideoCapture(videoFile)
@@ -43,6 +45,21 @@ def preprocess_sample(file, params):
         else:
             break
     captureObj.release()
+
+    # Concatenate the sequence of ROIs along the time axis to create a batch of data
+    roiBatch = np.concatenate(roiSequence, axis=0)
+
+    # Normalize the data using the provided mean and standard deviation
+    roiBatch = (roiBatch - normMean) / normStd
+
+    # Convert the numpy array to a PyTorch tensor
+    roiBatch = torch.from_numpy(roiBatch).float()
+    print("num devices :" + str(torch.cuda.device_count() ))
+    if torch.cuda.device_count() > 1:
+        roiBatch = nn.DataParallel(roiBatch)
+    else:
+        # Move the tensor to the appropriate device
+        roiBatch = roiBatch.to(device)
     cv.imwrite(roiFile, np.floor(255*np.concatenate(roiSequence, axis=1)).astype(np.int_))
 
 
