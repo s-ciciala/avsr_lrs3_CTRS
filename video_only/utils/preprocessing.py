@@ -10,6 +10,7 @@ import numpy as np
 import torch
 import os
 import torch.nn as nn
+import torch.nn.parameter as Parameter
 import torch.distributed as dist
 
 
@@ -70,11 +71,15 @@ def preprocess_sample(file, params):
     inp = np.stack(roiSequence, axis=0)
     inp = np.expand_dims(inp, axis=[1,2])
     inp = (inp - normMean)/normStd
-    inputBatch = torch.from_numpy(inp)
+    # Transpose inputBatch
+    inputBatch = np.transpose(inp, (0, 3, 1, 2))
+    # inputBatch = torch.from_numpy(inp)
     if num_devices > 1:
+        inputBatch = Parameter(torch.from_numpy(inputBatch).float())
         inputBatch = nn.DataParallel(inputBatch)
     else:
-        inputBatch = (inputBatch.float()).to(device)
+        inputBatch = torch.from_numpy(inputBatch).float().to(device)
+        # inputBatch = (inputBatch.float()).to(device)
     vf.eval()
     with torch.no_grad():
         outputBatch = vf(inputBatch)
