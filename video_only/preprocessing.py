@@ -16,7 +16,9 @@ def set_device():
     torch.manual_seed(args["SEED"])
     gpuAvailable = torch.cuda.is_available()
     device = torch.device("cuda" if gpuAvailable else "cpu")
+    print("Using Device " + str(device))
     return device
+
 
 def get_filelist():
     # walking through the data directory and obtaining a list of all files in the dataset
@@ -26,13 +28,14 @@ def get_filelist():
         for file in files:
             if file.endswith(".mp4"):
                 filesList.append(os.path.join(root, file[:-4]))
-    print(filesList)
+    # print(filesList)
     # Preprocessing each sample
     print("\nNumber of data samples to be processed = %d" % (len(filesList)))
     print("\n\nStarting preprocessing ....\n")
     return filesList
 
-def preprocess_all_samples(filesList,device):
+
+def preprocess_all_samples(filesList, device):
     # declaring the visual frontend module
     vf = VisualFrontend()
     vf.load_state_dict(torch.load(args["TRAINED_FRONTEND_FILE"], map_location=device))
@@ -42,6 +45,7 @@ def preprocess_all_samples(filesList,device):
     for file in tqdm(filesList, leave=True, desc="Preprocess", ncols=75):
         preprocess_sample(file, params)
     print("\nPreprocessing Done.")
+
 
 def generate_train_file():
     # Generating train.txt for splitting the pretrain set into train sets
@@ -88,6 +92,7 @@ def generate_train_file():
             f.writelines(example_dict["TEXT"][i])
             f.writelines("\n")
 
+
 def generate_val_file():
     # Generating val.txt for splitting the pretrain set into validation sets
     val_dir = args["VAL_DIRECTORY"]
@@ -133,7 +138,7 @@ def generate_val_file():
 if __name__ == "__main__":
     device = set_device()
     fileList = get_filelist()
-    # preprocess_all_samples(fileList,device)
-    generate_train_file()
-    generate_val_file()
+    preprocess_all_samples(fileList,device)
+    # generate_train_file()
+    # generate_val_file()
     print("Completed")

@@ -114,6 +114,8 @@ def train_model(model,trainLoader,valLoader,optimizer,loss_function,device):
 
     trainingLossCurve = list()
     validationLossCurve = list()
+    trainingCERCurve = list()
+    validationCERCurve = list()
     trainingWERCurve = list()
     validationWERCurve = list()
 
