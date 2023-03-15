@@ -38,6 +38,7 @@ def get_filelist():
 def preprocess_all_samples(filesList, device):
     # declaring the visual frontend module
     vf = VisualFrontend()
+    torch.cuda.empty_cache()
     print("Device is " + str(device))
     os.environ["CUDA_AVAILABLE_DEVICES"] = "0,1,2,3"
     device = "cuda:0"
