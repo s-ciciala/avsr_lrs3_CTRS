@@ -40,7 +40,7 @@ def preprocess_all_samples(filesList, device):
     vf = VisualFrontend()
     print("Device is " + str(device))
     os.environ["CUDA_AVAILABLE_DEVICES"] = "0,1,2,3"
-    # device = "cuda:0"
+    device = "cuda:0"
     print("Device is " + str(device))
     print(len(args["TRAINED_FRONTEND_FILE"]))
     vf.load_state_dict(torch.load(args["TRAINED_FRONTEND_FILE"], map_location=device))
