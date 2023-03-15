@@ -45,7 +45,8 @@ def preprocess_all_samples(filesList, device):
     print(len(args["TRAINED_FRONTEND_FILE"]))
     map_location = {'cuda:0': 'cuda:1'}
     # vf.load_state_dict(torch.load(args["TRAINED_FRONTEND_FILE"], map_location=device))
-    vf.load_state_dict(torch.load(args["TRAINED_FRONTEND_FILE"], map_location=map_location))
+    device = "cpu"
+    vf.load_state_dict(torch.load(args["TRAINED_FRONTEND_FILE"], map_location=device))
     vf.to(device)
     params = {"roiSize": args["ROI_SIZE"], "normMean": args["NORMALIZATION_MEAN"], "normStd": args["NORMALIZATION_STD"],
               "vf": vf}
