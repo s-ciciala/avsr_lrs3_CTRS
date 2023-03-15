@@ -12,6 +12,8 @@ import os
 import torch.nn as nn
 import torch.nn.parameter as Parameter
 import torch.distributed as dist
+from ..config import args
+
 
 
 def preprocess_sample(file, params):
@@ -28,6 +30,7 @@ def preprocess_sample(file, params):
     normStd = params["normStd"]
     vf = params["vf"]
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    num_devs = torch.cuda.device_count()
 
     #for each frame, resize to 224x224 and crop the central 112x112 region
     captureObj = cv.VideoCapture(videoFile)
@@ -53,6 +56,13 @@ def preprocess_sample(file, params):
     # Convert the numpy array to a PyTorch tensor
     roiBatch = torch.from_numpy(roiBatch).float()
 
+    roiBatch = roiBatch.transpose(0, 1)
+    if num_devs != 0:
+        roiBatch = nn.parallel.scatter(roiBatch, [0,1,2,3])
+    else:
+        roiBatch = roiBatch.to(device)
+
+
     cv.imwrite(roiFile, np.floor(255*np.concatenate(roiSequence, axis=1)).astype(np.int_))
 
     # Normalize the frames and extract features for each frame using the visual frontend
@@ -64,22 +74,19 @@ def preprocess_sample(file, params):
     # Use nn.Sequential to apply the necessary transpositions to the input batch
     # vf_seq = nn.Sequential(nn.Transpose(1, 2), nn.Transpose(0, 1), vf)
     # vf_seq = nn.Sequential(torch.transpose(x, 1, 2), torch.transpose(x, 0, 1), vf)
-    vf_seq = nn.Sequential(
-        lambda x: torch.transpose(x, 1, 2),
-        lambda x: torch.transpose(x, 0, 1),
-        vf
-    )
 
     inputBatch = torch.from_numpy(inp)
-    inputBatch = (inputBatch.float()).to(device)
-    vf_seq.eval()
+    inputBatch = nn.DataParallel(inputBatch, device_ids=args["GPUID"])
+    inputBatch = inputBatch.to(args["GPUID"][0])
+    # inputBatch = (inputBatch.float()).to(device)
+
+    vf = nn.DataParallel(vf)
+
+    vf.eval()
     with torch.no_grad():
-        outputBatch = vf_seq(inputBatch)
-
-    # Apply necessary transpositions to the output batch
-    outputBatch = outputBatch.transpose(1, 2).transpose(0, 1)
-
-    out = outputBatch.cpu().numpy()
+        outputBatch = vf(inputBatch)
+    out = torch.squeeze(outputBatch, dim=1)
+    out = out.cpu().numpy()
     np.save(visualFeaturesFile, out)
     return
 
