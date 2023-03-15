@@ -100,28 +100,28 @@ class VisualFrontend(nn.Module):
         self.resnet = ResNet()
         return
 
-    def forward(self, inputBatch):
-        inputBatch = torch.transpose(inputBatch, 0, 1).transpose(1, 2)
-        batchsize = inputBatch.shape[0]
-        batch = self.frontend3D(inputBatch)
-
-        batch = batch.transpose(1, 2)
-        batch = batch.reshape(batch.shape[0] * batch.shape[1], batch.shape[2], batch.shape[3], batch.shape[4])
-        outputBatch = self.resnet(batch)
-        outputBatch = outputBatch.reshape(batchsize, -1, 512)
-        outputBatch = outputBatch.transpose(1, 2)
-        outputBatch = outputBatch.transpose(1, 2).transpose(0, 1)
-        return outputBatch
-
     # def forward(self, inputBatch):
-    #     inputBatch = inputBatch.transpose(0, 1).transpose(1, 2)
+    #     inputBatch = torch.transpose(inputBatch, 0, 1).transpose(1, 2)
     #     batchsize = inputBatch.shape[0]
     #     batch = self.frontend3D(inputBatch)
     #
     #     batch = batch.transpose(1, 2)
-    #     batch = batch.reshape(batch.shape[0]*batch.shape[1], batch.shape[2], batch.shape[3], batch.shape[4])
+    #     batch = batch.reshape(batch.shape[0] * batch.shape[1], batch.shape[2], batch.shape[3], batch.shape[4])
     #     outputBatch = self.resnet(batch)
     #     outputBatch = outputBatch.reshape(batchsize, -1, 512)
-    #     outputBatch = outputBatch.transpose(1 ,2)
+    #     outputBatch = outputBatch.transpose(1, 2)
     #     outputBatch = outputBatch.transpose(1, 2).transpose(0, 1)
     #     return outputBatch
+
+    def forward(self, inputBatch):
+        inputBatch = inputBatch.transpose(0, 1).transpose(1, 2)
+        batchsize = inputBatch.shape[0]
+        batch = self.frontend3D(inputBatch)
+
+        batch = batch.transpose(1, 2)
+        batch = batch.reshape(batch.shape[0]*batch.shape[1], batch.shape[2], batch.shape[3], batch.shape[4])
+        outputBatch = self.resnet(batch)
+        outputBatch = outputBatch.reshape(batchsize, -1, 512)
+        outputBatch = outputBatch.transpose(1 ,2)
+        outputBatch = outputBatch.transpose(1, 2).transpose(0, 1)
+        return outputBatch
