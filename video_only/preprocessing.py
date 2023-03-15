@@ -137,6 +137,7 @@ def generate_val_file():
 
 if __name__ == "__main__":
     device = set_device()
+    print("added")
     fileList = get_filelist()
     preprocess_all_samples(fileList,device)
     # generate_train_file()
