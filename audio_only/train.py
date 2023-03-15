@@ -123,11 +123,13 @@ def train_model(model,trainLoader,valLoader,optimizer,loss_function,device):
         # train the model for one step
         trainingLoss, trainingCER, trainingWER = train(model, trainLoader, optimizer, loss_function, device,trainParams)
         trainingLossCurve.append(trainingLoss)
+        trainingCERCurve.append(trainingCER)
         trainingWERCurve.append(trainingWER)
 
         # evaluate the model on validation set
         validationLoss, validationCER, validationWER = evaluate(model, valLoader, loss_function, device, valParams)
         validationLossCurve.append(validationLoss)
+        validationCERCurve.append(validationCER)
         validationWERCurve.append(validationWER)
         # printing the stats after each step
         print(
@@ -161,6 +163,16 @@ def train_model(model,trainLoader,valLoader,optimizer,loss_function,device):
             plt.plot(list(range(1, len(validationWERCurve) + 1)), validationWERCurve, "red", label="Validation")
             plt.legend()
             plt.savefig(args["CODE_DIRECTORY"] + "/audio_only_checkpoints/plots/train-step_{:04d}-wer.png".format(step))
+            plt.close()
+
+            plt.figure()
+            plt.title("Loss Curves")
+            plt.xlabel("Step No.")
+            plt.ylabel("CER")
+            plt.plot(list(range(1, len(trainingCERCurve) + 1)), trainingCERCurve, "blue", label="Train")
+            plt.plot(list(range(1, len(validationCERCurve) + 1)), validationCERCurve, "red", label="Validation")
+            plt.legend()
+            plt.savefig(args["CODE_DIRECTORY"] + "/audio_only_checkpoints/plots/train-step_{:04d}-loss.png".format(step))
             plt.close()
     print("\nTraining Done.\n")
 
