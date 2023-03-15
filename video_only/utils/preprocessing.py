@@ -30,6 +30,8 @@ def preprocess_sample(file, params):
     normStd = params["normStd"]
     vf = params["vf"]
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    num_devices = torch.cuda.device_count()
+
 
     #for each frame, resize to 224x224 and crop the central 112x112 region
     captureObj = cv.VideoCapture(videoFile)
@@ -54,7 +56,7 @@ def preprocess_sample(file, params):
 
     # Convert the numpy array to a PyTorch tensor
     roiBatch = torch.from_numpy(roiBatch).float()
-    print("num devices :" + str(torch.cuda.device_count() ))
+    print("\nnum devices :" + str(torch.cuda.device_count() ))
     if torch.cuda.device_count() > 1:
         roiBatch = nn.DataParallel(roiBatch)
     else:
@@ -69,7 +71,10 @@ def preprocess_sample(file, params):
     inp = np.expand_dims(inp, axis=[1,2])
     inp = (inp - normMean)/normStd
     inputBatch = torch.from_numpy(inp)
-    inputBatch = (inputBatch.float()).to(device)
+    if num_devices > 1:
+        inputBatch = nn.DataParallel(inputBatch)
+    else:
+        inputBatch = (inputBatch.float()).to(device)
     vf.eval()
     with torch.no_grad():
         outputBatch = vf(inputBatch)
