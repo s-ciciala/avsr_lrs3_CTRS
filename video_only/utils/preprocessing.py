@@ -12,7 +12,7 @@ import os
 import torch.nn as nn
 import torch.nn.parameter as Parameter
 import torch.distributed as dist
-from ..config import args
+from config import args
 
 
 
