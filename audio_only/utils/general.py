@@ -182,15 +182,6 @@ def evaluate(model, evalLoader, loss_function, device, evalParams, char_to_index
         with torch.no_grad():
             outputBatch = model(inputBatch)
             with torch.backends.cudnn.flags(enabled=True):
-                # print("\n")
-                # print("inputLenBatch " + str(inputLenBatch))
-                # print("targetLenBatch " + str(targetLenBatch))
-                # print("inputBatch " + str(inputBatch))
-                # print("targetBatch " + str(targetBatch))
-                # print("outputLenBatch " + str(len(outputBatch)))
-                # print("targetLenBatch " + str(len(targetBatch)))
-                # print("outputBatch " + str(outputBatch))
-                # print("outputLenBatch " + str(len(outputBatch)))
                 arry = []
                 for btch in inputLenBatch:
                     if len(outputBatch) < btch:
@@ -198,13 +189,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams, char_to_index
                     else:
                         arry.append(btch)
                 new_inputLenBatch = torch.tensor(arry, dtype=torch.int32, device=device)
-                # print("new_inputLenBatch " + str(new_inputLenBatch))
                 loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
-
-        # with torch.no_grad():
-        #     outputBatch = model(inputBatch)
-        #     with torch.backends.cudnn.flags(enabled=False):
-        #         loss = loss_function(outputBatch, targetBatch, inputLenBatch, targetLenBatch)
 
         evalLoss = evalLoss + loss.item()
         if evalParams["decodeScheme"] == "greedy":
@@ -218,15 +203,25 @@ def evaluate(model, evalLoader, loss_function, device, evalParams, char_to_index
             print("Invalid Decode Scheme")
             exit()
 
+        # convert predicted and target sequences to strings
+        prediction_strings = []
+        target_strings = []
+        for i in range(len(predictionBatch)):
+            # convert indices to characters using index_to_char
+            prediction_chars = [index_to_char[idx] for idx in predictionBatch[i][:predictionLenBatch[i]]]
+            target_chars = [index_to_char[idx] for idx in targetBatch[i][:targetLenBatch[i]]]
+            # join the characters to form strings
+            prediction_string = "".join(prediction_chars)
+            target_string = "".join(target_chars)
+            prediction_strings.append(prediction_string)
+            target_strings.append(target_string)
+
+        # print the predicted strings
+        print("Prediction: ", prediction_strings)
+
         evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
         evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch,
                                         evalParams["spaceIx"])
-        # generate prediction string
-        for i in range(len(predictionBatch)):
-            predictionStr = ''
-            for j in range(predictionLenBatch[i]):
-                predictionStr += index_to_char[predictionBatch[i][j].item()]
-            print(f"Prediction string {i}: {predictionStr}")
 
         evalLoss = evalLoss / len(evalLoader)
         evalCER = evalCER / len(evalLoader)
