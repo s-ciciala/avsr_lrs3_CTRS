@@ -167,7 +167,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             item_idx = predictionBatch[i].item()
             charrr = index_to_char[item_idx]
             print(index_to_char[item_idx])
-            predictionString += index_to_char[charrr]
+            predictionString += charrr
         print(predictionStrings.append(predictionString))
         #
         # for i in range(targetBatch.shape[0]):
