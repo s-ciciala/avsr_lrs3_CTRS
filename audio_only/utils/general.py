@@ -180,6 +180,14 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
 
         print(targetBatch)
         print(len(targetBatch))
+        targetString = ""
+        for i in range(len(targetBatch)):
+            item_idx = targetBatch[i].item()
+            charrr = index_to_char[item_idx]
+            # print(index_to_char[item_idx])
+            targetString += str(charrr)
+        print(targetString)
+        targetStrings.append(targetString)
         exit()
 
         evalCER = evalCER + compute_cer(predictionStrings, targetStrings)
