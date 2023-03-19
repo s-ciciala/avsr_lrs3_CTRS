@@ -165,6 +165,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             charrr = index_to_char[item_idx]
             # print(index_to_char[item_idx])
             predictionString += str(charrr)
+        print("------------------PREDICTION------------------")
         print(predictionString)
         predictionStrings.append(predictionString)
         #
@@ -180,6 +181,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             charrr = index_to_char[item_idx]
             # print(index_to_char[item_idx])
             targetString += str(charrr)
+        print("------------------TARGET------------------")
         print(targetString)
 
     evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
