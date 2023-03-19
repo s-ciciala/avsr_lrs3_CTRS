@@ -64,8 +64,11 @@ def main():
         print("\nTrained Model File: %s" %(args["TRAINED_MODEL_FILE"]))
 
         #declaring the model, loss function and loading the trained model weights
-        model = AudioNet(args["TX_NUM_FEATURES"], args["TX_ATTENTION_HEADS"], args["TX_NUM_LAYERS"], args["PE_MAX_LENGTH"],
-                         args["AUDIO_FEATURE_SIZE"], args["TX_FEEDFORWARD_DIM"], args["TX_DROPOUT"], args["NUM_CLASSES"])
+        model = AudioNet(args["TX_NUM_FEATURES"], args["TX_ATTENTION_HEADS"], args["TX_NUM_LAYERS"],
+                         args["PE_MAX_LENGTH"],
+                         args["AUDIO_FEATURE_SIZE"], args["TX_FEEDFORWARD_DIM"], args["TX_DROPOUT"],
+                         args["NUM_CLASSES"])
+
         model.load_state_dict(torch.load(args["CODE_DIRECTORY"] + args["TRAINED_MODEL_FILE"], map_location=device))
         model.to(device)
         loss_function = nn.CTCLoss(blank=0, zero_infinity=True)
