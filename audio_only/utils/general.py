@@ -193,6 +193,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         # print(preds)
         # print(len(preds))
         predictionStrings = []
+        targetStrings = []
         for prediction in preds:
             curr_string = ""
             for char in prediction:
@@ -202,8 +203,22 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
                 # print(charrr)
                 curr_string += charrr
             predictionStrings.append(curr_string)
-        for strrr in predictionStrings:
-            print(strrr)
+
+        for target in trgts:
+            curr_string = ""
+            for char in target:
+                # print(char.item())
+                item_idx = char.item()
+                charrr = index_to_char[item_idx]
+                # print(charrr)
+                curr_string += charrr
+            targetStrings.append(curr_string)
+
+        for i in len(predictionStrings):
+            print("------------------PREDICTION------------------")
+            print(predictionStrings[i])
+            print("------------------TARGET------------------")
+            print(targetStrings[i])
         print("*"*80)
         exit()
 
