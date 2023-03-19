@@ -182,8 +182,9 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             targetString += str(charrr)
         print(targetString)
 
-        evalCER = evalCER + compute_cer(predictionStrings, targetStrings)
-        evalWER = evalWER + compute_wer(predictionStrings, targetStrings, evalParams["spaceToken"])
+    evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
+    evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch,
+                                    evalParams["spaceIx"])
 
     evalLoss = evalLoss / len(evalLoader)
     evalCER = evalCER / len(evalLoader)
