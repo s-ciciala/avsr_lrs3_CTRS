@@ -219,9 +219,6 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             print(predictionStrings[i])
             print("------------------TARGET------------------")
             print(targetStrings[i])
-        print("*"*80)
-        exit()
-
 
     evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
     evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch,
