@@ -160,7 +160,7 @@ import torch.multiprocessing as mp
 #     evalWER = evalWER / len(evalLoader)
 #     return evalLoss, evalCER, evalWER
 
-def evaluate(model, evalLoader, loss_function, device, evalParams):
+def evaluate(model, evalLoader, loss_function, device, evalParams, char_to_index, index_to_char):
     """
     Function to evaluate the model over validation/test set. It computes the loss, CER and WER over the evaluation set.
     The CTC decode scheme can be set to either 'greedy' or 'search'.
@@ -169,7 +169,6 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
     evalLoss = 0
     evalCER = 0
     evalWER = 0
-    all_predictions = []
 
     for batch, (inputBatch, targetBatch, inputLenBatch, targetLenBatch, index) in enumerate(
             tqdm(evalLoader, leave=False, desc="Eval",
@@ -218,21 +217,20 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             print("Invalid Decode Scheme")
             exit()
 
-        prediction_strings = []
-        for i in range(len(predictionBatch)):
-            prediction_string = ""
-            for j in range(predictionLenBatch[i]):
-                prediction_string += evalParams["charList"][predictionBatch[i][j]]
-            prediction_strings.append(prediction_string)
-        all_predictions += prediction_strings
-
         evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
         evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch,
                                         evalParams["spaceIx"])
+        # generate prediction string
+        for i in range(len(predictionBatch)):
+            predictionStr = ''
+            for j in range(predictionLenBatch[i]):
+                predictionStr += index_to_char[predictionBatch[i][j].item()]
+            print(f"Prediction string {i}: {predictionStr}")
 
-    evalLoss = evalLoss / len(evalLoader)
-    evalCER
-
+        evalLoss = evalLoss / len(evalLoader)
+        evalCER = evalCER / len(evalLoader)
+        evalWER = evalWER / len(evalLoader)
+        return evalLoss, evalCER, evalWER
 
 # def evaluate(model, evalLoader, loss_function, device, evalParams):
 #     """
