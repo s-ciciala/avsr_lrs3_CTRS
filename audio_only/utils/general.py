@@ -183,16 +183,17 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             targetString += str(charrr)
         print("------------------TARGET------------------")
         print(targetString)
+        predictionStrings.append(predictionString)
 
-    targetBatch = targetBatch.cpu()
-    targetLenBatch = targetLenBatch.cpu()
+        targetBatch = targetBatch.cpu()
+        targetLenBatch = targetLenBatch.cpu()
 
-    preds = list(torch.split(predictionBatch, predictionLenBatch.tolist()))
-    trgts = list(torch.split(targetBatch, targetLenBatch.tolist()))
-    print(preds)
-    print("*"*80)
-    print(trgts)
-    exit()
+        preds = list(torch.split(predictionBatch, predictionLenBatch.tolist()))
+        trgts = list(torch.split(targetBatch, targetLenBatch.tolist()))
+        print(preds)
+        print("*"*80)
+        print(trgts)
+        exit()
 
 
     evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
