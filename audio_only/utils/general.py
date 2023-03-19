@@ -179,6 +179,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         #     targetStrings.append(targetString)
 
         print(targetBatch)
+        print(len(targetBatch))
         exit()
 
         evalCER = evalCER + compute_cer(predictionStrings, targetStrings)
