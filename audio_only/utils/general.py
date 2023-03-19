@@ -201,7 +201,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
                 charrr = index_to_char[item_idx]
                 # print(charrr)
                 curr_string += charrr
-        predictionStrings.append(curr_string)
+            predictionStrings.append(curr_string)
         for strrr in predictionStrings:
             print(strrr)
         print("*"*80)
