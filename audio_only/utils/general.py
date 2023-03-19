@@ -165,7 +165,6 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
                 print("HEREEEE")
                 print(predictionBatch[i])
                 print(predictionBatch[i])
-                exit()
                 # predictionString += index_to_char[predictionBatch[i][j].item()]
             # predictionStrings.append(predictionString)
 
