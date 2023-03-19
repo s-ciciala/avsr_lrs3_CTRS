@@ -165,8 +165,8 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             charrr = index_to_char[item_idx]
             # print(index_to_char[item_idx])
             predictionString += str(charrr)
-        print("------------------PREDICTION------------------")
-        print(predictionString)
+        # print("------------------PREDICTION------------------")
+        # print(predictionString)
         predictionStrings.append(predictionString)
         #
         # for i in range(targetBatch.shape[0]):
@@ -181,8 +181,8 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             charrr = index_to_char[item_idx]
             # print(index_to_char[item_idx])
             targetString += str(charrr)
-        print("------------------TARGET------------------")
-        print(targetString)
+        # print("------------------TARGET------------------")
+        # print(targetString)
         predictionStrings.append(predictionString)
 
         targetBatch = targetBatch.cpu()
@@ -190,8 +190,8 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
 
         preds = list(torch.split(predictionBatch, predictionLenBatch.tolist()))
         trgts = list(torch.split(targetBatch, targetLenBatch.tolist()))
-        print(preds)
-        print(len(preds))
+        # print(preds)
+        # print(len(preds))
         for prediction in preds:
             for char in prediction:
                 print(char)
