@@ -162,28 +162,22 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         print(predictionBatch)
         print("BOOO")
         print(len(predictionBatch))
+        predictionString = ""
         for i in range(len(predictionBatch)):
             item_idx = predictionBatch[i].item()
+            charrr = index_to_char[item_idx]
             print(index_to_char[item_idx])
+            predictionString += index_to_char[charrr]
+        print(predictionStrings.append(predictionString))
+        #
+        # for i in range(targetBatch.shape[0]):
+        #     targetString = ""
+        #     for j in range(targetLenBatch[i]):
+        #         targetString += index_to_char[targetBatch[i][j].item()]
+        #     targetStrings.append(targetString)
 
+        print(targetBatch)
         exit()
-
-
-
-        for i in range(predictionBatch.shape[0]):
-            predictionString = ""
-            for j in range(predictionLenBatch[i]):
-                print("HEREEEE")
-                print(predictionBatch[i])
-                print(predictionBatch[i])
-                # predictionString += index_to_char[predictionBatch[i][j].item()]
-            # predictionStrings.append(predictionString)
-
-        for i in range(targetBatch.shape[0]):
-            targetString = ""
-            for j in range(targetLenBatch[i]):
-                targetString += index_to_char[targetBatch[i][j].item()]
-            targetStrings.append(targetString)
 
         evalCER = evalCER + compute_cer(predictionStrings, targetStrings)
         evalWER = evalWER + compute_wer(predictionStrings, targetStrings, evalParams["spaceToken"])
