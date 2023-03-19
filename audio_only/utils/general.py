@@ -5,15 +5,12 @@ File part of 'deep_avsr' GitHub repository available at -
 https://github.com/lordmartian/deep_avsr
 """
 import math
-
-import editdistance
 import numpy as np
 
 import torch
 from tqdm import tqdm
 
-# from .metrics import compute_cer, compute_wer
-from .metrics import compute_wer
+from .metrics import compute_cer, compute_wer
 from .decoders import ctc_greedy_decode, ctc_search_decode
 from config import args
 
@@ -108,27 +105,6 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.distributed as dist
 import torch.multiprocessing as mp
-def compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch):
-    """
-    Function to compute the Character Error Rate (CER).
-    """
-    index_to_char = {1: " ", 22: "'", 30: "1", 29: "0", 37: "3", 32: "2", 34: "5", 38: "4", 36: "7", 35: "6", 31: "9", 33: "8",
-                     5: "A", 17: "C", 20: "B", 2: "E", 12: "D", 16: "G", 19: "F", 6: "I", 9: "H", 24: "K", 25: "J", 18: "M",
-                     11: "L", 4: "O", 7: "N", 27: "Q", 21: "P", 8: "S", 10: "R", 13: "U", 3: "T", 15: "W", 23: "V", 14: "Y",
-                     26: "X", 28: "Z", 39: "<EOS>"}
-
-    cer = 0
-    for i in range(len(predictionBatch)):
-        predictionString = ""
-        targetString = ""
-        for j in range(predictionLenBatch[i]):
-            predictionString += index_to_char[predictionBatch[i][j].item()] if predictionBatch[i][j].numel() > 0 else ""
-        for j in range(targetLenBatch[i]):
-            targetString += index_to_char[targetBatch[i][j].item()]
-        cer = cer + editdistance.eval(predictionString, targetString)
-    cer = cer / sum(targetLenBatch)
-    return cer
-
 
 
 def evaluate(model, evalLoader, loss_function, device, evalParams):
@@ -186,8 +162,9 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         for i in range(predictionBatch.shape[0]):
             predictionString = ""
             for j in range(predictionLenBatch[i]):
-                predictionString += index_to_char[predictionBatch[i][j].item()]
-            predictionStrings.append(predictionString)
+                print(predictionBatch)
+                # predictionString += index_to_char[predictionBatch[i][j].item()]
+            # predictionStrings.append(predictionString)
 
         for i in range(targetBatch.shape[0]):
             targetString = ""
