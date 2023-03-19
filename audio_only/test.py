@@ -23,19 +23,7 @@ def print_predictions(model, testLoader, loss_function, device, testParams):
                 print("Model prediction:", decodedPreds[j][0])
 
 #
-def evaluate(model, dataLoader, loss_function, device, testParams):
-    model.eval()
-    totalLoss, totalCER, totalWER, totalChars, totalWords = 0, 0, 0, 0, 0
-    with torch.no_grad():
-        for data in dataLoader:
-            inputs, targets, inputPercentages, targetSizes, index = data
-            inputs, targets = inputs.to(device), targets.to(device)
-            out, outputSizes = model(inputs, inputPercentages)
-            loss = loss_function(out.transpose(0, 1), targets, outputSizes, targetSizes)
-            totalLoss += loss.item()
-            decodedPreds = decoder.decode(out, outputSizes, testParams)
-            for j in range(len(decodedPreds)):
-                print("Model prediction:", decodedPreds[j][0])
+
 
 def main():
 
@@ -95,15 +83,13 @@ def main():
         testParams = {"decodeScheme":args["TEST_DEMO_DECODING"], "beamSearchParams":beamSearchParams, "spaceIx":args["CHAR_TO_INDEX"][" "],
                       "eosIx":args["CHAR_TO_INDEX"]["<EOS>"], "lm":lm}
 
-        #evaluating the model over the test set
-        evaluate(model, testLoader, loss_function, device, testParams)
 
-        # #evaluating the model over the test set
-        # testLoss, testCER, testWER = evaluate(model, testLoader, loss_function, device, testParams)
-        #
-        # #printing the test set loss, CER and WER
-        # print("Test Loss: %.6f || Test CER: %.3f || Test WER: %.3f" %(testLoss, testCER, testWER))
-        # print("\nTesting Done.\n")
+        #evaluating the model over the test set
+        testLoss, testCER, testWER = evaluate(model, testLoader, loss_function, device, testParams)
+
+        #printing the test set loss, CER and WER
+        print("Test Loss: %.6f || Test CER: %.3f || Test WER: %.3f" %(testLoss, testCER, testWER))
+        print("\nTesting Done.\n")
 
 
     else:
