@@ -216,7 +216,9 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
 
         for i in range(len(predictionStrings)):
             print("------------------PREDICTION------------------")
+            print("------------------PREDICTION------------------")
             print(predictionStrings[i])
+            print("------------------TARGET------------------")
             print("------------------TARGET------------------")
             print(targetStrings[i])
 
