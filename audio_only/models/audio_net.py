@@ -61,7 +61,24 @@ class AudioNet(nn.Module):
         return
 
 
+    # def forward(self, inputBatch):
+    #     inputBatch = inputBatch.transpose(0, 1).transpose(1, 2)
+    #     batch = self.audioConv(inputBatch)
+    #     batch = batch.transpose(1, 2).transpose(0, 1)
+    #     batch = self.positionalEncoding(batch)
+    #     batch = self.audioEncoder(batch)
+    #     batch = self.audioDecoder(batch)
+    #     batch = batch.transpose(0, 1).transpose(1, 2)
+    #     batch = self.outputConv(batch)
+    #     batch = batch.transpose(1, 2).transpose(0, 1)
+    #     outputBatch = F.log_softmax(batch, dim=2)
+    #     return outputBatch
     def forward(self, inputBatch):
+        inputLen = inputBatch.shape[0]
+        # Calculate the number of zero-padding needed
+        padLen = 4 - (inputLen % 4)
+        # Add zero-padding to the input batch
+        inputBatch = torch.cat([inputBatch, torch.zeros(padLen, inputBatch.shape[1])], dim=0)
         inputBatch = inputBatch.transpose(0, 1).transpose(1, 2)
         batch = self.audioConv(inputBatch)
         batch = batch.transpose(1, 2).transpose(0, 1)
@@ -71,5 +88,6 @@ class AudioNet(nn.Module):
         batch = batch.transpose(0, 1).transpose(1, 2)
         batch = self.outputConv(batch)
         batch = batch.transpose(1, 2).transpose(0, 1)
-        outputBatch = F.log_softmax(batch, dim=2)
+        # Remove the zero-padding from the output batch
+        outputBatch = F.log_softmax(batch[:inputLen, :, :], dim=2)
         return outputBatch
