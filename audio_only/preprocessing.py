@@ -259,8 +259,6 @@ def generate_test_file():
     print("Length of examples before the cull: " + str(len(dirs)))
     dirs = dirs[:args["TEST_SIZE"]]
     print("Length of examples after the cull: " + str(len(dirs)))
-    exit()
-
 
     print("\nFor each folder we will extract the number of txt examples")
     for folder in tqdm(dirs):
