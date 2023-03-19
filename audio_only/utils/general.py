@@ -159,6 +159,8 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         # Convert prediction and target tensors to strings
         predictionStrings = []
         targetStrings = []
+        print(predictionBatch)
+        exit()
         for i in range(predictionBatch.shape[0]):
             predictionString = ""
             for j in range(predictionLenBatch[i]):
