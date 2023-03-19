@@ -149,7 +149,6 @@ if __name__ == "__main__":
     # print([x for x in fileList if (args["VIDEO_PREPROC_SET"] in x)])
     print("Doing only " + args["VIDEO_PREPROC_SET"])
     print("Size now after the cull:" + str(len(fileList)))
-    exit()
     preprocess_all_samples(fileList,device)
     # generate_train_file()
     # generate_val_file()
