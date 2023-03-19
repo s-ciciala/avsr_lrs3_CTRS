@@ -194,7 +194,10 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         # print(len(preds))
         for prediction in preds:
             for char in prediction:
-                print(char)
+                print(char.item())
+                item_idx = char.item()
+                charrr = index_to_char[item_idx]
+                print(charrr)
                 exit()
         print("*"*80)
         print(trgts)
