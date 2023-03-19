@@ -164,7 +164,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         print(len(predictionBatch))
         for i in range(len(predictionBatch)):
             item_idx = predictionBatch[i].item()
-            print(char_to_index[item_idx])
+            print(index_to_char[item_idx])
 
         exit()
 
