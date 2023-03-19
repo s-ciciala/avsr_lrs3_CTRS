@@ -214,7 +214,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
                 curr_string += charrr
             targetStrings.append(curr_string)
 
-        for i in len(predictionStrings):
+        for i in range(len(predictionStrings)):
             print("------------------PREDICTION------------------")
             print(predictionStrings[i])
             print("------------------TARGET------------------")
