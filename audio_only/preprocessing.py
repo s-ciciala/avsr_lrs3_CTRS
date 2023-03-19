@@ -255,6 +255,13 @@ def generate_test_file():
     print("\nAvaliable folders include: " + str(dirs))
     print("\nTotal number of folders included: " + str(len(dirs)))
 
+    ##CUT EXAMPLES:
+    print("Length of examples before the cull: " + str(len(dirs)))
+    dirs = dirs[:args["TEST_SIZE"]]
+    print("Length of examples after the cull: " + str(len(dirs)))
+    exit()
+
+
     print("\nFor each folder we will extract the number of txt examples")
     for folder in tqdm(dirs):
 
@@ -269,11 +276,6 @@ def generate_test_file():
         ##Current parse is absolute filename -> text
         print("\nReading Each example")
 
-        ##CUT EXAMPLES:
-        print("Length of examples before the cull: " + str(len(examples_textonly)))
-        examples_textonly = examples_textonly[:args["TEST_SIZE"]]
-        print("Length of examples after the cull: " + str(len(examples_textonly)))
-        exit()
         for ex in examples_textonly:
             examples_textonly_dir = example_dir + ex
             with open(examples_textonly_dir, "r") as f:
