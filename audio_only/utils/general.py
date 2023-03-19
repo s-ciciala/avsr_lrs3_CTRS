@@ -192,6 +192,10 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         trgts = list(torch.split(targetBatch, targetLenBatch.tolist()))
         print(preds)
         print(len(preds))
+        for prediction in preds:
+            for char in prediction:
+                print(char)
+                exit()
         print("*"*80)
         print(trgts)
         print(len(trgts))
