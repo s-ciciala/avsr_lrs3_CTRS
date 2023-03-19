@@ -163,7 +163,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             predictionString = ""
             for j in range(predictionLenBatch[i]):
                 print(predictionBatch[i])
-                print(predictionBatch[i][j].item())
+                print(predictionBatch[i].item(j))
                 exit()
                 # predictionString += index_to_char[predictionBatch[i][j].item()]
             # predictionStrings.append(predictionString)
