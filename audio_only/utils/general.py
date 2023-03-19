@@ -169,7 +169,8 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             charrr = index_to_char[item_idx]
             print(index_to_char[item_idx])
             predictionString += str(charrr)
-        print(predictionStrings.append(predictionString))
+        print(predictionString)
+        predictionStrings.append(predictionString)
         #
         # for i in range(targetBatch.shape[0]):
         #     targetString = ""
