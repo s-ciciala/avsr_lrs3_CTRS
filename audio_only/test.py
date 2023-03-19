@@ -22,20 +22,20 @@ def print_predictions(model, testLoader, loss_function, device, testParams):
             for j in range(len(decodedPreds)):
                 print("Model prediction:", decodedPreds[j][0])
 
-
-def evaluate(model, dataLoader, loss_function, device, testParams):
-    model.eval()
-    totalLoss, totalCER, totalWER, totalChars, totalWords = 0, 0, 0, 0, 0
-    with torch.no_grad():
-        for data in dataLoader:
-            inputs, targets, inputPercentages, targetSizes = data
-            inputs, targets = inputs.to(device), targets.to(device)
-            out, outputSizes = model(inputs, inputPercentages)
-            loss = loss_function(out.transpose(0, 1), targets, outputSizes, targetSizes)
-            totalLoss += loss.item()
-            decodedPreds = decoder.decode(out, outputSizes, testParams)
-            for j in range(len(decodedPreds)):
-                print("Model prediction:", decodedPreds[j][0])
+#
+# def evaluate(model, dataLoader, loss_function, device, testParams):
+#     model.eval()
+#     totalLoss, totalCER, totalWER, totalChars, totalWords = 0, 0, 0, 0, 0
+#     with torch.no_grad():
+#         for data in dataLoader:
+#             inputs, targets, inputPercentages, targetSizes = data
+#             inputs, targets = inputs.to(device), targets.to(device)
+#             out, outputSizes = model(inputs, inputPercentages)
+#             loss = loss_function(out.transpose(0, 1), targets, outputSizes, targetSizes)
+#             totalLoss += loss.item()
+#             decodedPreds = decoder.decode(out, outputSizes, testParams)
+#             for j in range(len(decodedPreds)):
+#                 print("Model prediction:", decodedPreds[j][0])
 
 def main():
 
