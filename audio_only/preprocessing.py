@@ -242,6 +242,57 @@ def generate_val_file():
             f.writelines(example_dict["TEXT"][i])
             f.writelines("\n")
 
+def generate_test_file():
+    # Generating val.txt for splitting the pretrain set into validation sets
+    test_dir = args["TEST_DIRECTORY"]
+    test_dir_file = args["DATA_DIRECTORY"] + "/test.txt"
+    example_dict = {
+        "ID": [],
+        "TEXT": []
+    }
+    print("\n\nGenerating the val.txt file from the directory" + test_dir)
+    dirs = [d for d in os.listdir(test_dir) if os.path.isdir(os.path.join(test_dir, d))]
+    print("\nAvaliable folders include: " + str(dirs))
+    print("\nTotal number of folders included: " + str(len(dirs)))
+
+    print("\nFor each folder we will extract the number of txt examples")
+    for folder in tqdm(dirs):
+
+        print("\nParsing Folder:" + folder)
+        example_dir = test_dir + folder + "/"
+        examples = [f for f in listdir(example_dir) if isfile(join(example_dir, f))]
+        ##NOTE assumption that each text file HAS an associated .mp4
+        examples_textonly = [ex for ex in examples if ".txt" in ex]
+        print("Parsing exmaples text files:" + str(examples_textonly))
+        # print("NOTE we assume that each text file HAS an associated .mp4")
+
+        ##Current parse is absolute filename -> text
+        print("\nReading Each example")
+
+        ##CUT EXAMPLES:
+        print("Length of examples before the cull: " + str(len(examples_textonly)))
+        examples_textonly = examples_textonly[:args["TEST_SIZE"]]
+        print("Length of examples after the cull: " + str(len(examples_textonly)))
+        exit()
+        for ex in examples_textonly:
+            examples_textonly_dir = example_dir + ex
+            with open(examples_textonly_dir, "r") as f:
+                lines = f.readlines()
+                examples_npy_dir = examples_textonly_dir.split("txt")[0][:-1]
+                string_to_add = str(lines[0][6: -1])
+                if "{" in string_to_add:
+                    string_to_add = lrs3_parse(string_to_add)
+                if string_filter(ex, folder, True):
+                    print("adding :" + str(examples_npy_dir))
+                    print("adding :" + str(string_to_add))
+                    example_dict["ID"].append(examples_npy_dir)
+                    example_dict["TEXT"].append(string_to_add)
+
+    with open(test_dir_file, "w") as f:
+        for i in range(len(example_dict["ID"])):
+            f.writelines(example_dict["ID"][i])
+            f.writelines(example_dict["TEXT"][i])
+            f.writelines("\n")
 
 if __name__ == "__main__":
     device = set_device()
@@ -251,6 +302,7 @@ if __name__ == "__main__":
     print("File List complete")
     # preprocess_all_samples(fileList)
     # generate_noise_file(fileList)
-    generate_train_file()
-    generate_val_file()
+    # generate_train_file()
+    # generate_val_file()
+    generate_test_file()
     print("Completed")
