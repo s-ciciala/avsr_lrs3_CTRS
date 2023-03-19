@@ -196,10 +196,10 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         for prediction in preds:
             curr_string = ""
             for char in prediction:
-                print(char.item())
+                # print(char.item())
                 item_idx = char.item()
                 charrr = index_to_char[item_idx]
-                print(charrr)
+                # print(charrr)
                 curr_string += charrr
         predictionStrings.append(curr_string)
         for strrr in predictionStrings:
