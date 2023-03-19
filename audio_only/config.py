@@ -93,6 +93,7 @@ args["USE_LM"] = False  #whether to use language model for decoding
 
 
 #testing
+args["TEST_DEMO_NOISY"] = False #test/demo with noisy audio
 args["TEST_DEMO_DECODING"] = "greedy"   #test/demo decoding type - "greedy" or "search"
 
 
