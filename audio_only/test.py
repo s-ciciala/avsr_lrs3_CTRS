@@ -28,7 +28,7 @@ def evaluate(model, dataLoader, loss_function, device, testParams):
     totalLoss, totalCER, totalWER, totalChars, totalWords = 0, 0, 0, 0, 0
     with torch.no_grad():
         for data in dataLoader:
-            inputs, targets, inputPercentages, targetSizes = data
+            inputs, targets, inputPercentages, targetSizes, index = data
             inputs, targets = inputs.to(device), targets.to(device)
             out, outputSizes = model(inputs, inputPercentages)
             loss = loss_function(out.transpose(0, 1), targets, outputSizes, targetSizes)
