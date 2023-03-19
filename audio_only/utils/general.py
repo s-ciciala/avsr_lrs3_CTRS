@@ -105,6 +105,77 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.distributed as dist
 import torch.multiprocessing as mp
+def evaluate(model, evalLoader, loss_function, device, evalParams):
+    """
+    Function to evaluate the model over validation/test set. It computes the loss, CER and WER over the evaluation set.
+    The CTC decode scheme can be set to either 'greedy' or 'search'.
+    """
+
+    evalLoss = 0
+    evalCER = 0
+    evalWER = 0
+
+    char_to_index = args["CHAR_TO_INDEX"]
+    index_to_char = args["INDEX_TO_CHAR"]
+
+    # Use DataParallel to parallelize the model across multiple GPUs
+    if torch.cuda.device_count() > 1:
+        model = torch.nn.DataParallel(model)
+
+    for batch, (inputBatch, targetBatch, inputLenBatch, targetLenBatch, index) in enumerate(
+            tqdm(evalLoader, leave=False, desc="Eval",
+                 ncols=75)):
+
+        inputBatch, targetBatch = (inputBatch.float()).to(device), (targetBatch.float()).to(device)
+        inputLenBatch, targetLenBatch = (inputLenBatch.int()).to(device), (targetLenBatch.int()).to(device)
+
+        model.eval()
+        with torch.no_grad():
+            outputBatch = model(inputBatch)
+            with torch.backends.cudnn.flags(enabled=True):
+                arry = []
+                for btch in inputLenBatch:
+                    if len(outputBatch) < btch:
+                        arry.append(len(outputBatch))
+                    else:
+                        arry.append(btch)
+                new_inputLenBatch = torch.tensor(arry, dtype=torch.int32, device=device)
+                loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
+
+        evalLoss = evalLoss + loss.item()
+        if evalParams["decodeScheme"] == "greedy":
+            predictionBatch, predictionLenBatch = ctc_greedy_decode(outputBatch, inputLenBatch, evalParams["eosIx"])
+        elif evalParams["decodeScheme"] == "search":
+            predictionBatch, predictionLenBatch = ctc_search_decode(outputBatch, inputLenBatch,
+                                                                    evalParams["beamSearchParams"],
+                                                                    evalParams["spaceIx"], evalParams["eosIx"],
+                                                                    evalParams["lm"])
+        else:
+            print("Invalid Decode Scheme")
+            exit()
+
+        # Convert prediction and target tensors to strings
+        predictionStrings = []
+        targetStrings = []
+        for i in range(predictionBatch.shape[0]):
+            predictionString = ""
+            for j in range(predictionLenBatch[i]):
+                predictionString += index_to_char[predictionBatch[i][j].item()]
+            predictionStrings.append(predictionString)
+
+        for i in range(targetBatch.shape[0]):
+            targetString = ""
+            for j in range(targetLenBatch[i]):
+                targetString += index_to_char[targetBatch[i][j].item()]
+            targetStrings.append(targetString)
+
+        evalCER = evalCER + compute_cer(predictionStrings, targetStrings)
+        evalWER = evalWER + compute_wer(predictionStrings, targetStrings, evalParams["spaceToken"])
+
+    evalLoss = evalLoss / len(evalLoader)
+    evalCER = evalCER / len(evalLoader)
+    evalWER = evalWER / len(evalLoader)
+    return evalLoss, evalCER, evalWER
 
 # def evaluate(model, evalLoader, loss_function, device, evalParams):
 #     """
@@ -161,36 +232,6 @@ import torch.multiprocessing as mp
 #     evalWER = evalWER / len(evalLoader)
 #     return evalLoss, evalCER, evalWER
 
-def evaluate(model, evalLoader, loss_function, device, evalParams):
-    model.eval()
-    total_loss = 0
-
-    with torch.no_grad():
-        for data in evalLoader:
-            input_seq, target_seq = data
-            input_seq = input_seq.to(device)
-            target_seq = target_seq.to(device)
-            output = model(input_seq)
-            loss = loss_function(output.view(-1, evalParams["VOCAB_SIZE"]), target_seq.view(-1))
-            total_loss += loss.item()
-
-            # convert output to predicted characters
-            _, topi = output.topk(1)
-            topi = topi.view(-1)
-            predicted_chars = [evalParams["INDEX_TO_CHAR"][i.item()] for i in topi]
-
-            # convert target_seq to actual characters
-            target_chars = [evalParams["INDEX_TO_CHAR"][i.item()] for i in target_seq.view(-1)]
-
-            # print the input sequence, target sequence and predicted sequence
-            input_str = ''.join([evalParams["INDEX_TO_CHAR"][i.item()] for i in input_seq.view(-1)])
-            target_str = ''.join(target_chars)
-            predicted_str = ''.join(predicted_chars)
-            print("Input Sequence: ", input_str)
-            print("Target Sequence: ", target_str)
-            print("Predicted Sequence: ", predicted_str)
-
-    return total_loss / len(evalLoader)
 
 # def evaluate(model, evalLoader, loss_function, device, evalParams):
 #     """
