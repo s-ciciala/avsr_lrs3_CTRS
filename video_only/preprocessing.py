@@ -145,7 +145,8 @@ if __name__ == "__main__":
     device = set_device()
     fileList = get_filelist()
     print("Size of the set before cull: " + str(len(fileList)))
-    print([x for x in fileList if (args["VIDEO_PREPROC_SET"] in x)])
+    fileList = [x for x in fileList if (args["VIDEO_PREPROC_SET"] in x)]
+    # print([x for x in fileList if (args["VIDEO_PREPROC_SET"] in x)])
     print("Doing only " + args["VIDEO_PREPROC_SET"])
     print("Size now after the cull:" + str(len(fileList)))
     exit()
