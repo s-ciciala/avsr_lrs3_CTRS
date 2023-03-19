@@ -144,6 +144,8 @@ def generate_val_file():
 if __name__ == "__main__":
     device = set_device()
     fileList = get_filelist()
+    print([x for x in fileList if ("trainval" in x)])
+    exit()
     preprocess_all_samples(fileList,device)
     # generate_train_file()
     # generate_val_file()

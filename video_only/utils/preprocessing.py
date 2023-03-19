@@ -77,7 +77,7 @@ def preprocess_sample(file, params):
 
     inputBatch = torch.from_numpy(inp)
     inputBatch = nn.DataParallel(inputBatch, device_ids=args["GPUID"])
-    inputBatch = inputBatch.to(args["GPUID"][0])
+    # inputBatch = inputBatch.to(args["GPUID"][0])
     # inputBatch = (inputBatch.float()).to(device)
 
     vf = nn.DataParallel(vf)
