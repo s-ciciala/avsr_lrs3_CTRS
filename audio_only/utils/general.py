@@ -159,15 +159,11 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         # Convert prediction and target tensors to strings
         predictionStrings = []
         targetStrings = []
-        print(predictionBatch)
-        print("BOOO")
-        print(len(predictionBatch))
         predictionString = ""
-
         for i in range(len(predictionBatch)):
             item_idx = predictionBatch[i].item()
             charrr = index_to_char[item_idx]
-            print(index_to_char[item_idx])
+            # print(index_to_char[item_idx])
             predictionString += str(charrr)
         print(predictionString)
         predictionStrings.append(predictionString)
@@ -178,8 +174,6 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         #         targetString += index_to_char[targetBatch[i][j].item()]
         #     targetStrings.append(targetString)
 
-        print(targetBatch)
-        print(len(targetBatch))
         targetString = ""
         for i in range(len(targetBatch)):
             item_idx = targetBatch[i].item()
@@ -187,8 +181,6 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             # print(index_to_char[item_idx])
             targetString += str(charrr)
         print(targetString)
-        targetStrings.append(targetString)
-        exit()
 
         evalCER = evalCER + compute_cer(predictionStrings, targetStrings)
         evalWER = evalWER + compute_wer(predictionStrings, targetStrings, evalParams["spaceToken"])
