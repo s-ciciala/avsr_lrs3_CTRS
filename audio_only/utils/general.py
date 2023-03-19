@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 from .metrics import compute_cer, compute_wer
 from .decoders import ctc_greedy_decode, ctc_search_decode
+from config import args
 
 
 def num_params(model):
@@ -160,7 +161,7 @@ import torch.multiprocessing as mp
 #     evalWER = evalWER / len(evalLoader)
 #     return evalLoss, evalCER, evalWER
 
-def evaluate(model, evalLoader, loss_function, device, evalParams, char_to_index, index_to_char):
+def evaluate(model, evalLoader, loss_function, device, evalParams, char_to_index = args["CHAR_TO_INDEX"], index_to_char = args["INDEX_TO_CHAR"]):
     """
     Function to evaluate the model over validation/test set. It computes the loss, CER and WER over the evaluation set.
     The CTC decode scheme can be set to either 'greedy' or 'search'.
