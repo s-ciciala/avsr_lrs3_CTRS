@@ -47,6 +47,7 @@ args["STFT_OVERLAP"] = 0.030    #consecutive window overlap in secs while comput
 #video preprocessing
 # args["VIDEO_PREPROC_SET"] = "trainval"
 args["VIDEO_PREPROC_SET"] = "trainval"
+args["VIDEO_TRAINVAL_NAME"] = "trainval"
 args["VIDEO_FPS"] = 25  #frame rate of the video clips
 args["ROI_SIZE"] = 112  #height and width of input greyscale lip region patch
 args["NORMALIZATION_MEAN"] = 0.4161 #mean value for normalization of greyscale lip region patch

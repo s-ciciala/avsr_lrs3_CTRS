@@ -9,6 +9,7 @@ import numpy as np
 from config import args
 from models.visual_frontend import VisualFrontend
 from utils.preprocessing import preprocess_sample
+from sklearn.model_selection import train_test_split
 
 
 def set_device():
@@ -140,6 +141,11 @@ def generate_val_file():
             f.writelines(example_dict["TEXT"][i])
             f.writelines("\n")
 
+def split_trainval(fileList):
+    trainval_only = [x for x in fileList if (args["VIDEO_TRAINVAL_NAME"] in x)]
+    print("We have a total of :"+str(len(trainval_only)))
+    print("Now we want a split 80/20")
+    x_80_percent, x_20_percent = train_test_split(trainval_only, test_size=.20, shuffle=True)
 
 if __name__ == "__main__":
     device = set_device()
