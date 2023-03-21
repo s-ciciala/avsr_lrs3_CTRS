@@ -91,7 +91,42 @@ import torch.optim as optim
 import torch.distributed as dist
 import torch.multiprocessing as mp
 
-import torch
+
+def evaluate(model, dataloader, criterion, device, eval_params):
+    model.eval()
+    total_loss = 0
+    total_cer = 0
+    total_wer = 0
+    idx2char = eval_params["idx2char"]
+
+    with torch.no_grad():
+        for batch_idx, (inputs, targets, input_lengths, target_lengths) in enumerate(dataloader):
+            inputs = inputs.to(device)
+            targets = targets.to(device)
+            input_lengths = input_lengths.to(device)
+            target_lengths = target_lengths.to(device)
+
+            outputs = model(inputs, input_lengths)
+
+            adjusted_input_lengths = torch.min(input_lengths, torch.tensor(outputs.size(1), device=device))
+            loss = criterion(outputs, targets, adjusted_input_lengths, target_lengths)
+            total_loss += loss.item()
+
+            # Use the provided decode_predictions function
+            decoded_preds, decoded_targets = decode_predictions(outputs, targets, idx2char)
+
+            # Use the provided calculate_metrics function
+            batch_cer, batch_wer = calculate_metrics(decoded_preds, decoded_targets)
+
+            total_cer += batch_cer
+            total_wer += batch_wer
+
+    avg_loss = total_loss / len(dataloader)
+    avg_cer = total_cer / len(dataloader)
+    avg_wer = total_wer / len(dataloader)
+
+    return avg_loss, avg_cer, avg_wer
+
 
 class GreedyDecoder:
     def __call__(self, outputs):
@@ -136,50 +171,50 @@ def calculate_metrics(decoded_preds, decoded_targets):
     avg_wer = total_wer / total_words
 
     return avg_cer, avg_wer
-
-
-def evaluate(model, dataloader, loss_function, device):
-    model.eval()
-    running_loss = 0.0
-    total_cer, total_wer = 0.0, 0.0
-    total_samples = 0
-
-    with torch.no_grad():
-        for batch in dataloader:
-            inputs, targets, input_lengths, target_lengths, index = batch
-            inputs, targets = inputs.float().to(device), targets.float().to(device)
-
-            # Forward pass
-            outputs = model(inputs)
-            outputs = outputs.permute(1, 0, 2)  # (B, T, C) -> (T, B, C)
-
-            # Calculate loss
-            print("in","tar")
-            print(len(input_lengths),len(target_lengths))
-            print("in", "tar")
-            print(len(outputs),len(targets))
-            print(len(targets))
-            target_sequences = torch.split(targets, target_lengths.tolist(), dim=0)
-            print( "tar")
-            print(len(target_sequences))
-            loss = loss_function(outputs, target_sequences, input_lengths, target_lengths)
-            running_loss += loss.item()
-
-            # Calculate CER and WER
-            batch_size = inputs.size(0)
-
-            decoded_preds, decoded_targets = decode_predictions(outputs, targets)
-            cer, wer = calculate_metrics(decoded_preds, decoded_targets)
-            total_cer += cer * batch_size
-            total_wer += wer * batch_size
-            total_samples += batch_size
-
-    # Calculate average loss, CER, and WER
-    avg_loss = running_loss / len(dataloader)
-    avg_cer = total_cer / total_samples
-    avg_wer = total_wer / total_samples
-
-    return avg_loss, avg_cer, avg_wer
+#
+#
+# def evaluate(model, dataloader, loss_function, device):
+#     model.eval()
+#     running_loss = 0.0
+#     total_cer, total_wer = 0.0, 0.0
+#     total_samples = 0
+#
+#     with torch.no_grad():
+#         for batch in dataloader:
+#             inputs, targets, input_lengths, target_lengths, index = batch
+#             inputs, targets = inputs.float().to(device), targets.float().to(device)
+#
+#             # Forward pass
+#             outputs = model(inputs)
+#             outputs = outputs.permute(1, 0, 2)  # (B, T, C) -> (T, B, C)
+#
+#             # Calculate loss
+#             print("in","tar")
+#             print(len(input_lengths),len(target_lengths))
+#             print("in", "tar")
+#             print(len(outputs),len(targets))
+#             print(len(targets))
+#             target_sequences = torch.split(targets, target_lengths.tolist(), dim=0)
+#             print( "tar")
+#             print(len(target_sequences))
+#             loss = loss_function(outputs, target_sequences, input_lengths, target_lengths)
+#             running_loss += loss.item()
+#
+#             # Calculate CER and WER
+#             batch_size = inputs.size(0)
+#
+#             decoded_preds, decoded_targets = decode_predictions(outputs, targets)
+#             cer, wer = calculate_metrics(decoded_preds, decoded_targets)
+#             total_cer += cer * batch_size
+#             total_wer += wer * batch_size
+#             total_samples += batch_size
+#
+#     # Calculate average loss, CER, and WER
+#     avg_loss = running_loss / len(dataloader)
+#     avg_cer = total_cer / total_samples
+#     avg_wer = total_wer / total_samples
+#
+#     return avg_loss, avg_cer, avg_wer
 
 
 # def evaluate(model, evalLoader, loss_function, device, evalParams):

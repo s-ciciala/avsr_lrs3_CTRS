@@ -142,9 +142,9 @@ def train_model(model, trainLoader, valLoader, optimizer, loss_function, device)
         # trainingWERCurve.append(trainingWER)
 
         # evaluate the model on validation set
-        # validationLoss, validationCER, validationWER = evaluate(model, valLoader, loss_function, device, valParams)
+        validationLoss, validationCER, validationWER = evaluate(model, valLoader, loss_function, device, valParams)
         #def evaluate(model, dataloader, criterion, device):
-        validationLoss, validationCER, validationWER = evaluate(model, valLoader, loss_function, device)
+        # validationLoss, validationCER, validationWER = evaluate(model, valLoader, loss_function, device)
         validationLossCurve.append(validationLoss)
         validationCERCurve.append(validationCER)
         validationWERCurve.append(validationWER)
