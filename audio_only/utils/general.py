@@ -196,14 +196,14 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
                 # print(charrr)
                 curr_string += charrr
             targetStrings.append(curr_string)
-
-        for i in range(len(predictionStrings)):
-            print("------------------PREDICTION------------------")
-            print("------------------PREDICTION------------------")
-            print(predictionStrings[i])
-            print("------------------TARGET------------------")
-            print("------------------TARGET------------------")
-            print(targetStrings[i])
+        if args["DISPLAY_PREDICTIONS"]:
+            for i in range(len(predictionStrings)):
+                print("------------------PREDICTION------------------")
+                print("------------------PREDICTION------------------")
+                print(predictionStrings[i])
+                print("------------------TARGET------------------")
+                print("------------------TARGET------------------")
+                print(targetStrings[i])
 
     evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
     evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch,
