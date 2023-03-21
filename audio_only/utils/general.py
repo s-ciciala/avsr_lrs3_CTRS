@@ -97,7 +97,7 @@ def evaluate(model, dataloader, criterion, device, eval_params):
     total_loss = 0
     total_cer = 0
     total_wer = 0
-    idx2char = eval_params["idx2char"]
+    idx2char = args["INDEX_TO_CHAR"]
 
     with torch.no_grad():
         for batch_idx, (inputs, targets, input_lengths, target_lengths) in enumerate(dataloader):
