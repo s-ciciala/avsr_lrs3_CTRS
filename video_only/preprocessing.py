@@ -101,46 +101,46 @@ def preprocess_all_samples(filesList, device):
 #             f.writelines("\n")
 
 
-def generate_val_file():
-    # Generating val.txt for splitting the pretrain set into validation sets
-    val_dir = args["VAL_DIRECTORY"]
-    val_dir_file = args["DATA_DIRECTORY"] + "/val.txt"
-    example_dict = {
-        "ID": [],
-        "TEXT": []
-    }
-    print("\n\nGenerating the val.txt file from the directory" + val_dir)
-    dirs = [d for d in os.listdir(val_dir) if os.path.isdir(os.path.join(val_dir, d))]
-    print("\nAvaliable folders include: " + str(dirs))
-    print("\nTotal number of folders included: " + str(len(dirs)))
-
-    print("\nFor each folder we will extract the number of txt examples")
-    for folder in tqdm(dirs):
-
-        print("\nParsing Folder:" + folder)
-        example_dir = val_dir + folder + "/"
-        examples = [f for f in listdir(example_dir) if isfile(join(example_dir, f))]
-        ##NOTE assumption that each text file HAS an associated .mp4
-        examples_textonly = [ex for ex in examples if ".txt" in ex]
-        print("Parsing exmaples text files:" + str(examples_textonly))
-        print("NOTE we assume that each text file HAS an associated .mp4")
-
-        ##Current parse is absolute filename -> text
-        print("\nReading Each example")
-        for ex in examples_textonly:
-            examples_textonly_dir = example_dir + ex
-            with open(examples_textonly_dir, "r") as f:
-                lines = f.readlines()
-                examples_npy_dir = examples_textonly_dir.split("txt")[0][:-1]
-                example_dict["ID"].append(examples_npy_dir)
-                string_to_add = str(lines[0][6: -1])
-                example_dict["TEXT"].append(string_to_add)
-
-    with open(val_dir_file, "w") as f:
-        for i in range(len(example_dict["ID"])):
-            f.writelines(example_dict["ID"][i])
-            f.writelines(example_dict["TEXT"][i])
-            f.writelines("\n")
+# def generate_val_file():
+#     # Generating val.txt for splitting the pretrain set into validation sets
+#     val_dir = args["VAL_DIRECTORY"]
+#     val_dir_file = args["DATA_DIRECTORY"] + "/val.txt"
+#     example_dict = {
+#         "ID": [],
+#         "TEXT": []
+#     }
+#     print("\n\nGenerating the val.txt file from the directory" + val_dir)
+#     dirs = [d for d in os.listdir(val_dir) if os.path.isdir(os.path.join(val_dir, d))]
+#     print("\nAvaliable folders include: " + str(dirs))
+#     print("\nTotal number of folders included: " + str(len(dirs)))
+#
+#     print("\nFor each folder we will extract the number of txt examples")
+#     for folder in tqdm(dirs):
+#
+#         print("\nParsing Folder:" + folder)
+#         example_dir = val_dir + folder + "/"
+#         examples = [f for f in listdir(example_dir) if isfile(join(example_dir, f))]
+#         ##NOTE assumption that each text file HAS an associated .mp4
+#         examples_textonly = [ex for ex in examples if ".txt" in ex]
+#         print("Parsing exmaples text files:" + str(examples_textonly))
+#         print("NOTE we assume that each text file HAS an associated .mp4")
+#
+#         ##Current parse is absolute filename -> text
+#         print("\nReading Each example")
+#         for ex in examples_textonly:
+#             examples_textonly_dir = example_dir + ex
+#             with open(examples_textonly_dir, "r") as f:
+#                 lines = f.readlines()
+#                 examples_npy_dir = examples_textonly_dir.split("txt")[0][:-1]
+#                 example_dict["ID"].append(examples_npy_dir)
+#                 string_to_add = str(lines[0][6: -1])
+#                 example_dict["TEXT"].append(string_to_add)
+#
+#     with open(val_dir_file, "w") as f:
+#         for i in range(len(example_dict["ID"])):
+#             f.writelines(example_dict["ID"][i])
+#             f.writelines(example_dict["TEXT"][i])
+#             f.writelines("\n")
 
 
 def split_trainval(fileList):
@@ -155,7 +155,6 @@ def split_trainval(fileList):
 
 def generate_train_file(train):
     # Generating train.txt for splitting the pretrain set into train sets
-    train_dir = args["TRAIN_DIRECTORY"]
     train_dir_file = args["DATA_DIRECTORY"] + "/train.txt"
     example_dict = {
         "ID": [],
@@ -173,15 +172,61 @@ def generate_train_file(train):
             print(string_to_add)
             example_dict["TEXT"].append(string_to_add)
             print(example_dict)
-            exit()
 
+    if os.path.isfile(train_dir_file):
+        os.remove(train_dir_file)
     with open(train_dir_file, "w") as f:
         for i in range(len(example_dict["ID"])):
             f.writelines(example_dict["ID"][i])
             f.writelines(example_dict["TEXT"][i])
             f.writelines("\n")
 
+def generate_val_file(val):
+    # Generating val.txt for splitting the pretrain set into validation sets
+    val_dir_file = args["DATA_DIRECTORY"] + "/val.txt"
+    example_dict = {
+        "ID": [],
+        "TEXT": []
+    }
 
+    for val_dir in val:
+        text_file = val_dir + ".txt"
+        with open(text_file, "r") as f:
+            lines = f.readlines()
+            print(text_file)
+            examples_npy_dir = text_file.split("txt")[0][:-1]
+            print(examples_npy_dir)
+            example_dict["ID"].append(examples_npy_dir)
+            string_to_add = str(lines[0][6: -1])
+            print(string_to_add)
+            example_dict["TEXT"].append(string_to_add)
+            print(example_dict)
+
+    if os.path.isfile(val_dir_file):
+        os.remove(val_dir_file)
+
+    with open(val_dir_file, "w") as f:
+        for i in range(len(example_dict["ID"])):
+            f.writelines(example_dict["ID"][i])
+            f.writelines(example_dict["TEXT"][i])
+            f.writelines("\n")
+
+def check_files_correct_len(train,val):
+    train_len = len(train)
+    val_len = len(val)
+    val_dir_file = args["DATA_DIRECTORY"] + "/val.txt"
+    train_dir_file = args["DATA_DIRECTORY"] + "/train.txt"
+
+    with open(train_dir_file) as f:
+        text = f.readlines()
+        train_file_len = len(text)
+
+    with open(val_dir_file) as f:
+        text = f.readlines()
+        val_file_len = len(text)
+
+    print("Expected train len: " + str(train_len) + " Got train len: " + str(train_file_len))
+    print("Expected val len: " + str(val_len) + " Got val len: " + str(val_file_len))
 
 if __name__ == "__main__":
     device = set_device()
@@ -197,5 +242,6 @@ if __name__ == "__main__":
     print(train)
     # preprocess_all_samples(fileList,device)
     generate_train_file(train)
-    # generate_val_file(val)
+    generate_val_file(val)
+    check_files_correct_len(train,val)
     print("Completed")
