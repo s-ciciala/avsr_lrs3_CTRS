@@ -138,7 +138,7 @@ def calculate_metrics(decoded_preds, decoded_targets):
     return avg_cer, avg_wer
 
 
-def evaluate(model, dataloader, criterion, device):
+def evaluate(model, dataloader, loss_function, device):
     model.eval()
     running_loss = 0.0
     total_cer, total_wer = 0.0, 0.0
@@ -153,12 +153,15 @@ def evaluate(model, dataloader, criterion, device):
             outputs = model(inputs)
             outputs = outputs.permute(1, 0, 2)  # (B, T, C) -> (T, B, C)
 
-            # Calculate loss
-            print("in","tar")
-            print(len(input_lengths),len(target_lengths))
-            print("out", "tar")
-            print(len(outputs),len(targets))
-            loss = criterion(outputs, targets, input_lengths, target_lengths)
+            # # Calculate loss
+            # print("in","tar")
+            # print(len(input_lengths),len(target_lengths))
+            # print("in", "tar")
+            # print(len(outputs),len(targets))
+            # print(len(targets))
+
+            target_sequences = torch.split(targets, target_lengths.tolist(), dim=0)
+            loss = loss_function(outputs, target_sequences, input_lengths, target_lengths)
             running_loss += loss.item()
 
             # Calculate CER and WER
