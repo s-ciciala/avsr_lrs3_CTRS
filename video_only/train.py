@@ -15,12 +15,13 @@ from utils.general import num_params, train, evaluate
 from tqdm import tqdm
 from sys import exit
 
+
 def set_device():
     print("GPU on?:" + str(torch.cuda.is_available()))
     print("Backend on?:" + str(torch.backends.cudnn.enabled))
     available_gpus = [torch.cuda.device(i) for i in range(torch.cuda.device_count())]
     print("available_gpus: " + str(len(available_gpus)))
-    print("device_count: " + str(torch.cuda.device_count()) )
+    print("device_count: " + str(torch.cuda.device_count()))
 
     matplotlib.use("Agg")
     np.random.seed(args["SEED"])
@@ -31,10 +32,10 @@ def set_device():
     kwargs = {"num_workers": args["NUM_WORKERS"], "pin_memory": True} if torch.cuda.is_available() else {}
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-    return device,kwargs
+    return device, kwargs
 
-def get_training_data(device,kwargs):
 
+def get_training_data(device, kwargs):
     videoParams = {"videoFPS": args["VIDEO_FPS"]}
     dataset = "train"
     datadir = args["DATA_DIRECTORY"]
@@ -55,7 +56,8 @@ def get_training_data(device,kwargs):
     model = VideoNet(args["TX_NUM_FEATURES"], args["TX_ATTENTION_HEADS"], args["TX_NUM_LAYERS"], args["PE_MAX_LENGTH"],
                      args["TX_FEEDFORWARD_DIM"], args["TX_DROPOUT"], args["NUM_CLASSES"])
     model.to(device)
-    return trainData,trainLoader,valData,valLoader,model
+    return trainData, trainLoader, valData, valLoader, model
+
 
 def get_optimiser_and_checkpoint_dir(model):
     optimizer = optim.Adam(model.parameters(), lr=args["INIT_LR"], betas=(args["MOMENTUM1"], args["MOMENTUM2"]))
@@ -63,7 +65,7 @@ def get_optimiser_and_checkpoint_dir(model):
                                                      patience=args["LR_SCHEDULER_WAIT"],
                                                      threshold=args["LR_SCHEDULER_THRESH"],
                                                      threshold_mode="abs", min_lr=args["FINAL_LR"], verbose=True)
-    loss_function = nn.CTCLoss(blank=0, zero_infinity=False)
+    loss_function = nn.CTCLoss(blank=0, zero_infinity=True)
     if args["CHECKPOINTS"]:
         if os.path.exists(args["CODE_DIRECTORY"] + "/checkpoints"):
             while True:
@@ -83,18 +85,28 @@ def get_optimiser_and_checkpoint_dir(model):
     if not os.path.exists(args["CODE_DIRECTORY"] + "video_only_checkpoints/plots"):
         os.makedirs(args["CODE_DIRECTORY"] + "video_only_checkpoints/plots")
 
-    return optimizer,scheduler,loss_function
+    return optimizer, scheduler, loss_function
 
-def train_model(model,trainLoader,valLoader,optimizer,loss_function,device):
+
+def train_model(model, trainLoader, valLoader, optimizer, loss_function, device):
     print("\nTraining the model .... \n")
 
     trainParams = {"spaceIx": args["CHAR_TO_INDEX"][" "], "eosIx": args["CHAR_TO_INDEX"]["<EOS>"]}
     valParams = {"decodeScheme": "greedy", "spaceIx": args["CHAR_TO_INDEX"][" "],
                  "eosIx": args["CHAR_TO_INDEX"]["<EOS>"]}
 
+    trainingLossCurve = list()
+    validationLossCurve = list()
+    trainingCERCurve = list()
+    validationCERCurve = list()
+    trainingWERCurve = list()
+    validationWERCurve = list()
+
+
     for step in range(args["NUM_STEPS"]):
         # train the model for one step
-        trainingLoss, trainingCER, trainingWER = train(model, trainLoader, optimizer, loss_function, device,trainParams)
+        trainingLoss, trainingCER, trainingWER = train(model, trainLoader, optimizer, loss_function, device,
+                                                       trainParams)
         trainingLossCurve.append(trainingLoss)
         trainingWERCurve.append(trainingWER)
 
@@ -113,8 +125,9 @@ def train_model(model,trainLoader,valLoader,optimizer,loss_function,device):
 
         # saving the model weights and loss/metric curves in the checkpoints directory after every few steps
         if ((step % args["SAVE_FREQUENCY"] == 0) or (step == args["NUM_STEPS"] - 1)) and (step != 0):
-            savePath = args["CODE_DIRECTORY"] + "/video_only_checkpoints/models/train-step_{:04d}-wer_{:.3f}.pt".format(step,
-                                                                                                             validationWER)
+            savePath = args["CODE_DIRECTORY"] + "/video_only_checkpoints/models/train-step_{:04d}-wer_{:.3f}.pt".format(
+                step,
+                validationWER)
             torch.save(model.state_dict(), savePath)
 
             plt.figure()
@@ -124,7 +137,8 @@ def train_model(model,trainLoader,valLoader,optimizer,loss_function,device):
             plt.plot(list(range(1, len(trainingLossCurve) + 1)), trainingLossCurve, "blue", label="Train")
             plt.plot(list(range(1, len(validationLossCurve) + 1)), validationLossCurve, "red", label="Validation")
             plt.legend()
-            plt.savefig(args["CODE_DIRECTORY"] + "/video_only_checkpoints/plots/train-step_{:04d}-loss.png".format(step))
+            plt.savefig(
+                args["CODE_DIRECTORY"] + "/video_only_checkpoints/plots/train-step_{:04d}-loss.png".format(step))
             plt.close()
 
             plt.figure()
@@ -137,12 +151,24 @@ def train_model(model,trainLoader,valLoader,optimizer,loss_function,device):
             plt.savefig(args["CODE_DIRECTORY"] + "/video_only_checkpoints/plots/train-step_{:04d}-wer.png".format(step))
             plt.close()
 
+            plt.figure()
+            plt.title("CER Curves")
+            plt.xlabel("Step No.")
+            plt.ylabel("CER")
+            plt.plot(list(range(1, len(trainingCERCurve) + 1)), trainingCERCurve, "blue", label="Train")
+            plt.plot(list(range(1, len(validationCERCurve) + 1)), validationCERCurve, "red", label="Validation")
+            plt.legend()
+            plt.savefig(
+                args["CODE_DIRECTORY"] + "/audio_only_checkpoints/plots/train-step_{:04d}-loss.png".format(step))
+            plt.close()
+
     print("\nTraining Done.\n")
 
+
 if __name__ == "__main__":
-    device,kwargs = set_device()
+    device, kwargs = set_device()
     videoParams = {"videoFPS": args["VIDEO_FPS"]}
-    trainData, trainLoader, valData, valLoader, model = get_training_data(device,kwargs)
+    trainData, trainLoader, valData, valLoader, model = get_training_data(device, kwargs)
     optimizer, scheduler, loss_function = get_optimiser_and_checkpoint_dir(model)
 
     trainingLossCurve = list()
