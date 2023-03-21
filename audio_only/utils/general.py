@@ -128,6 +128,9 @@ def evaluate(model, dataloader, criterion, device, eval_params):
 
     return avg_loss, avg_cer, avg_wer
 
+def indices_to_text(indices, idx2char):
+    text = ''.join([idx2char[idx] for idx in indices])
+    return text
 
 class GreedyDecoder:
     def __call__(self, outputs):
@@ -139,22 +142,30 @@ def decode_predictions(outputs, targets, idx2char):
 
     # Decode the output probabilities
     decoded_preds = greedy_decoder(outputs)
+    decoded_preds_text = []
     for seq in decoded_preds:
-        print("*"*80)
-        print(seq)
-    exit()
-    decoded_preds = [indices_to_text(seq, idx2char) for seq in decoded_preds]
+        # print("*"*80)
+        # print(seq)
+        text = ""
+        for char in seq:
+            text += idx2char[char.item()]
+        decoded_preds_text.append(text)
+    # decoded_preds = [indices_to_text(seq, idx2char) for seq in decoded_preds]
 
     # Decode the targets
-    decoded_targets = [indices_to_text(seq, idx2char) for seq in targets]
+    # decoded_targets = [indices_to_text(seq, idx2char) for seq in targets]
+    decoded_targets_text = []
+    for seq in targets:
+        # print("*"*80)
+        # print(seq)
+        text = ""
+        for char in seq:
+            text += idx2char[char.item()]
+        decoded_targets_text.append(text)
 
-    return decoded_preds, decoded_targets
+    return decoded_preds_text, decoded_targets_text
 
-def indices_to_text(indices, idx2char):
-    for inx in indices:
-        print(inx.item())
-    text = ''.join([idx2char[idx.item()] for idx in indices])
-    return text
+
 
 
 def calculate_metrics(decoded_preds, decoded_targets):
