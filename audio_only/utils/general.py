@@ -153,14 +153,15 @@ def evaluate(model, dataloader, loss_function, device):
             outputs = model(inputs)
             outputs = outputs.permute(1, 0, 2)  # (B, T, C) -> (T, B, C)
 
-            # # Calculate loss
-            # print("in","tar")
-            # print(len(input_lengths),len(target_lengths))
-            # print("in", "tar")
-            # print(len(outputs),len(targets))
-            # print(len(targets))
-
+            # Calculate loss
+            print("in","tar")
+            print(len(input_lengths),len(target_lengths))
+            print("in", "tar")
+            print(len(outputs),len(targets))
+            print(len(targets))
             target_sequences = torch.split(targets, target_lengths.tolist(), dim=0)
+            print( "tar")
+            print(len(target_sequences))
             loss = loss_function(outputs, target_sequences, input_lengths, target_lengths)
             running_loss += loss.item()
 
