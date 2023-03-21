@@ -156,7 +156,7 @@ def evaluate(model, dataloader, criterion, device):
 
             # Calculate loss
             print("in","tar")
-            print(input_lengths,target_lengths)
+            print(len(input_lengths),len(target_lengths))
             loss = criterion(outputs, targets, input_lengths, target_lengths)
             running_loss += loss.item()
 
