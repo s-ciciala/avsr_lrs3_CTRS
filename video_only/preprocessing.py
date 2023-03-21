@@ -271,7 +271,6 @@ def check_files_correct_len(train, val,test):
 if __name__ == "__main__":
     device = set_device()
     fileList = get_filelist()
-    print("Size of the set before cull: " + str(len(fileList)))
     train, val = split_trainval(fileList)
     test = [x for x in fileList if (args["VIDEO_TEST_SET"] in x)]
     # print([x for x in fileList if (args["VIDEO_PREPROC_SET"] in x)])
