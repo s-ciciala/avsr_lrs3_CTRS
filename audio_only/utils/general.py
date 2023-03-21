@@ -139,6 +139,9 @@ def decode_predictions(outputs, targets, idx2char):
 
     # Decode the output probabilities
     decoded_preds = greedy_decoder(outputs)
+    for seq in decoded_preds:
+        print(seq)
+    exit()
     decoded_preds = [indices_to_text(seq, idx2char) for seq in decoded_preds]
 
     # Decode the targets
