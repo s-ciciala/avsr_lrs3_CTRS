@@ -100,7 +100,7 @@ def evaluate(model, dataloader, criterion, device, eval_params):
     idx2char = args["INDEX_TO_CHAR"]
 
     with torch.no_grad():
-        for batch_idx, (inputs, targets, input_lengths, target_lengths) in enumerate(dataloader):
+        for batch_idx, (inputs, targets, input_lengths, target_lengths,index) in enumerate(dataloader):
             inputs = inputs.to(device)
             targets = targets.to(device)
             input_lengths = input_lengths.to(device)
