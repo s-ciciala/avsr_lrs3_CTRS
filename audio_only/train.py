@@ -35,7 +35,6 @@ def set_device():
     return device, kwargs
 
 
-##TODO no noise params
 def get_training_data(device, kwargs):
     dataset = "train"
     datadir = args["DATA_DIRECTORY"]

@@ -47,15 +47,6 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
         outputBatch = model(inputBatch)
 
         with torch.backends.cudnn.flags(enabled=True):
-            # print("\n")
-            # print("inputLenBatch " + str(inputLenBatch))
-            # print("targetLenBatch " + str(targetLenBatch))
-            # print("inputBatch " + str(inputBatch))
-            # print("targetBatch " + str(targetBatch))
-            # print("outputLenBatch " + str(len(outputBatch)))
-            # print("targetLenBatch " + str(len(targetBatch)))
-            # print("outputBatch " + str(outputBatch))
-            # print("outputLenBatch " + str(len(outputBatch)))
             arry = []
             for btch in inputLenBatch:
                 # print("HERE")
@@ -65,7 +56,6 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
                 else:
                     arry.append(btch)
             new_inputLenBatch = torch.tensor(arry, dtype=torch.int32, device=device)
-            # print("new_inputLenBatch " + str(new_inputLenBatch))
             loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
             # if len(outputBatch) < inputLenBatch:
             #     # print("CATCH")
@@ -77,13 +67,7 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
             #     loss = loss_function(outputBatch, targetBatch, inputLenBatch, targetLenBatch)
         loss.backward()
         optimizer.step()
-        # print("LOSS" * 10)
-        # print(index)
-        # print(trainLoader.dataset.datalist[index])
-        # print(trainLoader.dataset[index][0].sum())
-        # print(trainLoader.dataset[index][1].sum())
-        # print(loss.item())
-        if (loss.item() == math.inf):
+        if loss.item() == math.inf:
             print(trainLoader.dataset.datalist[index])
             print(trainLoader)
             print(trainLoader.dataset[index])
@@ -117,12 +101,11 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
     evalCER = 0
     evalWER = 0
 
-    char_to_index = args["CHAR_TO_INDEX"]
     index_to_char = args["INDEX_TO_CHAR"]
 
-    # Use DataParallel to parallelize the model across multiple GPUs
-    if torch.cuda.device_count() > 1:
-        model = torch.nn.DataParallel(model)
+    # # Use DataParallel to parallelize the model across multiple GPUs
+    # if torch.cuda.device_count() > 1:
+    #     model = torch.nn.DataParallel(model)
 
     for batch, (inputBatch, targetBatch, inputLenBatch, targetLenBatch, index) in enumerate(
             tqdm(evalLoader, leave=False, desc="Eval",
