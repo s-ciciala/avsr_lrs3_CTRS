@@ -144,8 +144,8 @@ def decode_predictions(outputs, targets, idx2char):
     decoded_preds = greedy_decoder(outputs)
     decoded_preds_text = []
     for seq in decoded_preds:
-        print("*"*80)
-        print(seq)
+        # print("*"*80)
+        # print(seq)
         text = ""
         for char1 in seq.data:
             text += idx2char[char1.item()]
@@ -156,8 +156,8 @@ def decode_predictions(outputs, targets, idx2char):
     # decoded_targets = [indices_to_text(seq, idx2char) for seq in targets]
     decoded_targets_text = []
     for seq in targets:
-        # print("*"*80)
-        # print(seq)
+        print("*"*80)
+        print(seq)
         text = ""
         for char2 in seq.data:
             text += idx2char[char2.item()]
