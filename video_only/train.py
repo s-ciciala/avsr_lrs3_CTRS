@@ -165,7 +165,7 @@ def train_model(model, trainLoader, valLoader, optimizer, loss_function, device)
             plt.plot(list(range(1, len(validationCERCurve) + 1)), validationCERCurve, "red", label="Validation")
             plt.legend()
             plt.savefig(
-                args["CODE_DIRECTORY"] + "/audio_only_checkpoints/plots/train-step_{:04d}-loss.png".format(step))
+                args["CODE_DIRECTORY"] + "/video_only_checkpoints/plots/train-step_{:04d}-loss.png".format(step))
             plt.close()
 
     print("\nTraining Done.\n")
