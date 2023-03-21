@@ -151,11 +151,13 @@ def evaluate(model, dataloader, criterion, device):
 
             # Forward pass
             outputs = model(inputs)
-            # outputs = outputs.permute(1, 0, 2)  # (B, T, C) -> (T, B, C)
+            outputs = outputs.permute(1, 0, 2)  # (B, T, C) -> (T, B, C)
 
             # Calculate loss
             print("in","tar")
             print(len(input_lengths),len(target_lengths))
+            print(len(outputs))
+            print(len(targets))
             loss = criterion(outputs, targets, input_lengths, target_lengths)
             running_loss += loss.item()
 
