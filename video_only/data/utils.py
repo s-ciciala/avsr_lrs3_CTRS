@@ -29,7 +29,7 @@ def prepare_main_input(visualFeaturesFile, targetFile, reqInpLen, charToIx, vide
         if "{" in trgt:
             trgt = trgt.split("{")[0]
         #UNDO THIS TO SEE TEXT
-        print(trgt)
+        # print(trgt)
         trgt = [charToIx[char] for char in trgt]
         trgt.append(charToIx["<EOS>"])
         trgt = np.array(trgt)
