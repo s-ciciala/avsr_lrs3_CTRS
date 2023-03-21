@@ -148,7 +148,7 @@ def decode_predictions(outputs, targets, idx2char):
 
 def indices_to_text(indices, idx2char):
     for inx in indices:
-        print(inx.data[0])
+        print(inx.item())
     text = ''.join([idx2char[idx.item()] for idx in indices])
     return text
 
