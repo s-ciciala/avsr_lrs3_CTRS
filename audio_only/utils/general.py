@@ -106,7 +106,8 @@ def evaluate(model, dataloader, criterion, device, eval_params):
             input_lengths = input_lengths.to(device)
             target_lengths = target_lengths.to(device)
 
-            outputs = model(inputs, input_lengths)
+            # outputs = model(inputs, input_lengths)
+            outputs = model(inputs)
 
             adjusted_input_lengths = torch.min(input_lengths, torch.tensor(outputs.size(1), device=device))
             loss = criterion(outputs, targets, adjusted_input_lengths, target_lengths)
