@@ -155,14 +155,14 @@ def split_trainval(fileList):
 
 def generate_test_file(test):
     # Generating train.txt for splitting the pretrain set into train sets
-    train_dir_file = args["DATA_DIRECTORY"] + "/test.txt"
+    test_dir_file = args["DATA_DIRECTORY"] + "/test.txt"
     example_dict = {
         "ID": [],
         "TEXT": []
     }
     print("Generating test file...")
-    for train_dir in tqdm(train):
-        text_file = train_dir + ".txt"
+    for test_dir in tqdm(test):
+        text_file = test_dir + ".txt"
         with open(text_file, "r") as f:
             lines = f.readlines()
             # print(text_file)
@@ -174,9 +174,9 @@ def generate_test_file(test):
             example_dict["TEXT"].append(string_to_add)
             # print(example_dict)
 
-    if os.path.isfile(train_dir_file):
-        os.remove(train_dir_file)
-    with open(train_dir_file, "w") as f:
+    if os.path.isfile(test_dir_file):
+        os.remove(test_dir_file)
+    with open(test_dir_file, "w") as f:
         for i in range(len(example_dict["ID"])):
             f.writelines(example_dict["ID"][i])
             f.writelines(example_dict["TEXT"][i])
