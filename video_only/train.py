@@ -55,7 +55,7 @@ def get_training_data(device, kwargs):
 
     model = VideoNet(args["TX_NUM_FEATURES"], args["TX_ATTENTION_HEADS"], args["TX_NUM_LAYERS"], args["PE_MAX_LENGTH"],
                      args["TX_FEEDFORWARD_DIM"], args["TX_DROPOUT"], args["NUM_CLASSES"])
-
+    ##GPU add
     if args["LIMITGPU"]:
         model = nn.DataParallel(model, device_ids=args["GPUID"])
     else:
