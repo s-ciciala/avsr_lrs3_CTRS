@@ -60,7 +60,7 @@ args["LIMITGPU"] = True
 # args["GPU"] = "cuda:1,2"
 args["GPUID"] = [0,1,2,3]
 args["SEED"] = 19220297 #seed for random number generators
-args["BATCH_SIZE"] = 4 #minibatch size
+args["BATCH_SIZE"] = 16 #minibatch size
 args["STEP_SIZE"] = 16384   #number of samples in one step (virtual epoch)
 args["NUM_STEPS"] = 1000 #maximum number of steps to train for (early stopping is used)
 args["SAVE_FREQUENCY"] = 10 #saving the model weights and loss/metric plots after every these many steps
@@ -80,18 +80,18 @@ args["NUM_CLASSES"] = 40    #number of output characters
 
 
 #transformer architecture
-args["PE_MAX_LENGTH"] = 2500    #length up to which we calculate positional encodings
-args["TX_NUM_FEATURES"] = 512   #transformer input feature size
-args["TX_ATTENTION_HEADS"] = 8  #number of attention heads in multihead attention layer
-args["TX_NUM_LAYERS"] = 6   #number of Transformer Encoder blocks in the stack
-args["TX_FEEDFORWARD_DIM"] = 2048   #hidden layer size in feedforward network of transformer
-args["TX_DROPOUT"] = 0.1    #dropout probability in the transformer
 # args["PE_MAX_LENGTH"] = 2500    #length up to which we calculate positional encodings
 # args["TX_NUM_FEATURES"] = 512   #transformer input feature size
-# args["TX_ATTENTION_HEADS"] = 4  #number of attention heads in multihead attention layer
-# args["TX_NUM_LAYERS"] = 3   #number of Transformer Encoder blocks in the stack
-# args["TX_FEEDFORWARD_DIM"] = 1024   #hidden layer size in feedforward network of transformer
+# args["TX_ATTENTION_HEADS"] = 8  #number of attention heads in multihead attention layer
+# args["TX_NUM_LAYERS"] = 6   #number of Transformer Encoder blocks in the stack
+# args["TX_FEEDFORWARD_DIM"] = 2048   #hidden layer size in feedforward network of transformer
 # args["TX_DROPOUT"] = 0.1    #dropout probability in the transformer
+args["PE_MAX_LENGTH"] = 2500    #length up to which we calculate positional encodings
+args["TX_NUM_FEATURES"] = 512   #transformer input feature size
+args["TX_ATTENTION_HEADS"] = 5  #number of attention heads in multihead attention layer
+args["TX_NUM_LAYERS"] = 4   #number of Transformer Encoder blocks in the stack
+args["TX_FEEDFORWARD_DIM"] = 1024   #hidden layer size in feedforward network of transformer
+args["TX_DROPOUT"] = 0.1    #dropout probability in the transformer
 
 
 #beam search
