@@ -161,6 +161,7 @@ def generate_train_file(train):
         "ID": [],
         "TEXT": []
     }
+    print("Generating train file...")
     for train_dir in tqdm(train):
         text_file = train_dir + ".txt"
         with open(text_file, "r") as f:
@@ -190,7 +191,7 @@ def generate_val_file(val):
         "ID": [],
         "TEXT": []
     }
-
+    print("Generating val file...")
     for val_dir in tqdm(val):
         text_file = val_dir + ".txt"
         with open(text_file, "r") as f:
