@@ -274,8 +274,6 @@ if __name__ == "__main__":
     train, val = split_trainval(fileList)
     test = [x for x in fileList if (args["VIDEO_TEST_SET"] in x)]
     # print([x for x in fileList if (args["VIDEO_PREPROC_SET"] in x)])
-    print("Doing only " + args["VIDEO_PREPROC_SET"])
-    print("Size now after the cull:" + str(len(fileList)))
     print("Size of train set" + str(len(train)))
     print("Size of val set:" + str(len(val)))
     # preprocess_all_samples(fileList,device)
