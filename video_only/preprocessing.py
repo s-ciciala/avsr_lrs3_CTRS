@@ -145,13 +145,14 @@ def preprocess_all_samples(filesList, device):
 
 def split_trainval(fileList):
     trainval_only = [x for x in fileList if (args["VIDEO_TRAINVAL_NAME"] in x)]
-    print("We have a total of :"+str(len(trainval_only)))
+    print("We have a total of :" + str(len(trainval_only)))
     print("Now we want a split 80/20")
     train, val = train_test_split(trainval_only, test_size=.20, shuffle=False)
     if collections.Counter(train) == collections.Counter(val):
         print("WARNING: TRAIN AND VAL HAVE SOME OVERLAPPING ELEMENTS")
         exit()
-    return train,val
+    return train, val
+
 
 def generate_train_file(train):
     # Generating train.txt for splitting the pretrain set into train sets
@@ -160,18 +161,18 @@ def generate_train_file(train):
         "ID": [],
         "TEXT": []
     }
-    for train_dir in train:
+    for train_dir in tqdm(train):
         text_file = train_dir + ".txt"
         with open(text_file, "r") as f:
             lines = f.readlines()
-            print(text_file)
+            # print(text_file)
             examples_npy_dir = text_file.split("txt")[0][:-1]
-            print(examples_npy_dir)
+            # print(examples_npy_dir)
             example_dict["ID"].append(examples_npy_dir)
             string_to_add = str(lines[0][6: -1])
-            print(string_to_add)
+            # print(string_to_add)
             example_dict["TEXT"].append(string_to_add)
-            print(example_dict)
+            # print(example_dict)
 
     if os.path.isfile(train_dir_file):
         os.remove(train_dir_file)
@@ -181,6 +182,7 @@ def generate_train_file(train):
             f.writelines(example_dict["TEXT"][i])
             f.writelines("\n")
 
+
 def generate_val_file(val):
     # Generating val.txt for splitting the pretrain set into validation sets
     val_dir_file = args["DATA_DIRECTORY"] + "/val.txt"
@@ -189,18 +191,18 @@ def generate_val_file(val):
         "TEXT": []
     }
 
-    for val_dir in val:
+    for val_dir in tqdm(val):
         text_file = val_dir + ".txt"
         with open(text_file, "r") as f:
             lines = f.readlines()
-            print(text_file)
+            # print(text_file)
             examples_npy_dir = text_file.split("txt")[0][:-1]
-            print(examples_npy_dir)
+            # print(examples_npy_dir)
             example_dict["ID"].append(examples_npy_dir)
             string_to_add = str(lines[0][6: -1])
-            print(string_to_add)
+            # print(string_to_add)
             example_dict["TEXT"].append(string_to_add)
-            print(example_dict)
+            # print(example_dict)
 
     if os.path.isfile(val_dir_file):
         os.remove(val_dir_file)
@@ -211,7 +213,8 @@ def generate_val_file(val):
             f.writelines(example_dict["TEXT"][i])
             f.writelines("\n")
 
-def check_files_correct_len(train,val):
+
+def check_files_correct_len(train, val):
     train_len = len(train)
     val_len = len(val)
     val_dir_file = args["DATA_DIRECTORY"] + "/val.txt"
@@ -228,11 +231,12 @@ def check_files_correct_len(train,val):
     print("Expected train len: " + str(train_len) + " Got train len: " + str(train_file_len))
     print("Expected val len: " + str(val_len) + " Got val len: " + str(val_file_len))
 
+
 if __name__ == "__main__":
     device = set_device()
     fileList = get_filelist()
     print("Size of the set before cull: " + str(len(fileList)))
-    train,val = split_trainval(fileList)
+    train, val = split_trainval(fileList)
     fileList = [x for x in fileList if (args["VIDEO_PREPROC_SET"] in x)]
     # print([x for x in fileList if (args["VIDEO_PREPROC_SET"] in x)])
     print("Doing only " + args["VIDEO_PREPROC_SET"])
@@ -242,5 +246,5 @@ if __name__ == "__main__":
     # preprocess_all_samples(fileList,device)
     generate_train_file(train)
     generate_val_file(val)
-    check_files_correct_len(train,val)
+    check_files_correct_len(train, val)
     print("Completed")
