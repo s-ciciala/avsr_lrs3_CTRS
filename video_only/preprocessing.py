@@ -10,6 +10,7 @@ from config import args
 from models.visual_frontend import VisualFrontend
 from utils.preprocessing import preprocess_sample
 from sklearn.model_selection import train_test_split
+import collections
 
 
 def set_device():
@@ -141,12 +142,17 @@ def generate_val_file():
             f.writelines(example_dict["TEXT"][i])
             f.writelines("\n")
 
+
 def split_trainval(fileList):
     trainval_only = [x for x in fileList if (args["VIDEO_TRAINVAL_NAME"] in x)]
     print("We have a total of :"+str(len(trainval_only)))
     print("Now we want a split 80/20")
-    train, val = train_test_split(trainval_only, test_size=.20, shuffle=True)
+    train, val = train_test_split(trainval_only, test_size=.20, shuffle=False)
+    if collections.Counter(train) == collections.Counter(val):
+        print("WARNING: TRAIN AND VAL HAVE SOME OVERLAPPING ELEMENTS")
+        exit()
     return train,val
+
 
 if __name__ == "__main__":
     device = set_device()
@@ -159,7 +165,8 @@ if __name__ == "__main__":
     print("Size now after the cull:" + str(len(fileList)))
     print("Size of train set" + str(len(train)))
     print("Size of val set:" + str(len(val)))
+    print(train)
     # preprocess_all_samples(fileList,device)
-    # generate_train_file()
-    # generate_val_file()
+    # generate_train_file(train)
+    # generate_val_file(val)
     print("Completed")
