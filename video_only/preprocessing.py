@@ -153,34 +153,6 @@ def split_trainval(fileList):
         exit()
     return train, val
 
-def generate_test_file(test):
-    # Generating train.txt for splitting the pretrain set into train sets
-    test_dir_file = args["DATA_DIRECTORY"] + "/test.txt"
-    example_dict = {
-        "ID": [],
-        "TEXT": []
-    }
-    print("Generating test file...")
-    for test_dir in tqdm(test):
-        text_file = test_dir + ".txt"
-        with open(text_file, "r") as f:
-            lines = f.readlines()
-            # print(text_file)
-            examples_npy_dir = text_file.split("txt")[0][:-1]
-            # print(examples_npy_dir)
-            example_dict["ID"].append(examples_npy_dir)
-            string_to_add = str(lines[0][6: -1])
-            # print(string_to_add)
-            example_dict["TEXT"].append(string_to_add)
-            # print(example_dict)
-
-    if os.path.isfile(test_dir_file):
-        os.remove(test_dir_file)
-    with open(test_dir_file, "w") as f:
-        for i in range(len(example_dict["ID"])):
-            f.writelines(example_dict["ID"][i])
-            f.writelines(example_dict["TEXT"][i])
-            f.writelines("\n")
 
 def generate_train_file(train):
     # Generating train.txt for splitting the pretrain set into train sets
@@ -243,7 +215,37 @@ def generate_val_file(val):
             f.writelines("\n")
 
 
-def check_files_correct_len(train, val,test):
+def generate_test_file(test):
+    # Generating train.txt for splitting the pretrain set into train sets
+    test_dir_file = args["DATA_DIRECTORY"] + "/test.txt"
+    example_dict = {
+        "ID": [],
+        "TEXT": []
+    }
+    print("Generating test file...")
+    for test_dir in tqdm(test):
+        text_file = test_dir + ".txt"
+        with open(text_file, "r") as f:
+            lines = f.readlines()
+            # print(text_file)
+            examples_npy_dir = text_file.split("txt")[0][:-1]
+            # print(examples_npy_dir)
+            example_dict["ID"].append(examples_npy_dir)
+            string_to_add = str(lines[0][6: -1])
+            # print(string_to_add)
+            example_dict["TEXT"].append(string_to_add)
+            # print(example_dict)
+
+    if os.path.isfile(test_dir_file):
+        os.remove(test_dir_file)
+    with open(test_dir_file, "w") as f:
+        for i in range(len(example_dict["ID"])):
+            f.writelines(example_dict["ID"][i])
+            f.writelines(example_dict["TEXT"][i])
+            f.writelines("\n")
+
+
+def check_files_correct_len(train, val, test):
     train_len = len(train)
     val_len = len(val)
     test_len = len(test)
@@ -276,9 +278,10 @@ if __name__ == "__main__":
     # print([x for x in fileList if (args["VIDEO_PREPROC_SET"] in x)])
     print("Size of train set" + str(len(train)))
     print("Size of val set:" + str(len(val)))
+    print("Size of test set:" + str(len(test)))
     # preprocess_all_samples(fileList,device)
     # generate_train_file(train)
     # generate_val_file(val)
     generate_test_file(test)
-    check_files_correct_len(train, val,test)
+    check_files_correct_len(train, val, test)
     print("Completed")
