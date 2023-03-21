@@ -7,6 +7,7 @@ https://github.com/lordmartian/deep_avsr
 import math
 import numpy as np
 
+import Levenshtein
 import torch
 from tqdm import tqdm
 
@@ -90,126 +91,208 @@ import torch.optim as optim
 import torch.distributed as dist
 import torch.multiprocessing as mp
 
+import torch
 
-def evaluate(model, evalLoader, loss_function, device, evalParams):
-    """
-    Function to evaluate the model over validation/test set. It computes the loss, CER and WER over the evaluation set.
-    The CTC decode scheme can be set to either 'greedy' or 'search'.
-    """
+class GreedyDecoder:
+    def __call__(self, outputs):
+        _, max_indices = torch.max(outputs, dim=2)
+        return max_indices
 
-    evalLoss = 0
-    evalCER = 0
-    evalWER = 0
+def decode_predictions(outputs, targets, idx2char):
+    greedy_decoder = GreedyDecoder()
 
-    index_to_char = args["INDEX_TO_CHAR"]
+    # Decode the output probabilities
+    decoded_preds = greedy_decoder(outputs)
+    decoded_preds = [indices_to_text(seq, idx2char) for seq in decoded_preds]
 
-    # # Use DataParallel to parallelize the model across multiple GPUs
-    # if torch.cuda.device_count() > 1:
-    #     model = torch.nn.DataParallel(model)
+    # Decode the targets
+    decoded_targets = [indices_to_text(seq, idx2char) for seq in targets]
 
-    for batch, (inputBatch, targetBatch, inputLenBatch, targetLenBatch, index) in enumerate(
-            tqdm(evalLoader, leave=False, desc="Eval",
-                 ncols=75)):
+    return decoded_preds, decoded_targets
 
-        inputBatch, targetBatch = (inputBatch.float()).to(device), (targetBatch.float()).to(device)
-        inputLenBatch, targetLenBatch = (inputLenBatch.int()).to(device), (targetLenBatch.int()).to(device)
+def indices_to_text(indices, idx2char):
+    text = ''.join([idx2char[idx] for idx in indices])
+    return text
 
-        model.eval()
-        with torch.no_grad():
-            outputBatch = model(inputBatch)
-            with torch.backends.cudnn.flags(enabled=True):
-                arry = []
-                for btch in inputLenBatch:
-                    if len(outputBatch) < btch:
-                        arry.append(len(outputBatch))
-                    else:
-                        arry.append(btch)
-                new_inputLenBatch = torch.tensor(arry, dtype=torch.int32, device=device)
-                loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
 
-        evalLoss = evalLoss + loss.item()
-        if evalParams["decodeScheme"] == "greedy":
-            predictionBatch, predictionLenBatch = ctc_greedy_decode(outputBatch, inputLenBatch, evalParams["eosIx"])
-        elif evalParams["decodeScheme"] == "search":
-            predictionBatch, predictionLenBatch = ctc_search_decode(outputBatch, inputLenBatch,
-                                                                    evalParams["beamSearchParams"],
-                                                                    evalParams["spaceIx"], evalParams["eosIx"],
-                                                                    evalParams["lm"])
-        else:
-            print("Invalid Decode Scheme")
-            exit()
+def calculate_metrics(decoded_preds, decoded_targets):
+    total_cer, total_wer = 0.0, 0.0
+    total_chars, total_words = 0, 0
 
-        # Convert prediction and target tensors to strings
-        predictionStrings = []
-        targetStrings = []
-        predictionString = ""
-        for i in range(len(predictionBatch)):
-            item_idx = predictionBatch[i].item()
-            charrr = index_to_char[item_idx]
-            # print(index_to_char[item_idx])
-            predictionString += str(charrr)
-        # print("------------------PREDICTION------------------")
-        # print(predictionString)
-        predictionStrings.append(predictionString)
-        #
-        # for i in range(targetBatch.shape[0]):
-        #     targetString = ""
-        #     for j in range(targetLenBatch[i]):
-        #         targetString += index_to_char[targetBatch[i][j].item()]
-        #     targetStrings.append(targetString)
+    for pred, target in zip(decoded_preds, decoded_targets):
+        # Calculate CER
+        cer = Levenshtein.distance(pred, target)
+        total_cer += cer
+        total_chars += len(target)
 
-        targetString = ""
-        for i in range(len(targetBatch)):
-            item_idx = targetBatch[i].item()
-            charrr = index_to_char[item_idx]
-            # print(index_to_char[item_idx])
-            targetString += str(charrr)
-        # print("------------------TARGET------------------")
-        # print(targetString)
-        predictionStrings.append(predictionString)
+        # Calculate WER
+        pred_words = pred.split()
+        target_words = target.split()
+        wer = Levenshtein.distance(pred_words, target_words)
+        total_wer += wer
+        total_words += len(target_words)
 
-        targetBatch = targetBatch.cpu()
-        targetLenBatch = targetLenBatch.cpu()
+    avg_cer = total_cer / total_chars
+    avg_wer = total_wer / total_words
 
-        preds = list(torch.split(predictionBatch, predictionLenBatch.tolist()))
-        trgts = list(torch.split(targetBatch, targetLenBatch.tolist()))
-        # print(preds)
-        # print(len(preds))
-        predictionStrings = []
-        targetStrings = []
-        for prediction in preds:
-            curr_string = ""
-            for char in prediction:
-                # print(char.item())
-                item_idx = char.item()
-                charrr = index_to_char[item_idx]
-                # print(charrr)
-                curr_string += charrr
-            predictionStrings.append(curr_string)
+    return avg_cer, avg_wer
 
-        for target in trgts:
-            curr_string = ""
-            for char in target:
-                # print(char.item())
-                item_idx = char.item()
-                charrr = index_to_char[item_idx]
-                # print(charrr)
-                curr_string += charrr
-            targetStrings.append(curr_string)
-        if args["DISPLAY_PREDICTIONS"]:
-            for i in range(len(predictionStrings)):
-                print("------------------PREDICTION------------------")
-                print("------------------PREDICTION------------------")
-                print(predictionStrings[i])
-                print("------------------TARGET------------------")
-                print("------------------TARGET------------------")
-                print(targetStrings[i])
 
-    evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
-    evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch,
-                                    evalParams["spaceIx"])
+def evaluate(model, dataloader, criterion, device):
+    model.eval()
+    running_loss = 0.0
+    total_cer, total_wer = 0.0, 0.0
+    total_samples = 0
 
-    evalLoss = evalLoss / len(evalLoader)
-    evalCER = evalCER / len(evalLoader)
-    evalWER = evalWER / len(evalLoader)
-    return evalLoss, evalCER, evalWER
+    with torch.no_grad():
+        for batch in dataloader:
+            inputs, targets, input_lengths, target_lengths = batch
+            inputs, targets = inputs.to(device), targets.to(device)
+
+            # Forward pass
+            outputs = model(inputs)
+            outputs = outputs.permute(1, 0, 2)  # (B, T, C) -> (T, B, C)
+
+            # Calculate loss
+            loss = criterion(outputs, targets, input_lengths, target_lengths)
+            running_loss += loss.item()
+
+            # Calculate CER and WER
+            batch_size = inputs.size(0)
+
+            decoded_preds, decoded_targets = decode_predictions(outputs, targets)
+            cer, wer = calculate_metrics(decoded_preds, decoded_targets)
+            total_cer += cer * batch_size
+            total_wer += wer * batch_size
+            total_samples += batch_size
+
+    # Calculate average loss, CER, and WER
+    avg_loss = running_loss / len(dataloader)
+    avg_cer = total_cer / total_samples
+    avg_wer = total_wer / total_samples
+
+    return avg_loss, avg_cer, avg_wer
+
+
+# def evaluate(model, evalLoader, loss_function, device, evalParams):
+#     """
+#     Function to evaluate the model over validation/test set. It computes the loss, CER and WER over the evaluation set.
+#     The CTC decode scheme can be set to either 'greedy' or 'search'.
+#     """
+#
+#     evalLoss = 0
+#     evalCER = 0
+#     evalWER = 0
+#
+#     index_to_char = args["INDEX_TO_CHAR"]
+#
+#     # # Use DataParallel to parallelize the model across multiple GPUs
+#     # if torch.cuda.device_count() > 1:
+#     #     model = torch.nn.DataParallel(model)
+#
+#     for batch, (inputBatch, targetBatch, inputLenBatch, targetLenBatch, index) in enumerate(
+#             tqdm(evalLoader, leave=False, desc="Eval",
+#                  ncols=75)):
+#
+#         inputBatch, targetBatch = (inputBatch.float()).to(device), (targetBatch.float()).to(device)
+#         inputLenBatch, targetLenBatch = (inputLenBatch.int()).to(device), (targetLenBatch.int()).to(device)
+#
+#         model.eval()
+#         with torch.no_grad():
+#             outputBatch = model(inputBatch)
+#             with torch.backends.cudnn.flags(enabled=True):
+#                 arry = []
+#                 for btch in inputLenBatch:
+#                     if len(outputBatch) < btch:
+#                         arry.append(len(outputBatch))
+#                     else:
+#                         arry.append(btch)
+#                 new_inputLenBatch = torch.tensor(arry, dtype=torch.int32, device=device)
+#                 loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
+#
+#         evalLoss = evalLoss + loss.item()
+#         if evalParams["decodeScheme"] == "greedy":
+#             predictionBatch, predictionLenBatch = ctc_greedy_decode(outputBatch, inputLenBatch, evalParams["eosIx"])
+#         elif evalParams["decodeScheme"] == "search":
+#             predictionBatch, predictionLenBatch = ctc_search_decode(outputBatch, inputLenBatch,
+#                                                                     evalParams["beamSearchParams"],
+#                                                                     evalParams["spaceIx"], evalParams["eosIx"],
+#                                                                     evalParams["lm"])
+#         else:
+#             print("Invalid Decode Scheme")
+#             exit()
+#
+#         # Convert prediction and target tensors to strings
+#         predictionStrings = []
+#         targetStrings = []
+#         predictionString = ""
+#         for i in range(len(predictionBatch)):
+#             item_idx = predictionBatch[i].item()
+#             charrr = index_to_char[item_idx]
+#             # print(index_to_char[item_idx])
+#             predictionString += str(charrr)
+#         # print("------------------PREDICTION------------------")
+#         # print(predictionString)
+#         predictionStrings.append(predictionString)
+#         #
+#         # for i in range(targetBatch.shape[0]):
+#         #     targetString = ""
+#         #     for j in range(targetLenBatch[i]):
+#         #         targetString += index_to_char[targetBatch[i][j].item()]
+#         #     targetStrings.append(targetString)
+#
+#         targetString = ""
+#         for i in range(len(targetBatch)):
+#             item_idx = targetBatch[i].item()
+#             charrr = index_to_char[item_idx]
+#             # print(index_to_char[item_idx])
+#             targetString += str(charrr)
+#         # print("------------------TARGET------------------")
+#         # print(targetString)
+#         predictionStrings.append(predictionString)
+#
+#         targetBatch = targetBatch.cpu()
+#         targetLenBatch = targetLenBatch.cpu()
+#
+#         preds = list(torch.split(predictionBatch, predictionLenBatch.tolist()))
+#         trgts = list(torch.split(targetBatch, targetLenBatch.tolist()))
+#         # print(preds)
+#         # print(len(preds))
+#         predictionStrings = []
+#         targetStrings = []
+#         for prediction in preds:
+#             curr_string = ""
+#             for char in prediction:
+#                 # print(char.item())
+#                 item_idx = char.item()
+#                 charrr = index_to_char[item_idx]
+#                 # print(charrr)
+#                 curr_string += charrr
+#             predictionStrings.append(curr_string)
+#
+#         for target in trgts:
+#             curr_string = ""
+#             for char in target:
+#                 # print(char.item())
+#                 item_idx = char.item()
+#                 charrr = index_to_char[item_idx]
+#                 # print(charrr)
+#                 curr_string += charrr
+#             targetStrings.append(curr_string)
+#         if args["DISPLAY_PREDICTIONS"]:
+#             for i in range(len(predictionStrings)):
+#                 print("------------------PREDICTION------------------")
+#                 print("------------------PREDICTION------------------")
+#                 print(predictionStrings[i])
+#                 print("------------------TARGET------------------")
+#                 print("------------------TARGET------------------")
+#                 print(targetStrings[i])
+#
+#     evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
+#     evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch,
+#                                     evalParams["spaceIx"])
+#
+#     evalLoss = evalLoss / len(evalLoader)
+#     evalCER = evalCER / len(evalLoader)
+#     evalWER = evalWER / len(evalLoader)
+#     return evalLoss, evalCER, evalWER
