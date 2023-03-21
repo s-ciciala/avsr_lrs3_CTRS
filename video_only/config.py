@@ -13,7 +13,7 @@ args["CODE_DIRECTORY"] = "../avsr_lrs3_CTRS/"   #absolute path to the code direc
 args["DATA_DIRECTORY"] = "../../lrs3"  #absolute path to the data directory
 args["TRAIN_DIRECTORY"] = "../../lrs3/" + "trainval/"
 args["TEST_DIRECTORY"] = "../../lrs3/" + "test/"
-args["VAL_DIRECTORY"] = "../../lrs3/" + "test/"
+args["VAL_DIRECTORY"] = "../../lrs3/" + "trainval/"
 args["TRAINVAL_DIRECTORY"] = "../../lrs3/" + "pretrain/"
 args["DEMO_DIRECTORY"] = "../../avsr_lrs3_CTRS/visual_only/demo/"   #absolute path to the demo directory
 args["PRETRAINED_MODEL_FILE"] = "/final/models/pretrained_model.pt"     #relative path to the pretrained model file
@@ -46,7 +46,7 @@ args["STFT_OVERLAP"] = 0.030    #consecutive window overlap in secs while comput
 
 #video preprocessing
 # args["VIDEO_PREPROC_SET"] = "trainval"
-args["VIDEO_PREPROC_SET"] = "pretrain"
+args["VIDEO_PREPROC_SET"] = "trainval"
 args["VIDEO_FPS"] = 25  #frame rate of the video clips
 args["ROI_SIZE"] = 112  #height and width of input greyscale lip region patch
 args["NORMALIZATION_MEAN"] = 0.4161 #mean value for normalization of greyscale lip region patch
