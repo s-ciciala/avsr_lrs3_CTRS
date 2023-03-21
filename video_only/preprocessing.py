@@ -160,7 +160,7 @@ def generate_test_file(test):
         "ID": [],
         "TEXT": []
     }
-    print("Generating train file...")
+    print("Generating test file...")
     for train_dir in tqdm(train):
         text_file = train_dir + ".txt"
         with open(text_file, "r") as f:
@@ -189,7 +189,7 @@ def generate_train_file(train):
         "ID": [],
         "TEXT": []
     }
-    print("Generating test file...")
+    print("Generating train file...")
     for train_dir in tqdm(train):
         text_file = train_dir + ".txt"
         with open(text_file, "r") as f:
@@ -249,6 +249,7 @@ def check_files_correct_len(train, val,test):
     test_len = len(test)
     val_dir_file = args["DATA_DIRECTORY"] + "/val.txt"
     train_dir_file = args["DATA_DIRECTORY"] + "/train.txt"
+    test_dir_file = args["DATA_DIRECTORY"] + "/test.txt"
 
     with open(train_dir_file) as f:
         text = f.readlines()
@@ -258,7 +259,7 @@ def check_files_correct_len(train, val,test):
         text = f.readlines()
         val_file_len = len(text)
 
-    with open(val_dir_file) as f:
+    with open(test_dir_file) as f:
         text = f.readlines()
         test_file_len = len(text)
 
