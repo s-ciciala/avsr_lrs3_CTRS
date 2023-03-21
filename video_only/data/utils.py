@@ -25,8 +25,11 @@ def prepare_main_input(visualFeaturesFile, targetFile, reqInpLen, charToIx, vide
         #reading the target from the target file and converting each character to its corresponding index
         with open(targetFile, "r") as f:
             trgt = f.readline().strip()[7:]
-        ##UNDO THIS TO SEE TEXT 
-#         print(trgt)
+        ##Need to remove the {}
+        if "{" in trgt:
+            trgt = trgt.split("{")[0]
+        #UNDO THIS TO SEE TEXT
+        print(trgt)
         trgt = [charToIx[char] for char in trgt]
         trgt.append(charToIx["<EOS>"])
         trgt = np.array(trgt)
