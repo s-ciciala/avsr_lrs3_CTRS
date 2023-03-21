@@ -155,6 +155,8 @@ def evaluate(model, dataloader, criterion, device):
             outputs = outputs.permute(1, 0, 2)  # (B, T, C) -> (T, B, C)
 
             # Calculate loss
+            print("in","tar")
+            print(input_lengths,target_lengths)
             loss = criterion(outputs, targets, input_lengths, target_lengths)
             running_loss += loss.item()
 
@@ -186,10 +188,6 @@ def evaluate(model, dataloader, criterion, device):
 #     evalWER = 0
 #
 #     index_to_char = args["INDEX_TO_CHAR"]
-#
-#     # # Use DataParallel to parallelize the model across multiple GPUs
-#     # if torch.cuda.device_count() > 1:
-#     #     model = torch.nn.DataParallel(model)
 #
 #     for batch, (inputBatch, targetBatch, inputLenBatch, targetLenBatch, index) in enumerate(
 #             tqdm(evalLoader, leave=False, desc="Eval",
