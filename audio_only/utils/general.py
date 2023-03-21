@@ -146,7 +146,7 @@ def evaluate(model, dataloader, criterion, device):
 
     with torch.no_grad():
         for batch in dataloader:
-            inputs, targets, input_lengths, target_lengths = batch
+            inputs, targets, input_lengths, target_lengths, index = batch
             inputs, targets = inputs.to(device), targets.to(device)
 
             # Forward pass
