@@ -17,7 +17,7 @@ def lrs3_parse(example):
     splt = example.split("{")
     print("Had to split")
     print("Was " + str(example))
-    print("Is " + str(splt))
+    print("Is " + str(splt[0]))
     return splt[0]
 
 

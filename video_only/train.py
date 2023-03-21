@@ -179,6 +179,6 @@ if __name__ == "__main__":
     numTotalParams, numTrainableParams = num_params(model)
     print("\nNumber of total parameters in the model = %d" % (numTotalParams))
     print("Number of trainable parameters in the model = %d\n" % (numTrainableParams))
-
+    torch.cuda.empty_cache()
     train_model(model, trainLoader, valLoader, optimizer, loss_function, device)
     print("Completed")
