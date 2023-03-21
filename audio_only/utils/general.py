@@ -159,7 +159,7 @@ def decode_predictions(outputs, targets, idx2char):
         # print("*"*80)
         # print(seq)
         text = ""
-        for char2 in seq:
+        for char2 in seq.data:
             text += idx2char[char2.item()]
         decoded_targets_text.append(text)
 
