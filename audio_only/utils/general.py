@@ -103,8 +103,8 @@ def evaluate(model, dataloader, criterion, device, eval_params):
         for batch_idx, (inputs, targets, input_lengths, target_lengths,index) in enumerate(dataloader):
             inputs = inputs.float().to(device)
             targets = targets.float().to(device)
-            input_lengths = input_lengths.float().to(device)
-            target_lengths = target_lengths.float().to(device)
+            input_lengths = input_lengths.int().to(device)
+            target_lengths = target_lengths.int().to(device)
 
             # outputs = model(inputs, input_lengths)
             outputs = model(inputs)
