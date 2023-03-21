@@ -146,11 +146,10 @@ def decode_predictions(outputs, targets, idx2char):
     for seq in decoded_preds:
         print("*"*80)
         print(seq)
-        print(seq.data[0])
         text = ""
-        # for char1 in seq:
-        #     text += idx2char[char.item()]
-        # decoded_preds_text.append(text)
+        for char1 in seq.data:
+            text += idx2char[char1.item()]
+        decoded_preds_text.append(text)
     # decoded_preds = [indices_to_text(seq, idx2char) for seq in decoded_preds]
 
     # Decode the targets
