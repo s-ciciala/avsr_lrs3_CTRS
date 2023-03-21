@@ -151,7 +151,7 @@ def evaluate(model, dataloader, criterion, device):
 
             # Forward pass
             outputs = model(inputs)
-            outputs = outputs.permute(1, 0, 2)  # (B, T, C) -> (T, B, C)
+            # outputs = outputs.permute(1, 0, 2)  # (B, T, C) -> (T, B, C)
 
             # Calculate loss
             print("in","tar")
