@@ -145,16 +145,20 @@ def split_trainval(fileList):
     trainval_only = [x for x in fileList if (args["VIDEO_TRAINVAL_NAME"] in x)]
     print("We have a total of :"+str(len(trainval_only)))
     print("Now we want a split 80/20")
-    x_80_percent, x_20_percent = train_test_split(trainval_only, test_size=.20, shuffle=True)
+    train, val = train_test_split(trainval_only, test_size=.20, shuffle=True)
+    return train,val
 
 if __name__ == "__main__":
     device = set_device()
     fileList = get_filelist()
     print("Size of the set before cull: " + str(len(fileList)))
+    train,val = split_trainval(fileList)
     fileList = [x for x in fileList if (args["VIDEO_PREPROC_SET"] in x)]
     # print([x for x in fileList if (args["VIDEO_PREPROC_SET"] in x)])
     print("Doing only " + args["VIDEO_PREPROC_SET"])
     print("Size now after the cull:" + str(len(fileList)))
+    print("Size of train set" + str(len(train)))
+    print("Size of val set:" + str(len(val)))
     # preprocess_all_samples(fileList,device)
     # generate_train_file()
     # generate_val_file()
