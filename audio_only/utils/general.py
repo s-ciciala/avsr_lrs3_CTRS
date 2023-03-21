@@ -101,10 +101,10 @@ def evaluate(model, dataloader, criterion, device, eval_params):
 
     with torch.no_grad():
         for batch_idx, (inputs, targets, input_lengths, target_lengths,index) in enumerate(dataloader):
-            inputs = inputs.to(device)
-            targets = targets.to(device)
-            input_lengths = input_lengths.to(device)
-            target_lengths = target_lengths.to(device)
+            inputs = inputs.float().to(device)
+            targets = targets.float().to(device)
+            input_lengths = input_lengths.float().to(device)
+            target_lengths = target_lengths.float().to(device)
 
             # outputs = model(inputs, input_lengths)
             outputs = model(inputs)
