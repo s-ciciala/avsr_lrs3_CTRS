@@ -122,8 +122,6 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         #         curr_string += charrr
         #     targetStrings.append(curr_string)
     if args["DISPLAY_PREDICTIONS"]:
-        print(len(predictionStrings),len(targetStrings))
-        exit()
         for i in range(len(predictionStrings)):
             print("------------------PREDICTION------------------")
             print("------------------PREDICTION------------------")
