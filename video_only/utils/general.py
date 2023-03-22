@@ -131,9 +131,9 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             print(targetStrings[i])
         with open('test_results.txt', 'w') as f:
             for i in range(len(predictionStrings)):
-                f.write("------------------TARGET------------------")
+                f.write("------------------TARGET------------------\n")
                 f.write("%s\n" % str(targetStrings[i]))
-                f.write("------------------PREDICTION------------------")
+                f.write("------------------PREDICTION------------------\n")
                 f.write("%s\n" % str(predictionStrings[i]))
         evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
         evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch, evalParams["spaceIx"])
