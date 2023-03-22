@@ -135,11 +135,11 @@ def train_model(model, trainLoader, valLoader, optimizer, loss_function, device)
 
     for step in range(args["NUM_STEPS"]):
         # train the model for one step
-        # trainingLoss, trainingCER, trainingWER = train(model, trainLoader, optimizer, loss_function, device,
-        #                                                trainParams)
-        # trainingLossCurve.append(trainingLoss)
-        # trainingCERCurve.append(trainingCER)
-        # trainingWERCurve.append(trainingWER)
+        trainingLoss, trainingCER, trainingWER = train(model, trainLoader, optimizer, loss_function, device,
+                                                       trainParams)
+        trainingLossCurve.append(trainingLoss)
+        trainingCERCurve.append(trainingCER)
+        trainingWERCurve.append(trainingWER)
 
         # evaluate the model on validation set
         validationLoss, validationCER, validationWER = evaluate(model, valLoader, loss_function, device, valParams)
