@@ -20,8 +20,9 @@ args["PRETRAINED_MODEL_FILE"] = "/final/models/pretrained_model.pt"     #relativ
 args["TRAINED_MODEL_FILE"] = "/disk/scratch1/s1834237/avsr_lrs3_CTRS/avsr_lrs3_CTRS/video_only_checkpoints/models/train-step_0880-wer_1.051.pt"   #relative path to the trained model file
 args["TRAINED_FRONTEND_FILE"] = "../../deep_avsr_models/visual_frontend/visual_frontend.pt" #absolute path to the trained language model file
 args["TRAINED_LM_FILE"] = "../../deep_avsr_models/language_model/language_model.pt" #absolute path to the trained visual frontend file
-args["CONTINUE_TRAINING"] = "/disk/scratch1/s1834237/avsr_lrs3_CTRS/avsr_lrs3_CTRS/video_only_checkpoints/models/train-step_0999-wer_1.051.pt"
-args["EPOCHS_SO_FAR"] = 1000
+# args["CONTINUE_TRAINING"] = "/disk/scratch1/s1834237/avsr_lrs3_CTRS/avsr_lrs3_CTRS/video_only_checkpoints/models/train-step_0999-wer_1.051.pt"
+args["CONTINUE_TRAINING"] = None
+args["EPOCHS_SO_FAR"] = 0
 
 #data
 args["PRETRAIN_VAL_SPLIT"] = 0.01   #validation set size fraction during pretraining
@@ -64,7 +65,7 @@ args["GPUID"] = [0,1,2,3]
 args["SEED"] = 19220297 #seed for random number generators
 args["BATCH_SIZE"] = 32 #minibatch size
 args["STEP_SIZE"] = 16384   #number of samples in one step (virtual epoch)
-args["NUM_STEPS"] = 2000 #maximum number of steps to train for (early stopping is used)
+args["NUM_STEPS"] = 5000 #maximum number of steps to train for (early stopping is used)
 args["SAVE_FREQUENCY"] = 10 #saving the model weights and loss/metric plots after every these many steps
 args["CHECKPOINTS"] = False
 #optimizer and scheduler
