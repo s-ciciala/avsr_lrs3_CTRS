@@ -145,53 +145,53 @@ import torch.multiprocessing as mp
 #     # return avg_loss, avg_cer, avg_wer
 #
 
-def indices_to_text(indices, idx2char):
-    text = ''.join([idx2char[idx] for idx in indices])
-    return text
-
-
-class GreedyDecoder:
-    def __call__(self, outputs):
-        _, max_indices = torch.max(outputs, dim=2)
-        return max_indices
-
-
-def decode_predictions(outputs, targets, idx2char):
-    greedy_decoder = GreedyDecoder()
-
-    # Decode the output probabilities
-    decoded_preds = greedy_decoder(outputs)
-    decoded_preds_text = []
-    for seq in decoded_preds:
-        # print("*"*80)
-        # print(seq)
-        text = ""
-        for char1 in seq.data:
-            text += idx2char[char1.item()]
-        decoded_preds_text.append(text)
-    # decoded_preds = [indices_to_text(seq, idx2char) for seq in decoded_preds]
-
-    # Decode the targets
-    # decoded_targets = [indices_to_text(seq, idx2char) for seq in targets]
-    decoded_targets_text = []
-    for seq in targets:
-        # print("*"*80)
-        # print(seq)
-        try:
-            ##Targets can be singletons
-            # print(seq.item())
-            char_index = int(seq.item())
-            text = idx2char[char_index]
-            decoded_targets_text.append(text)
-        except:
-            # print("Not a singleton hence will try a sequence")
-            text = ""
-            for char2 in seq.data:
-                text += idx2char[char2.item()]
-            decoded_targets_text.append(text)
-
-    return decoded_preds_text, decoded_targets_text
-
+# def indices_to_text(indices, idx2char):
+#     text = ''.join([idx2char[idx] for idx in indices])
+#     return text
+#
+#
+# class GreedyDecoder:
+#     def __call__(self, outputs):
+#         _, max_indices = torch.max(outputs, dim=2)
+#         return max_indices
+#
+#
+# def decode_predictions(outputs, targets, idx2char):
+#     greedy_decoder = GreedyDecoder()
+#
+#     # Decode the output probabilities
+#     decoded_preds = greedy_decoder(outputs)
+#     decoded_preds_text = []
+#     for seq in decoded_preds:
+#         # print("*"*80)
+#         # print(seq)
+#         text = ""
+#         for char1 in seq.data:
+#             text += idx2char[char1.item()]
+#         decoded_preds_text.append(text)
+#     # decoded_preds = [indices_to_text(seq, idx2char) for seq in decoded_preds]
+#
+#     # Decode the targets
+#     # decoded_targets = [indices_to_text(seq, idx2char) for seq in targets]
+#     decoded_targets_text = []
+#     for seq in targets:
+#         # print("*"*80)
+#         # print(seq)
+#         try:
+#             ##Targets can be singletons
+#             # print(seq.item())
+#             char_index = int(seq.item())
+#             text = idx2char[char_index]
+#             decoded_targets_text.append(text)
+#         except:
+#             # print("Not a singleton hence will try a sequence")
+#             text = ""
+#             for char2 in seq.data:
+#                 text += idx2char[char2.item()]
+#             decoded_targets_text.append(text)
+#
+#     return decoded_preds_text, decoded_targets_text
+#
 
 #
 #
