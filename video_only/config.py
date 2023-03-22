@@ -17,7 +17,7 @@ args["VAL_DIRECTORY"] = "../../lrs3/" + "trainval/"
 args["TRAINVAL_DIRECTORY"] = "../../lrs3/" + "pretrain/"
 args["DEMO_DIRECTORY"] = "../../avsr_lrs3_CTRS/visual_only/demo/"   #absolute path to the demo directory
 args["PRETRAINED_MODEL_FILE"] = "/final/models/pretrained_model.pt"     #relative path to the pretrained model file
-args["TRAINED_MODEL_FILE"] = "avsr_lrs3_CTRS/video_only_checkpoints/models/train-step_0880-wer_1.051.pt"   #relative path to the trained model file
+args["TRAINED_MODEL_FILE"] = "/disk/scratch1/s1834237/avsr_lrs3_CTRS/avsr_lrs3_CTRS/video_only_checkpoints/models/train-step_0880-wer_1.051.pt"   #relative path to the trained model file
 args["TRAINED_FRONTEND_FILE"] = "../../deep_avsr_models/visual_frontend/visual_frontend.pt" #absolute path to the trained language model file
 args["TRAINED_LM_FILE"] = "../../deep_avsr_models/language_model/language_model.pt" #absolute path to the trained visual frontend file
 
