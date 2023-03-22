@@ -155,13 +155,18 @@ def train_model(model, trainLoader, valLoader, optimizer, loss_function, device)
 
         # make a scheduler step
         scheduler.step(validationWER)
-
+        save_dict = {
+            'epoch': step,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'loss': trainingLoss,
+        }
         # saving the model weights and loss/metric curves in the checkpoints directory after every few steps
         if ((step % args["SAVE_FREQUENCY"] == 0) or (step == args["NUM_STEPS"] - 1)) and (step != 0):
             savePath = args["CODE_DIRECTORY"] + "/audio_only_checkpoints/models/train-step_{:04d}-wer_{:.3f}.pt".format(
                 step,
                 validationWER)
-            torch.save(model.state_dict(), savePath)
+            torch.save(save_dict, savePath)
 
             plt.figure()
             plt.title("Loss Curves")
