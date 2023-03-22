@@ -4,7 +4,7 @@ from tqdm import tqdm
 from .metrics import compute_cer, compute_wer
 from .decoders import ctc_greedy_decode, ctc_search_decode
 from sys import exit
-
+from config import args
 
 def num_params(model):
     """
@@ -86,6 +86,64 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             print("Invalid Decode Scheme")
             exit()
 
+        # Convert prediction and target tensors to strings
+        index_to_char = args["INDEX_TO_CHAR"]
+        predictionStrings = []
+        targetStrings = []
+        predictionString = ""
+        for i in range(len(predictionBatch)):
+            item_idx = predictionBatch[i].item()
+            charrr = index_to_char[item_idx]
+            # print(index_to_char[item_idx])
+            predictionString += str(charrr)
+        # print("------------------PREDICTION------------------")
+        # print(predictionString)
+        predictionStrings.append(predictionString)
+        #
+        # for i in range(targetBatch.shape[0]):
+        #     targetString = ""
+        #     for j in range(targetLenBatch[i]):
+        #         targetString += index_to_char[targetBatch[i][j].item()]
+        #     targetStrings.append(targetString)
+        targetString = ""
+        for i in range(len(targetBatch)):
+            item_idx = targetBatch[i].item()
+            charrr = index_to_char[item_idx]
+            # print(index_to_char[item_idx])
+            targetString += str(charrr)
+        # print("------------------TARGET------------------")
+        # print(targetString)
+        predictionStrings.append(predictionString)
+        targetBatch = targetBatch.cpu()
+        targetLenBatch = targetLenBatch.cpu()
+        preds = list(torch.split(predictionBatch, predictionLenBatch.tolist()))
+        trgts = list(torch.split(targetBatch, targetLenBatch.tolist()))
+        predictionStrings = []
+        targetStrings = []
+        for prediction in preds:
+            curr_string = ""
+            for char in prediction:
+                item_idx = char.item()
+                charrr = index_to_char[item_idx]
+                curr_string += charrr
+            predictionStrings.append(curr_string)
+
+        for target in trgts:
+            curr_string = ""
+            for char in target:
+                # print(char.item())
+                item_idx = char.item()
+                charrr = index_to_char[item_idx]
+                # print(charrr)
+                curr_string += charrr
+            targetStrings.append(curr_string)
+        if args["DISPLAY_PREDICTIONS"]:
+            for i in range(len(predictionStrings)):
+                print("------------------PREDICTION------------------")
+                print("------------------PREDICTION------------------")
+                print(predictionStrings[i])
+                print("------------------TARGET------------------")
+                print("------------------TARGET------------------")
         evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
         evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch, evalParams["spaceIx"])
 
