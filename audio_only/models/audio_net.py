@@ -33,12 +33,14 @@ class AudioNet(nn.Module):
         batch = batch.transpose(1, 2).transpose(0, 1)
 
         # Listener (encoder) - Bidirectional LSTM
+        self.listener.flatten_parameters()  # Add this line
         batch, _ = self.listener(batch)
 
         # Attention Mechanism
         attn_output, _ = self.attention(batch, batch, batch)
 
         # Speller (decoder) - LSTM
+        self.speller.flatten_parameters()  # Add this line
         speller_output, _ = self.speller(attn_output)
 
         speller_output = speller_output.transpose(0, 1).transpose(1, 2)
@@ -48,6 +50,27 @@ class AudioNet(nn.Module):
         outputBatch = F.log_softmax(batch, dim=2)
 
         return outputBatch
+    # def forward(self, inputBatch):
+    #     inputBatch = inputBatch.transpose(0, 1).transpose(1, 2)
+    #     batch = self.audioConv(inputBatch)
+    #     batch = batch.transpose(1, 2).transpose(0, 1)
+    #
+    #     # Listener (encoder) - Bidirectional LSTM
+    #     batch, _ = self.listener(batch)
+    #
+    #     # Attention Mechanism
+    #     attn_output, _ = self.attention(batch, batch, batch)
+    #
+    #     # Speller (decoder) - LSTM
+    #     speller_output, _ = self.speller(attn_output)
+    #
+    #     speller_output = speller_output.transpose(0, 1).transpose(1, 2)
+    #     batch = self.pool(speller_output)
+    #     batch = self.outputConv(batch)
+    #     batch = batch.transpose(1, 2).transpose(0, 1)
+    #     outputBatch = F.log_softmax(batch, dim=2)
+    #
+    #     return outputBatch
 # ###Previous transformer architecture
 # class PositionalEncoding(nn.Module):
 #
