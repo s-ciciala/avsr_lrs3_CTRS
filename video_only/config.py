@@ -20,8 +20,8 @@ args["PRETRAINED_MODEL_FILE"] = "/final/models/pretrained_model.pt"     #relativ
 args["TRAINED_MODEL_FILE"] = "/disk/scratch1/s1834237/avsr_lrs3_CTRS/avsr_lrs3_CTRS/video_only_checkpoints/models/train-step_0880-wer_1.051.pt"   #relative path to the trained model file
 args["TRAINED_FRONTEND_FILE"] = "../../deep_avsr_models/visual_frontend/visual_frontend.pt" #absolute path to the trained language model file
 args["TRAINED_LM_FILE"] = "../../deep_avsr_models/language_model/language_model.pt" #absolute path to the trained visual frontend file
-# args["CONTINUE_TRAINING"] = "/disk/scratch1/s1834237/avsr_lrs3_CTRS/avsr_lrs3_CTRS/video_only_checkpoints/models/train-step_0999-wer_1.051.pt"
-args["CONTINUE_TRAINING"] = None
+args["CONTINUE_TRAINING"] = "/disk/scratch1/s1834237/avsr_lrs3_CTRS/avsr_lrs3_CTRS/video_only_checkpoints/models/train-step_0999-wer_1.051.pt"
+# args["CONTINUE_TRAINING"] = None
 args["EPOCHS_SO_FAR"] = 0
 
 #data
