@@ -127,7 +127,7 @@ def train_model(model, trainLoader, valLoader, optimizer, loss_function, device)
         validationWERCurve.append(validationWER)
 
         # printing the stats after each step
-        step_print = args["EPOCH_SO_FAR"] + step
+        step_print = args["EPOCHS_SO_FAR"]  + step
         print(
             "Step: %03d || Tr.Loss: %.6f  Val.Loss: %.6f || Tr.CER: %.3f  Val.CER: %.3f || Tr.WER: %.3f  Val.WER: %.3f"
             % (step_print, trainingLoss, validationLoss, trainingCER, validationCER, trainingWER, validationWER))
