@@ -63,7 +63,8 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
     evalLoss = 0
     evalCER = 0
     evalWER = 0
-
+    predictionStrings = []
+    targetStrings = []
     for batch, (inputBatch, targetBatch, inputLenBatch, targetLenBatch) in enumerate(tqdm(evalLoader, leave=False, desc="Eval",
                                                                                           ncols=75)):
 
@@ -118,8 +119,6 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         targetLenBatch = targetLenBatch.cpu()
         preds = list(torch.split(predictionBatch, predictionLenBatch.tolist()))
         trgts = list(torch.split(targetBatch, targetLenBatch.tolist()))
-        predictionStrings = []
-        targetStrings = []
         for prediction in preds:
             curr_string = ""
             for char in prediction:
@@ -137,20 +136,20 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
                 # print(charrr)
                 curr_string += charrr
             targetStrings.append(curr_string)
-        if args["DISPLAY_PREDICTIONS"]:
+    if args["DISPLAY_PREDICTIONS"]:
+        for i in range(len(predictionStrings)):
+            print("------------------PREDICTION------------------")
+            print("------------------PREDICTION------------------")
+            print(predictionStrings[i])
+            print("------------------TARGET------------------")
+            print("------------------TARGET------------------")
+            print(targetStrings[i])
+        with open('test_results.txt', 'w') as f:
             for i in range(len(predictionStrings)):
-                print("------------------PREDICTION------------------")
-                print("------------------PREDICTION------------------")
-                print(predictionStrings[i])
-                print("------------------TARGET------------------")
-                print("------------------TARGET------------------")
-                print(targetStrings[i])
-            with open('test_results.txt', 'w') as f:
-                for i in range(len(predictionStrings)):
-                    f.write("------------------TARGET------------------")
-                    f.write("%s\n" % str(targetStrings[i]))
-                    f.write("------------------PREDICTION------------------")
-                    f.write("%s\n" % str(predictionStrings[i]))
+                f.write("------------------TARGET------------------")
+                f.write("%s\n" % str(targetStrings[i]))
+                f.write("------------------PREDICTION------------------")
+                f.write("%s\n" % str(predictionStrings[i]))
         evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
         evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch, evalParams["spaceIx"])
 
