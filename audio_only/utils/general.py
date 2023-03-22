@@ -86,10 +86,84 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
     return trainingLoss, trainingCER, trainingWER
 
 
-import torch.nn as nn
-import torch.optim as optim
-import torch.distributed as dist
-import torch.multiprocessing as mp
+def evaluate(model, evalLoader, loss_function, device, evalParams):
+    """
+    Function to evaluate the model on the given dataset. It computes the evaluation loss, CER, and WER.
+    The CTC decode scheme is always 'greedy' here.
+    """
+
+    evalLoss = 0
+    evalCER = 0
+    evalWER = 0
+
+    model.eval()
+    index_to_char = args["INDEX_TO_CHAR"]
+    predictionStrings = []
+    targetStrings = []
+    with torch.no_grad():
+        for batch, (inputBatch, targetBatch, inputLenBatch, targetLenBatch, index) in enumerate(
+                tqdm(evalLoader, leave=False, desc="Eval",
+                     ncols=75)):
+
+            inputBatch, targetBatch = (inputBatch.float()).to(device), (targetBatch.float()).to(device)
+            inputLenBatch, targetLenBatch = (inputLenBatch.int()).to(device), (targetLenBatch.int()).to(device)
+
+            outputBatch = model(inputBatch)
+
+            with torch.backends.cudnn.flags(enabled=True):
+                arry = []
+                for btch in inputLenBatch:
+                    if len(outputBatch) < btch:
+                        arry.append(len(outputBatch))
+                    else:
+                        arry.append(btch)
+                new_inputLenBatch = torch.tensor(arry, dtype=torch.int32, device=device)
+                loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
+
+            evalLoss = evalLoss + loss.item()
+            predictionBatch, predictionLenBatch = ctc_greedy_decode(outputBatch.detach(), inputLenBatch,
+                                                                    evalParams["eosIx"])
+            evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
+            evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch,
+                                            evalParams["spaceIx"])
+            ##Per batch, predict what it should be , show the target
+            # Convert prediction and target tensors to strings
+            index_to_char = args["INDEX_TO_CHAR"]
+            predictionString = ""
+            for i in range(len(predictionBatch)):
+                item_idx = predictionBatch[i].item()
+                charrr = index_to_char[item_idx]
+                predictionString += str(charrr)
+            predictionStrings.append(predictionString)
+            targetString = ""
+            for i in range(len(targetBatch)):
+                item_idx = targetBatch[i].item()
+                charrr = index_to_char[item_idx]
+                targetString += str(charrr)
+            targetStrings.append(targetString)
+
+        evalLoss = evalLoss / len(evalLoader)
+        evalCER = evalCER / len(evalLoader)
+        evalWER = evalWER / len(evalLoader)
+        if args["DISPLAY_PREDICTIONS"]:
+            for i in range(len(predictionStrings)):
+                print("------------------PREDICTION------------------")
+                print("------------------PREDICTION------------------")
+                print(predictionStrings[i])
+                print("------------------TARGET------------------")
+                print("------------------TARGET------------------")
+                print(targetStrings[i])
+            with open('test_results_audio_only.txt', 'w') as f:
+                for i in range(len(predictionStrings)):
+                    f.write("------------------TARGET------------------\n")
+                    f.write("%s\n" % str(targetStrings[i]))
+                    f.write("------------------PREDICTION------------------\n")
+                    f.write("%s\n" % str(predictionStrings[i]))
+                f.write("\n" + "evalLoss: " + str(evalLoss))
+                f.write("\n" + "evalCER: " + str(evalCER))
+                f.write("\n" + "evalWER: " + str(evalWER))
+
+    return evalLoss, evalCER, evalWER
 
 
 #
@@ -239,89 +313,89 @@ import torch.multiprocessing as mp
 #     return avg_loss, avg_cer, avg_wer
 
 
-def evaluate(model, evalLoader, loss_function, device, evalParams):
-    """
-    Function to evaluate the model over validation/test set. It computes the loss, CER and WER over the evaluation set.
-    The CTC decode scheme can be set to either 'greedy' or 'search'.
-    """
-
-    evalLoss = 0
-    evalCER = 0
-    evalWER = 0
-
-    index_to_char = args["INDEX_TO_CHAR"]
-    predictionStrings = []
-    targetStrings = []
-    for batch, (inputBatch, targetBatch, inputLenBatch, targetLenBatch, index) in enumerate(
-            tqdm(evalLoader, leave=False, desc="Eval",
-                 ncols=75)):
-
-        inputBatch, targetBatch = (inputBatch.float()).to(device), (targetBatch.float()).to(device)
-        inputLenBatch, targetLenBatch = (inputLenBatch.int()).to(device), (targetLenBatch.int()).to(device)
-
-        model.eval()
-        with torch.no_grad():
-            outputBatch = model(inputBatch)
-            with torch.backends.cudnn.flags(enabled=True):
-                arry = []
-                for btch in inputLenBatch:
-                    if len(outputBatch) < btch:
-                        arry.append(len(outputBatch))
-                    else:
-                        arry.append(btch)
-                new_inputLenBatch = torch.tensor(arry, dtype=torch.int32, device=device)
-                loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
-
-        evalLoss = evalLoss + loss.item()
-        if evalParams["decodeScheme"] == "greedy":
-            predictionBatch, predictionLenBatch = ctc_greedy_decode(outputBatch, inputLenBatch, evalParams["eosIx"])
-        elif evalParams["decodeScheme"] == "search":
-            predictionBatch, predictionLenBatch = ctc_search_decode(outputBatch, inputLenBatch,
-                                                                    evalParams["beamSearchParams"],
-                                                                    evalParams["spaceIx"], evalParams["eosIx"],
-                                                                    evalParams["lm"])
-        else:
-            print("Invalid Decode Scheme")
-            exit()
-        evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
-        evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch,
-                                        evalParams["spaceIx"])
-
-        ##Per batch, predict what it should be , show the target
-        # Convert prediction and target tensors to strings
-        index_to_char = args["INDEX_TO_CHAR"]
-        predictionString = ""
-        for i in range(len(predictionBatch)):
-            item_idx = predictionBatch[i].item()
-            charrr = index_to_char[item_idx]
-            predictionString += str(charrr)
-        predictionStrings.append(predictionString)
-        targetString = ""
-        for i in range(len(targetBatch)):
-            item_idx = targetBatch[i].item()
-            charrr = index_to_char[item_idx]
-            targetString += str(charrr)
-        targetStrings.append(targetString)
-
-    evalLoss = evalLoss / len(evalLoader)
-    evalCER = evalCER / len(evalLoader)
-    evalWER = evalWER / len(evalLoader)
-    if args["DISPLAY_PREDICTIONS"]:
-        for i in range(len(predictionStrings)):
-            print("------------------PREDICTION------------------")
-            print("------------------PREDICTION------------------")
-            print(predictionStrings[i])
-            print("------------------TARGET------------------")
-            print("------------------TARGET------------------")
-            print(targetStrings[i])
-        with open('test_results_audio_only.txt', 'w') as f:
-            for i in range(len(predictionStrings)):
-                f.write("------------------TARGET------------------\n")
-                f.write("%s\n" % str(targetStrings[i]))
-                f.write("------------------PREDICTION------------------\n")
-                f.write("%s\n" % str(predictionStrings[i]))
-            f.write("\n" + "evalLoss: " + str(evalLoss))
-            f.write("\n" + "evalCER: " + str(evalCER))
-            f.write("\n" + "evalWER: " + str(evalWER))
-
-    return evalLoss, evalCER, evalWER
+# def evaluate(model, evalLoader, loss_function, device, evalParams):
+#     """
+#     Function to evaluate the model over validation/test set. It computes the loss, CER and WER over the evaluation set.
+#     The CTC decode scheme can be set to either 'greedy' or 'search'.
+#     """
+#
+#     evalLoss = 0
+#     evalCER = 0
+#     evalWER = 0
+#
+#     index_to_char = args["INDEX_TO_CHAR"]
+#     predictionStrings = []
+#     targetStrings = []
+#     for batch, (inputBatch, targetBatch, inputLenBatch, targetLenBatch, index) in enumerate(
+#             tqdm(evalLoader, leave=False, desc="Eval",
+#                  ncols=75)):
+#
+#         inputBatch, targetBatch = (inputBatch.float()).to(device), (targetBatch.float()).to(device)
+#         inputLenBatch, targetLenBatch = (inputLenBatch.int()).to(device), (targetLenBatch.int()).to(device)
+#
+#         model.eval()
+#         with torch.no_grad():
+#             outputBatch = model(inputBatch)
+#             with torch.backends.cudnn.flags(enabled=True):
+#                 arry = []
+#                 for btch in inputLenBatch:
+#                     if len(outputBatch) < btch:
+#                         arry.append(len(outputBatch))
+#                     else:
+#                         arry.append(btch)
+#                 new_inputLenBatch = torch.tensor(arry, dtype=torch.int32, device=device)
+#                 loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
+#
+#         evalLoss = evalLoss + loss.item()
+#         if evalParams["decodeScheme"] == "greedy":
+#             predictionBatch, predictionLenBatch = ctc_greedy_decode(outputBatch, inputLenBatch, evalParams["eosIx"])
+#         elif evalParams["decodeScheme"] == "search":
+#             predictionBatch, predictionLenBatch = ctc_search_decode(outputBatch, inputLenBatch,
+#                                                                     evalParams["beamSearchParams"],
+#                                                                     evalParams["spaceIx"], evalParams["eosIx"],
+#                                                                     evalParams["lm"])
+#         else:
+#             print("Invalid Decode Scheme")
+#             exit()
+#         evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
+#         evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch,
+#                                         evalParams["spaceIx"])
+#
+#         ##Per batch, predict what it should be , show the target
+#         # Convert prediction and target tensors to strings
+#         index_to_char = args["INDEX_TO_CHAR"]
+#         predictionString = ""
+#         for i in range(len(predictionBatch)):
+#             item_idx = predictionBatch[i].item()
+#             charrr = index_to_char[item_idx]
+#             predictionString += str(charrr)
+#         predictionStrings.append(predictionString)
+#         targetString = ""
+#         for i in range(len(targetBatch)):
+#             item_idx = targetBatch[i].item()
+#             charrr = index_to_char[item_idx]
+#             targetString += str(charrr)
+#         targetStrings.append(targetString)
+#
+#     evalLoss = evalLoss / len(evalLoader)
+#     evalCER = evalCER / len(evalLoader)
+#     evalWER = evalWER / len(evalLoader)
+#     if args["DISPLAY_PREDICTIONS"]:
+#         for i in range(len(predictionStrings)):
+#             print("------------------PREDICTION------------------")
+#             print("------------------PREDICTION------------------")
+#             print(predictionStrings[i])
+#             print("------------------TARGET------------------")
+#             print("------------------TARGET------------------")
+#             print(targetStrings[i])
+#         with open('test_results_audio_only.txt', 'w') as f:
+#             for i in range(len(predictionStrings)):
+#                 f.write("------------------TARGET------------------\n")
+#                 f.write("%s\n" % str(targetStrings[i]))
+#                 f.write("------------------PREDICTION------------------\n")
+#                 f.write("%s\n" % str(predictionStrings[i]))
+#             f.write("\n" + "evalLoss: " + str(evalLoss))
+#             f.write("\n" + "evalCER: " + str(evalCER))
+#             f.write("\n" + "evalWER: " + str(evalWER))
+#
+#     return evalLoss, evalCER, evalWER
