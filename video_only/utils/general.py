@@ -86,7 +86,8 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         else:
             print("Invalid Decode Scheme")
             exit()
-
+        print(len(predictionBatch),len(targetBatch))
+        exit()
         # Convert prediction and target tensors to strings
         index_to_char = args["INDEX_TO_CHAR"]
         predictionString = ""
