@@ -86,6 +86,9 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         else:
             print("Invalid Decode Scheme")
             exit()
+        evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
+        evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch,
+                                        evalParams["spaceIx"])
         ##Per batch, predict what it should be , show the target
         # Convert prediction and target tensors to strings
         index_to_char = args["INDEX_TO_CHAR"]
@@ -135,8 +138,6 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
                 f.write("%s\n" % str(targetStrings[i]))
                 f.write("------------------PREDICTION------------------\n")
                 f.write("%s\n" % str(predictionStrings[i]))
-        evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
-        evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch, evalParams["spaceIx"])
 
     evalLoss = evalLoss/len(evalLoader)
     evalCER = evalCER/len(evalLoader)
