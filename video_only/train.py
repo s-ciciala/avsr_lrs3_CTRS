@@ -68,7 +68,7 @@ def load_ckp(checkpoint_fpath, model, optimizer):
     checkpoint = torch.load(checkpoint_fpath)
     model.load_state_dict(model.state_dict())
     optimizer.load_state_dict(optimizer.state_dict())
-    return model, optimizer, checkpoint['epoch']
+    return model, optimizer, args["EPOCHS_SO_FAR"]
 
 def get_optimiser_and_checkpoint_dir(model):
     optimizer = optim.Adam(model.parameters(), lr=args["INIT_LR"], betas=(args["MOMENTUM1"], args["MOMENTUM2"]))
@@ -134,13 +134,18 @@ def train_model(model, trainLoader, valLoader, optimizer, loss_function, device)
 
         # make a scheduler step
         scheduler.step(validationWER)
-
+        save_dict = {
+            'epoch': step,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'loss': trainingLoss,
+            }
         # saving the model weights and loss/metric curves in the checkpoints directory after every few steps
         if ((step % args["SAVE_FREQUENCY"] == 0) or (step == args["NUM_STEPS"] - 1)) and (step != 0):
             savePath = args["CODE_DIRECTORY"] + "/video_only_checkpoints/models/train-step_{:04d}-wer_{:.3f}.pt".format(
                 step_print,
                 validationWER)
-            torch.save(model.state_dict(), savePath)
+            torch.save(save_dict, savePath)
 
             plt.figure()
             plt.title("Loss Curves")
