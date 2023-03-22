@@ -159,15 +159,17 @@ def decode_predictions(outputs, targets, idx2char):
         print("*"*80)
         print(seq)
         try:
+            ##Targets can be singletons
             print(seq.item())
+            char_index = int(seq.item())
+            text = idx2char[char_index]
+            decoded_targets_text.append(text)
         except:
             print("Not a singleton hence will try a sequence")
-        text = ""
-        ##Targets can be singletons
-
-        for char2 in seq.data:
-            text += idx2char[char2.item()]
-        decoded_targets_text.append(text)
+            text = ""
+            for char2 in seq.data:
+                text += idx2char[char2.item()]
+            decoded_targets_text.append(text)
 
     return decoded_preds_text, decoded_targets_text
 
