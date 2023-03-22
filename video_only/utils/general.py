@@ -144,6 +144,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
                 print(predictionStrings[i])
                 print("------------------TARGET------------------")
                 print("------------------TARGET------------------")
+                print(targetStrings[i])
         evalCER = evalCER + compute_cer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch)
         evalWER = evalWER + compute_wer(predictionBatch, targetBatch, predictionLenBatch, targetLenBatch, evalParams["spaceIx"])
 
