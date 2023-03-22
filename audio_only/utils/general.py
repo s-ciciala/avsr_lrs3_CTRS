@@ -158,7 +158,10 @@ def decode_predictions(outputs, targets, idx2char):
     for seq in targets:
         print("*"*80)
         print(seq)
+        print(len(seq))
         text = ""
+        ##Targets can be singletons
+
         for char2 in seq.data:
             text += idx2char[char2.item()]
         decoded_targets_text.append(text)
