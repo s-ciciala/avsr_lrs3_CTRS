@@ -91,6 +91,7 @@ import torch.optim as optim
 import torch.distributed as dist
 import torch.multiprocessing as mp
 
+
 #
 # def evaluate(model, dataloader, criterion, device, eval_params):
 #     model.eval()
@@ -142,7 +143,7 @@ import torch.multiprocessing as mp
 #     # avg_wer = total_wer / len(dataloader)
 #     #
 #     # return avg_loss, avg_cer, avg_wer
-    #
+#
 
 def indices_to_text(indices, idx2char):
     text = ''.join([idx2char[idx] for idx in indices])
@@ -190,6 +191,7 @@ def decode_predictions(outputs, targets, idx2char):
             decoded_targets_text.append(text)
 
     return decoded_preds_text, decoded_targets_text
+
 
 #
 #
@@ -301,6 +303,9 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             targetString += str(charrr)
         targetStrings.append(targetString)
 
+    evalLoss = evalLoss / len(evalLoader)
+    evalCER = evalCER / len(evalLoader)
+    evalWER = evalWER / len(evalLoader)
     if args["DISPLAY_PREDICTIONS"]:
         for i in range(len(predictionStrings)):
             print("------------------PREDICTION------------------")
@@ -315,8 +320,8 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
                 f.write("%s\n" % str(targetStrings[i]))
                 f.write("------------------PREDICTION------------------\n")
                 f.write("%s\n" % str(predictionStrings[i]))
+            f.write("\n" + "evalLoss: " + str(evalLoss))
+            f.write("\n" + "evalCER: " + str(evalCER))
+            f.write("\n" + "evalWER: " + str(evalWER))
 
-    evalLoss = evalLoss / len(evalLoader)
-    evalCER = evalCER / len(evalLoader)
-    evalWER = evalWER / len(evalLoader)
     return evalLoss, evalCER, evalWER

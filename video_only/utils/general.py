@@ -124,6 +124,10 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         #         # print(charrr)
         #         curr_string += charrr
         #     targetStrings.append(curr_string)
+    evalLoss = evalLoss / len(evalLoader)
+    evalCER = evalCER / len(evalLoader)
+    evalWER = evalWER / len(evalLoader)
+
     if args["DISPLAY_PREDICTIONS"]:
         for i in range(len(predictionStrings)):
             print("------------------PREDICTION------------------")
@@ -138,8 +142,11 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
                 f.write("%s\n" % str(targetStrings[i]))
                 f.write("------------------PREDICTION------------------\n")
                 f.write("%s\n" % str(predictionStrings[i]))
+            f.write("\n" + "evalLoss: " + str(evalLoss))
+            f.write("\n" + "evalCER: " + str(evalCER))
+            f.write("\n" + "evalWER: " + str(evalWER))
 
-    evalLoss = evalLoss/len(evalLoader)
-    evalCER = evalCER/len(evalLoader)
-    evalWER = evalWER/len(evalLoader)
+    # evalLoss = evalLoss/len(evalLoader)
+    # evalCER = evalCER/len(evalLoader)
+    # evalWER = evalWER/len(evalLoader)
     return evalLoss, evalCER, evalWER
