@@ -35,15 +35,20 @@ def main():
         #declaring the model, loss function and loading the trained model weights
         model = VideoNet(args["TX_NUM_FEATURES"], args["TX_ATTENTION_HEADS"], args["TX_NUM_LAYERS"], args["PE_MAX_LENGTH"],
                          args["TX_FEEDFORWARD_DIM"], args["TX_DROPOUT"], args["NUM_CLASSES"])
-        model.load_state_dict(torch.load(args["TRAINED_MODEL_FILE"], map_location=device))
+        saved_state_dict = torch.load(args["TRAINED_MODEL_FILE"], map_location=device)
+        new_state_dict = {}
+        for k, v in saved_state_dict.items():
+            name = k.replace('module.', '')  # remove the "module." prefix
+            new_state_dict[name] = v
+        model.load_state_dict(new_state_dict)
         model.to(device)
         loss_function = nn.CTCLoss(blank=0, zero_infinity=True)
 
 
-        #declaring the language model
-        lm = LRS2CharLM()
-        lm.load_state_dict(torch.load(args["TRAINED_LM_FILE"], map_location=device))
-        lm.to(device)
+        # #declaring the language model
+        # lm = LRS2CharLM()
+        # lm.load_state_dict(torch.load(args["TRAINED_LM_FILE"], map_location=device))
+        # lm.to(device)
         if not args["USE_LM"]:
             lm = None
 
