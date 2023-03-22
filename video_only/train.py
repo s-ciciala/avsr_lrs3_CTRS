@@ -68,7 +68,7 @@ def load_ckp(checkpoint_fpath, model, optimizer):
     checkpoint = torch.load(checkpoint_fpath)
     model.load_state_dict(model.state_dict())
     optimizer.load_state_dict(optimizer.state_dict())
-    return model, optimizer, args["EPOCH_SO_FAR"]
+    return model, optimizer, checkpoint['epoch']
 
 def get_optimiser_and_checkpoint_dir(model):
     optimizer = optim.Adam(model.parameters(), lr=args["INIT_LR"], betas=(args["MOMENTUM1"], args["MOMENTUM2"]))
