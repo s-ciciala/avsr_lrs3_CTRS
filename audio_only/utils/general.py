@@ -42,6 +42,7 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
         inputBatch, targetBatch = (inputBatch.float()).to(device), (targetBatch.float()).to(device)
         inputLenBatch, targetLenBatch = (inputLenBatch.int()).to(device), (targetLenBatch.int()).to(device)
         optimizer.zero_grad()
+        model.rnn.flatten_parameters()
         model.train()
         outputBatch = model(inputBatch)
 
@@ -107,7 +108,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
 
             inputBatch, targetBatch = (inputBatch.float()).to(device), (targetBatch.float()).to(device)
             inputLenBatch, targetLenBatch = (inputLenBatch.int()).to(device), (targetLenBatch.int()).to(device)
-
+            model.rnn.flatten_parameters()
             outputBatch = model(inputBatch)
 
             with torch.backends.cudnn.flags(enabled=True):
