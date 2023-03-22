@@ -100,7 +100,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             item_idx = targetBatch[i].item()
             charrr = index_to_char[item_idx]
             targetString += str(charrr)
-        predictionStrings.append(predictionString)
+        targetStrings.append(targetString)
 
         # preds = list(torch.split(predictionBatch, predictionLenBatch.tolist()))
         # trgts = list(torch.split(targetBatch, targetLenBatch.tolist()))
