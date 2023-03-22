@@ -82,8 +82,8 @@ args["PE_MAX_LENGTH"] = 2500    #length up to which we calculate positional enco
 args["TX_NUM_FEATURES"] = 512   #transformer input feature size
 args["TX_ATTENTION_HEADS"] = 4  #number of attention heads in multihead attention layer
 args["TX_NUM_LAYERS"] = 3  #number of Transformer Encoder blocks in the stack
-# args["TX_FEEDFORWARD_DIM"] = 1024   #hidden layer size in feedforward network of transformer
-args["TX_FEEDFORWARD_DIM"] = 2048   #hidden layer size in feedforward network of transformer
+args["TX_FEEDFORWARD_DIM"] = 1024   #hidden layer size in feedforward network of transformer
+# args["TX_FEEDFORWARD_DIM"] = 2048   #hidden layer size in feedforward network of transformer
 args["TX_DROPOUT"] = 0.1    #dropout probability in the transformer
 
 
