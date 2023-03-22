@@ -64,6 +64,11 @@ def get_training_data(device, kwargs):
     model.to(device)
     return trainData, trainLoader, valData, valLoader, model
 
+def load_ckp(checkpoint_fpath, model, optimizer):
+    checkpoint = torch.load(checkpoint_fpath)
+    model.load_state_dict(checkpoint['state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer'])
+    return model, optimizer, checkpoint['epoch']
 
 def get_optimiser_and_checkpoint_dir(model):
     optimizer = optim.Adam(model.parameters(), lr=args["INIT_LR"], betas=(args["MOMENTUM1"], args["MOMENTUM2"]))
@@ -122,9 +127,10 @@ def train_model(model, trainLoader, valLoader, optimizer, loss_function, device)
         validationWERCurve.append(validationWER)
 
         # printing the stats after each step
+        step_print = args["EPOCH_SO_FAR"] + step
         print(
             "Step: %03d || Tr.Loss: %.6f  Val.Loss: %.6f || Tr.CER: %.3f  Val.CER: %.3f || Tr.WER: %.3f  Val.WER: %.3f"
-            % (step, trainingLoss, validationLoss, trainingCER, validationCER, trainingWER, validationWER))
+            % (step_print, trainingLoss, validationLoss, trainingCER, validationCER, trainingWER, validationWER))
 
         # make a scheduler step
         scheduler.step(validationWER)
@@ -132,7 +138,7 @@ def train_model(model, trainLoader, valLoader, optimizer, loss_function, device)
         # saving the model weights and loss/metric curves in the checkpoints directory after every few steps
         if ((step % args["SAVE_FREQUENCY"] == 0) or (step == args["NUM_STEPS"] - 1)) and (step != 0):
             savePath = args["CODE_DIRECTORY"] + "/video_only_checkpoints/models/train-step_{:04d}-wer_{:.3f}.pt".format(
-                step,
+                step_print,
                 validationWER)
             torch.save(model.state_dict(), savePath)
 
@@ -176,7 +182,8 @@ if __name__ == "__main__":
     videoParams = {"videoFPS": args["VIDEO_FPS"]}
     trainData, trainLoader, valData, valLoader, model = get_training_data(device, kwargs)
     optimizer, scheduler, loss_function = get_optimiser_and_checkpoint_dir(model)
-
+    if args["CONTINUE_TRAINING"] is not None:
+      model, optimizer, start_epoch = load_ckp(args["CONTINUE_TRAINING"], model, optimizer)
     trainingLossCurve = list()
     validationLossCurve = list()
     trainingWERCurve = list()
