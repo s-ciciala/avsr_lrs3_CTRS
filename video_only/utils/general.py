@@ -89,31 +89,17 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
 
         # Convert prediction and target tensors to strings
         index_to_char = args["INDEX_TO_CHAR"]
-        predictionStrings = []
-        targetStrings = []
         predictionString = ""
         for i in range(len(predictionBatch)):
             item_idx = predictionBatch[i].item()
             charrr = index_to_char[item_idx]
-            # print(index_to_char[item_idx])
             predictionString += str(charrr)
-        # print("------------------PREDICTION------------------")
-        # print(predictionString)
         predictionStrings.append(predictionString)
-        #
-        # for i in range(targetBatch.shape[0]):
-        #     targetString = ""
-        #     for j in range(targetLenBatch[i]):
-        #         targetString += index_to_char[targetBatch[i][j].item()]
-        #     targetStrings.append(targetString)
         targetString = ""
         for i in range(len(targetBatch)):
             item_idx = targetBatch[i].item()
             charrr = index_to_char[item_idx]
-            # print(index_to_char[item_idx])
             targetString += str(charrr)
-        # print("------------------TARGET------------------")
-        # print(targetString)
         predictionStrings.append(predictionString)
         targetBatch = targetBatch.cpu()
         targetLenBatch = targetLenBatch.cpu()
