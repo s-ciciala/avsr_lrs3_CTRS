@@ -66,7 +66,7 @@ def get_training_data(device, kwargs):
 
 def load_ckp(checkpoint_fpath, model, optimizer):
     checkpoint = torch.load(checkpoint_fpath)
-    model.load_state_dict(checkpoint['state_dict'])
+    model.load_state_dict(model.state_dict())
     optimizer.load_state_dict(checkpoint['optimizer'])
     return model, optimizer, checkpoint['epoch']
 
