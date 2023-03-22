@@ -86,10 +86,7 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
         else:
             print("Invalid Decode Scheme")
             exit()
-        print("GERE")
-        print(predictionBatch,targetBatch)
-        print(len(predictionBatch),len(targetBatch))
-        exit()
+        ##Per batch, predict what it should be , show the target
         # Convert prediction and target tensors to strings
         index_to_char = args["INDEX_TO_CHAR"]
         predictionString = ""
@@ -104,27 +101,27 @@ def evaluate(model, evalLoader, loss_function, device, evalParams):
             charrr = index_to_char[item_idx]
             targetString += str(charrr)
         predictionStrings.append(predictionString)
-        targetBatch = targetBatch.cpu()
-        targetLenBatch = targetLenBatch.cpu()
-        preds = list(torch.split(predictionBatch, predictionLenBatch.tolist()))
-        trgts = list(torch.split(targetBatch, targetLenBatch.tolist()))
-        for prediction in preds:
-            curr_string = ""
-            for char in prediction:
-                item_idx = char.item()
-                charrr = index_to_char[item_idx]
-                curr_string += charrr
-            predictionStrings.append(curr_string)
 
-        for target in trgts:
-            curr_string = ""
-            for char in target:
-                # print(char.item())
-                item_idx = char.item()
-                charrr = index_to_char[item_idx]
-                # print(charrr)
-                curr_string += charrr
-            targetStrings.append(curr_string)
+        # preds = list(torch.split(predictionBatch, predictionLenBatch.tolist()))
+        # trgts = list(torch.split(targetBatch, targetLenBatch.tolist()))
+        # for prediction in preds:
+        #     curr_string = ""
+        #     for char in prediction:
+        #         item_idx = char.item()
+        #         charrr = index_to_char[item_idx]
+        #         curr_string += charrr
+        #     predictionStrings.append(curr_string)
+        #
+        # for target in trgts:
+        #     curr_string = ""
+        #     for char in target:
+        #         # print(char.item())
+        #         item_idx = char.item()
+        #         charrr = index_to_char[item_idx]
+        #         # print(charrr)
+        #         curr_string += charrr
+        #     targetStrings.append(curr_string)
+    print(len(predictionStrings),len(targetStrings))
     if args["DISPLAY_PREDICTIONS"]:
         print(len(predictionStrings),len(targetStrings))
         exit()
