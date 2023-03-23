@@ -86,7 +86,11 @@ class AVNet(nn.Module):
             if len(audioBatch) > len(videoBatch):
                 print("AUDIO GREATER THAN VIDEO")
                 print(type(audioBatch))
+                diff = len(audioBatch) - len(videoBatch)
                 print(len(audioBatch),len(videoBatch))
+                audioBatch = audioBatch[:-diff]
+                print(len(audioBatch),len(videoBatch))
+                exit(1)
 
             if len(videoBatch) > len(audioBatch):
                 print("VIDEO GREATER THAN VIDEO")
