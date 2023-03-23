@@ -88,7 +88,6 @@ class AVNet(nn.Module):
             print(len(audioBatch))
             print("videoBatch")
             print(len(videoBatch))
-            raise KeyboardInterrupt
             jointBatch = torch.cat([audioBatch, videoBatch], dim=2)
             jointBatch = jointBatch.transpose(0, 1).transpose(1, 2)
             jointBatch = self.jointConv(jointBatch)
