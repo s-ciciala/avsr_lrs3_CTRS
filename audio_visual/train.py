@@ -70,7 +70,7 @@ def get_optimiser_and_checkpoint_dir(model):
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=args["LR_SCHEDULER_FACTOR"],
                                                      patience=args["LR_SCHEDULER_WAIT"], threshold=args["LR_SCHEDULER_THRESH"],
                                                      threshold_mode="abs", min_lr=args["FINAL_LR"], verbose=True)
-    loss_function = nn.CTCLoss(blank=0, zero_infinity=False)
+    loss_function = nn.CTCLoss(blank=0, zero_infinity=True)
 
 
     #removing the checkpoints directory if it exists and remaking it
