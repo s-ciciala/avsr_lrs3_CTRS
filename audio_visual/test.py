@@ -13,7 +13,7 @@ import numpy as np
 from config import args
 from models.av_net import AVNet
 from models.lrs2_char_lm import LRS2CharLM
-from data.lrs2_dataset import LRS2Main
+from data.lrs3_dataset import LRS2Main
 from data.utils import collate_fn
 from utils.general import evaluate
 

@@ -70,17 +70,17 @@ class LRS2Pretrain(Dataset):
 
 
 
-class LRS2Main(Dataset):
+class LRS3Main(Dataset):
 
     """
     A custom dataset class for the LRS2 main (includes train, val, test) dataset
     """
 
     def __init__(self, dataset, datadir, reqInpLen, charToIx, stepSize, audioParams, videoParams, noiseParams):
-        super(LRS2Main, self).__init__()
+        super(LRS3Main, self).__init__()
         with open(datadir + "/" + dataset + ".txt", "r") as f:
             lines = f.readlines()
-        self.datalist = [datadir + "/main/" + line.strip().split(" ")[0] for line in lines]
+        self.datalist = [line.strip().split(" ")[0] for line in lines]
         self.reqInpLen = reqInpLen
         self.charToIx = charToIx
         self.dataset = dataset
@@ -118,7 +118,8 @@ class LRS2Main(Dataset):
         #using step size only for train dataset and not for val and test datasets because
         #the size of val and test datasets is smaller than step size and we generally want to validate and test
         #on the complete dataset
-        if self.dataset == "train":
-            return self.stepSize
-        else:
-            return len(self.datalist)
+        return len(self.datalist)
+        # if self.dataset == "train":
+        #     return self.stepSize
+        # else:
+        #     return len(self.datalist)

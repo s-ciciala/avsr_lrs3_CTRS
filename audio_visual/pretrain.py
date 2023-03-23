@@ -16,7 +16,7 @@ import os, shutil
 
 from config import args
 from models.av_net import AVNet
-from data.lrs2_dataset import LRS2Pretrain
+from data.lrs3_dataset import LRS2Pretrain
 from data.utils import collate_fn
 from utils.general import num_params, train, evaluate
 

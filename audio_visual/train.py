@@ -1,10 +1,3 @@
-"""
-Author: Smeet Shah
-Copyright (c) 2020 Smeet Shah
-File part of 'deep_avsr' GitHub repository available at -
-https://github.com/lordmartian/deep_avsr
-"""
-
 import torch
 import torch.optim as optim
 import torch.nn as nn
@@ -16,33 +9,46 @@ import os, shutil
 
 from config import args
 from models.av_net import AVNet
-from data.lrs2_dataset import LRS2Main
+from data.lrs3_dataset import LRS3Main
 from data.utils import collate_fn
 from utils.general import num_params, train, evaluate
 
 
-
-def main():
+def set_device():
+    print("GPU on?:" + str(torch.cuda.is_available()))
+    print("Backend on?:" + str(torch.backends.cudnn.enabled))
+    available_gpus = [torch.cuda.device(i) for i in range(torch.cuda.device_count())]
+    print("available_gpus: " + str(len(available_gpus)))
+    print("device_count: " + str(torch.cuda.device_count()))
 
     matplotlib.use("Agg")
     np.random.seed(args["SEED"])
     torch.manual_seed(args["SEED"])
-    gpuAvailable = torch.cuda.is_available()
-    device = torch.device("cuda" if gpuAvailable else "cpu")
-    kwargs = {"num_workers": args["NUM_WORKERS"], "pin_memory": True} if gpuAvailable else {}
+    if not (torch.cuda.is_available()):
+        exit()
+    device = torch.device(str(args["GPU"]) if len(available_gpus) != 0 else "cpu")
+    kwargs = {"num_workers": args["NUM_WORKERS"], "pin_memory": True} if torch.cuda.is_available() else {}
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+    return device, kwargs
 
+
+def get_training_data(device, kwargs):
+    dataset = "train"
+    datadir = args["DATA_DIRECTORY"]
+    reqInpLen = args["MAIN_REQ_INPUT_LENGTH"]
+    charToIx = args["CHAR_TO_INDEX"]
+    stepSize = args["STEP_SIZE"]
 
     #declaring the train and validation datasets and their corresponding dataloaders
     audioParams = {"stftWindow":args["STFT_WINDOW"], "stftWinLen":args["STFT_WIN_LENGTH"], "stftOverlap":args["STFT_OVERLAP"]}
     videoParams = {"videoFPS":args["VIDEO_FPS"]}
     noiseParams = {"noiseFile":args["DATA_DIRECTORY"] + "/noise.wav", "noiseProb":args["NOISE_PROBABILITY"], "noiseSNR":args["NOISE_SNR_DB"]}
-    trainData = LRS2Main("train", args["DATA_DIRECTORY"], args["MAIN_REQ_INPUT_LENGTH"], args["CHAR_TO_INDEX"], args["STEP_SIZE"],
+    trainData = LRS3Main("train", args["DATA_DIRECTORY"], args["MAIN_REQ_INPUT_LENGTH"], args["CHAR_TO_INDEX"], args["STEP_SIZE"],
                          audioParams, videoParams, noiseParams)
     trainLoader = DataLoader(trainData, batch_size=args["BATCH_SIZE"], collate_fn=collate_fn, shuffle=True, **kwargs)
     noiseParams = {"noiseFile":args["DATA_DIRECTORY"] + "/noise.wav", "noiseProb":0, "noiseSNR":args["NOISE_SNR_DB"]}
-    valData = LRS2Main("val", args["DATA_DIRECTORY"], args["MAIN_REQ_INPUT_LENGTH"], args["CHAR_TO_INDEX"], args["STEP_SIZE"],
+    valData = LRS3Main("val", args["DATA_DIRECTORY"], args["MAIN_REQ_INPUT_LENGTH"], args["CHAR_TO_INDEX"], args["STEP_SIZE"],
                        audioParams, videoParams, noiseParams)
     valLoader = DataLoader(valData, batch_size=args["BATCH_SIZE"], collate_fn=collate_fn, shuffle=True, **kwargs)
 
@@ -50,7 +56,16 @@ def main():
     #declaring the model, optimizer, scheduler and the loss function
     model = AVNet(args["TX_NUM_FEATURES"], args["TX_ATTENTION_HEADS"], args["TX_NUM_LAYERS"], args["PE_MAX_LENGTH"],
                   args["AUDIO_FEATURE_SIZE"], args["TX_FEEDFORWARD_DIM"], args["TX_DROPOUT"], args["NUM_CLASSES"])
+    ##added multiprocessing
+    if args["LIMITGPU"]:
+        model = nn.DataParallel(model, device_ids=args["GPUID"])
+    else:
+        model = nn.DataParallel(model)
     model.to(device)
+    return trainData, trainLoader, valData, valLoader, model
+
+
+def get_optimiser_and_checkpoint_dir(model):
     optimizer = optim.Adam(model.parameters(), lr=args["INIT_LR"], betas=(args["MOMENTUM1"], args["MOMENTUM2"]))
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=args["LR_SCHEDULER_FACTOR"],
                                                      patience=args["LR_SCHEDULER_WAIT"], threshold=args["LR_SCHEDULER_THRESH"],
@@ -74,87 +89,102 @@ def main():
     os.mkdir(args["CODE_DIRECTORY"] + "/checkpoints/models")
     os.mkdir(args["CODE_DIRECTORY"] + "/checkpoints/plots")
 
-
-    #loading the pretrained weights
-    if args["PRETRAINED_MODEL_FILE"] is not None:
-        print("\n\nPre-trained Model File: %s" %(args["PRETRAINED_MODEL_FILE"]))
-        print("\nLoading the pre-trained model .... \n")
-        model.load_state_dict(torch.load(args["CODE_DIRECTORY"] + args["PRETRAINED_MODEL_FILE"], map_location=device))
-        model.to(device)
-        print("Loading Done.\n")
+    return optimizer, scheduler, loss_function
 
 
+def train_model(model, trainLoader, valLoader, optimizer, loss_function, device):
+    print("\nTraining the model .... \n")
+
+    trainParams = {"spaceIx": args["CHAR_TO_INDEX"][" "], "eosIx": args["CHAR_TO_INDEX"]["<EOS>"]}
+    valParams = {"decodeScheme": "greedy", "spaceIx": args["CHAR_TO_INDEX"][" "],
+                 "eosIx": args["CHAR_TO_INDEX"]["<EOS>"]}
 
     trainingLossCurve = list()
     validationLossCurve = list()
+    trainingCERCurve = list()
+    validationCERCurve = list()
     trainingWERCurve = list()
     validationWERCurve = list()
 
-
-    #printing the total and trainable parameters in the model
-    numTotalParams, numTrainableParams = num_params(model)
-    print("\nNumber of total parameters in the model = %d" %(numTotalParams))
-    print("Number of trainable parameters in the model = %d\n" %(numTrainableParams))
-
-
-    print("\nTraining the model .... \n")
-
-    trainParams = {"spaceIx":args["CHAR_TO_INDEX"][" "], "eosIx":args["CHAR_TO_INDEX"]["<EOS>"], "aoProb":args["AUDIO_ONLY_PROBABILITY"],
-                   "voProb":args["VIDEO_ONLY_PROBABILITY"]}
-    valParams = {"decodeScheme":"greedy", "spaceIx":args["CHAR_TO_INDEX"][" "], "eosIx":args["CHAR_TO_INDEX"]["<EOS>"], "aoProb":0, "voProb":0}
-
     for step in range(args["NUM_STEPS"]):
-
-        #train the model for one step
-        trainingLoss, trainingCER, trainingWER = train(model, trainLoader, optimizer, loss_function, device, trainParams)
+        # train the model for one step
+        trainingLoss, trainingCER, trainingWER = train(model, trainLoader, optimizer, loss_function, device,
+                                                       trainParams)
         trainingLossCurve.append(trainingLoss)
+        trainingCERCurve.append(trainingCER)
         trainingWERCurve.append(trainingWER)
 
-        #evaluate the model on validation set
+        # evaluate the model on validation set
         validationLoss, validationCER, validationWER = evaluate(model, valLoader, loss_function, device, valParams)
+        #def evaluate(model, dataloader, criterion, device):
+        # validationLoss, validationCER, validationWER = evaluate(model, valLoader, loss_function, device)
         validationLossCurve.append(validationLoss)
+        validationCERCurve.append(validationCER)
         validationWERCurve.append(validationWER)
+        # printing the stats after each step
+        print(
+            "Step: %03d || Tr.Loss: %.6f  Val.Loss: %.6f || Tr.CER: %.3f  Val.CER: %.3f || Tr.WER: %.3f  Val.WER: %.3f"
+            % (step, trainingLoss, validationLoss, trainingCER, validationCER, trainingWER, validationWER))
 
-        #printing the stats after each step
-        print("Step: %03d || Tr.Loss: %.6f  Val.Loss: %.6f || Tr.CER: %.3f  Val.CER: %.3f || Tr.WER: %.3f  Val.WER: %.3f"
-              %(step, trainingLoss, validationLoss, trainingCER, validationCER, trainingWER, validationWER))
-
-        #make a scheduler step
+        # make a scheduler step
         scheduler.step(validationWER)
-
-
-        #saving the model weights and loss/metric curves in the checkpoints directory after every few steps
-        if ((step%args["SAVE_FREQUENCY"] == 0) or (step == args["NUM_STEPS"]-1)) and (step != 0):
-
-            savePath = args["CODE_DIRECTORY"] + "/checkpoints/models/train-step_{:04d}-wer_{:.3f}.pt".format(step, validationWER)
-            torch.save(model.state_dict(), savePath)
+        save_dict = {
+            'epoch': step,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'loss': trainingLoss,
+        }
+        # saving the model weights and loss/metric curves in the checkpoints directory after every few steps
+        if ((step % args["SAVE_FREQUENCY"] == 0) or (step == args["NUM_STEPS"] - 1)) and (step != 0):
+            savePath = args["CODE_DIRECTORY"] + "/audio_only_checkpoints/models/train-step_{:04d}-wer_{:.3f}.pt".format(
+                step,
+                validationWER)
+            torch.save(save_dict, savePath)
 
             plt.figure()
             plt.title("Loss Curves")
             plt.xlabel("Step No.")
             plt.ylabel("Loss value")
-            plt.plot(list(range(1, len(trainingLossCurve)+1)), trainingLossCurve, "blue", label="Train")
-            plt.plot(list(range(1, len(validationLossCurve)+1)), validationLossCurve, "red", label="Validation")
+            plt.plot(list(range(1, len(trainingLossCurve) + 1)), trainingLossCurve, "blue", label="Train")
+            plt.plot(list(range(1, len(validationLossCurve) + 1)), validationLossCurve, "red", label="Validation")
             plt.legend()
-            plt.savefig(args["CODE_DIRECTORY"] + "/checkpoints/plots/train-step_{:04d}-loss.png".format(step))
+            plt.savefig(
+                args["CODE_DIRECTORY"] + "/audio_only_checkpoints/plots/train-step_{:04d}-loss.png".format(step))
             plt.close()
 
             plt.figure()
             plt.title("WER Curves")
             plt.xlabel("Step No.")
             plt.ylabel("WER")
-            plt.plot(list(range(1, len(trainingWERCurve)+1)), trainingWERCurve, "blue", label="Train")
-            plt.plot(list(range(1, len(validationWERCurve)+1)), validationWERCurve, "red", label="Validation")
+            plt.plot(list(range(1, len(trainingWERCurve) + 1)), trainingWERCurve, "blue", label="Train")
+            plt.plot(list(range(1, len(validationWERCurve) + 1)), validationWERCurve, "red", label="Validation")
             plt.legend()
-            plt.savefig(args["CODE_DIRECTORY"] + "/checkpoints/plots/train-step_{:04d}-wer.png".format(step))
+            plt.savefig(args["CODE_DIRECTORY"] + "/audio_only_checkpoints/plots/train-step_{:04d}-wer.png".format(step))
             plt.close()
 
-
+            plt.figure()
+            plt.title("CER Curves")
+            plt.xlabel("Step No.")
+            plt.ylabel("CER")
+            plt.plot(list(range(1, len(trainingCERCurve) + 1)), trainingCERCurve, "blue", label="Train")
+            plt.plot(list(range(1, len(validationCERCurve) + 1)), validationCERCurve, "red", label="Validation")
+            plt.legend()
+            plt.savefig(
+                args["CODE_DIRECTORY"] + "/audio_only_checkpoints/plots/train-step_{:04d}-loss.png".format(step))
+            plt.close()
     print("\nTraining Done.\n")
-
-    return
-
 
 
 if __name__ == "__main__":
-    main()
+    device, kwargs = set_device()
+    print("Training using :" + str(device))
+    trainData, trainLoader, valData, valLoader, model = get_training_data(device, kwargs)
+
+    optimizer, scheduler, loss_function = get_optimiser_and_checkpoint_dir(model)
+
+    numTotalParams, numTrainableParams = num_params(model)
+    print("\nNumber of total parameters in the model = %d" % (numTotalParams))
+    print("Number of trainable parameters in the model = %d\n" % (numTrainableParams))
+    torch.cuda.empty_cache()
+    train_model(model, trainLoader, valLoader, optimizer, loss_function, device)
+    print("Completed")

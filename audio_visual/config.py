@@ -9,13 +9,19 @@ args = dict()
 
 
 #project structure
-args["CODE_DIRECTORY"] = None   #absolute path to the code directory
-args["DATA_DIRECTORY"] = None   #absolute path to the data directory
-args["DEMO_DIRECTORY"] = None   #absolute path to the demo directory
+args["CODE_DIRECTORY"] = "../../avsr_lrs3_CTRS/"   #absolute path to the code directory
+args["DATA_DIRECTORY"] = "../../lrs3"  #absolute path to the data directory
+args["TRAIN_DIRECTORY"] = "../../lrs3/" + "trainval/"
+args["TEST_DIRECTORY"] = "../../lrs3/" + "pretrain/"
+args["TEST_SIZE"] = 1000
+args["VAL_DIRECTORY"] = "../../lrs3/" + "test/"
+args["TRAINVAL_DIRECTORY"] = "../../lrs3/" + "pretrain/"
+args["DEMO_DIRECTORY"] = "../../avsr_lrs3_CTRS/audio_only/demo/"   #absolute path to the demo directory
 args["PRETRAINED_MODEL_FILE"] = "/final/models/pretrained_model.pt"     #relative path to the pretrained model file
-args["TRAINED_MODEL_FILE"] = "/final/models/trained_model.pt"   #relative path to the trained model file
-args["TRAINED_LM_FILE"] = None  #absolute path to the trained language model file
-args["TRAINED_FRONTEND_FILE"] = None #absolute path to the trained visual frontend file
+# args["TRAINED_MODEL_FILE"] = "/final/models/trained_model.pt"   #relative path to the trained model file
+args["TRAINED_MODEL_FILE"] = "audio_only_checkpoints/models/train-step_0970-wer_1.043.pt"   #relative path to the trained model file
+args["TRAINED_FRONTEND_FILE"] = "../../deep_avsr_models/visual_frontend/visual_frontend.pt" #absolute path to the trained language model file
+args["TRAINED_LM_FILE"] = "../../deep_avsr_models/language_model/language_model.pt" #absolute path to the trained visual frontend file
 
 
 #data
@@ -34,6 +40,7 @@ args["INDEX_TO_CHAR"] = {1:" ", 22:"'", 30:"1", 29:"0", 37:"3", 32:"2", 34:"5", 
 
 
 #audio preprocessing
+args["MAX_CHAR_LEN"] = 100 #Characters
 args["NOISE_PROBABILITY"] = 0.25    #noise addition probability while training
 args["NOISE_SNR_DB"] = 0    #noise level in dB SNR
 args["STFT_WINDOW"] = "hamming" #window to use while computing STFT
@@ -49,6 +56,10 @@ args["NORMALIZATION_STD"] = 0.1688  #standard deviation value for normalization 
 
 
 #training
+args["GPU"] = "cuda"
+args["LIMITGPU"] = True
+# args["GPU"] = "cuda:1,2"
+args["GPUID"] = [0,1,2,3]
 args["SEED"] = 19220297 #seed for random number generators
 args["BATCH_SIZE"] = 32 #minibatch size
 args["STEP_SIZE"] = 16384   #number of samples in one step (virtual epoch)
@@ -74,12 +85,21 @@ args["NUM_CLASSES"] = 40    #number of output characters
 
 
 #transformer architecture
+# args["PE_MAX_LENGTH"] = 2500    #length up to which we calculate positional encodings
+# args["TX_NUM_FEATURES"] = 512   #transformer input feature size
+# args["TX_ATTENTION_HEADS"] = 8  #number of attention heads in multihead attention layer
+# args["TX_NUM_LAYERS"] = 6   #number of Transformer Encoder blocks in the stack
+# args["TX_FEEDFORWARD_DIM"] = 2048   #hidden layer size in feedforward network of transformer
+# args["TX_DROPOUT"] = 0.1    #dropout probability in the transformer
+args["DISPLAY_PREDICTIONS"] = False
 args["PE_MAX_LENGTH"] = 2500    #length up to which we calculate positional encodings
 args["TX_NUM_FEATURES"] = 512   #transformer input feature size
-args["TX_ATTENTION_HEADS"] = 8  #number of attention heads in multihead attention layer
-args["TX_NUM_LAYERS"] = 6   #number of Transformer Encoder blocks in the stack
-args["TX_FEEDFORWARD_DIM"] = 2048   #hidden layer size in feedforward network of transformer
+args["TX_ATTENTION_HEADS"] = 4  #number of attention heads in multihead attention layer
+args["TX_NUM_LAYERS"] = 3  #number of Transformer Encoder blocks in the stack
+args["TX_FEEDFORWARD_DIM"] = 1024   #hidden layer size in feedforward network of transformer
+# args["TX_FEEDFORWARD_DIM"] = 2048   #hidden layer size in feedforward network of transformer
 args["TX_DROPOUT"] = 0.1    #dropout probability in the transformer
+
 
 
 #beam search

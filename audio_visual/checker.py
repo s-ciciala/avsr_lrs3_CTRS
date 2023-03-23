@@ -17,7 +17,7 @@ from models.lrs2_char_lm import LRS2CharLM
 from models.visual_frontend import VisualFrontend
 from models.av_net import AVNet
 from data.utils import req_input_length, collate_fn
-from data.lrs2_dataset import LRS2Pretrain, LRS2Main
+from data.lrs3_dataset import LRS2Pretrain, LRS2Main
 from utils.decoders import ctc_greedy_decode, ctc_search_decode
 from utils.metrics import compute_cer, compute_wer
 from utils.preprocessing import preprocess_sample
