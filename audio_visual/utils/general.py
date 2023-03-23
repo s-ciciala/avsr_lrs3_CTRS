@@ -54,7 +54,16 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
         model.train()
         outputBatch = model(inputBatch)
         with torch.backends.cudnn.flags(enabled=False):
-            loss = loss_function(outputBatch, targetBatch, inputLenBatch, targetLenBatch)
+            arry = []
+            for btch in inputLenBatch:
+                # print("HERE")
+                # print(btch)
+                if len(outputBatch) < btch:
+                    arry.append(len(outputBatch))
+                else:
+                    arry.append(btch)
+            new_inputLenBatch = torch.tensor(arry, dtype=torch.int32, device=device)
+            loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
         loss.backward()
         optimizer.step()
 
