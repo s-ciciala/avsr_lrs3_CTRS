@@ -74,16 +74,16 @@ def get_optimiser_and_checkpoint_dir(model):
 
 
     #removing the checkpoints directory if it exists and remaking it
-    if os.path.exists(args["CODE_DIRECTORY"] + "/checkpoints"):
-        while True:
-            ch = input("Continue and remove the 'checkpoints' directory? y/n: ")
-            if ch == "y":
-                break
-            elif ch == "n":
-                exit()
-            else:
-                print("Invalid input")
-        shutil.rmtree(args["CODE_DIRECTORY"] + "/checkpoints")
+    # if os.path.exists(args["CODE_DIRECTORY"] + "/checkpoints"):
+    #     while True:
+    #         ch = input("Continue and remove the 'checkpoints' directory? y/n: ")
+    #         if ch == "y":
+    #             break
+    #         elif ch == "n":
+    #             exit()
+    #         else:
+    #             print("Invalid input")
+    #     shutil.rmtree(args["CODE_DIRECTORY"] + "/checkpoints")
 
     os.mkdir(args["CODE_DIRECTORY"] + "/checkpoints")
     os.mkdir(args["CODE_DIRECTORY"] + "/checkpoints/models")
@@ -95,9 +95,11 @@ def get_optimiser_and_checkpoint_dir(model):
 def train_model(model, trainLoader, valLoader, optimizer, loss_function, device):
     print("\nTraining the model .... \n")
 
-    trainParams = {"spaceIx": args["CHAR_TO_INDEX"][" "], "eosIx": args["CHAR_TO_INDEX"]["<EOS>"]}
+    trainParams = {"spaceIx": args["CHAR_TO_INDEX"][" "], "eosIx": args["CHAR_TO_INDEX"]["<EOS>"],
+                   "aoProb": args["AUDIO_ONLY_PROBABILITY"],
+                   "voProb": args["VIDEO_ONLY_PROBABILITY"]}
     valParams = {"decodeScheme": "greedy", "spaceIx": args["CHAR_TO_INDEX"][" "],
-                 "eosIx": args["CHAR_TO_INDEX"]["<EOS>"]}
+                 "eosIx": args["CHAR_TO_INDEX"]["<EOS>"], "aoProb": 0, "voProb": 0}
 
     trainingLossCurve = list()
     validationLossCurve = list()
