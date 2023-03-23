@@ -84,17 +84,18 @@ class AVNet(nn.Module):
             videoBatch = None
         if (audioBatch is not None) and (videoBatch is not None):
             if len(audioBatch) > len(videoBatch):
-                print("AUDIO GREATER THAN VIDEO")
-                print(type(audioBatch))
+                # print("AUDIO GREATER THAN VIDEO")
+                # print(type(audioBatch))
                 diff = len(audioBatch) - len(videoBatch)
-                print(len(audioBatch),len(videoBatch))
+                # print(len(audioBatch),len(videoBatch))
                 audioBatch = audioBatch[:-diff]
-                print(len(audioBatch),len(videoBatch))
-                exit(1)
+                # print(len(audioBatch),len(videoBatch))
 
             if len(videoBatch) > len(audioBatch):
-                print("VIDEO GREATER THAN VIDEO")
-                print(len(audioBatch),len(videoBatch))
+                # print("VIDEO GREATER THAN VIDEO")
+                # print(len(audioBatch),len(videoBatch))
+                diff = len(videoBatch) - len(audioBatch)
+                videoBatch = videoBatch[:-diff]
             jointBatch = torch.cat([audioBatch, videoBatch], dim=2)
             jointBatch = jointBatch.transpose(0, 1).transpose(1, 2)
             jointBatch = self.jointConv(jointBatch)
