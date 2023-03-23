@@ -85,7 +85,11 @@ class AVNet(nn.Module):
 
         if (audioBatch is not None) and (videoBatch is not None):
             print("AUDIO BATCH")
+            print("AUDIO BATCH")
+            print("AUDIO BATCH")
             print(len(audioBatch))
+            print("videoBatch")
+            print("videoBatch")
             print("videoBatch")
             print(len(videoBatch))
             jointBatch = torch.cat([audioBatch, videoBatch], dim=2)
