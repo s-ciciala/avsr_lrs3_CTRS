@@ -64,7 +64,7 @@ args["SEED"] = 19220297 #seed for random number generators
 args["BATCH_SIZE"] = 32 #minibatch size
 args["STEP_SIZE"] = 16384   #number of samples in one step (virtual epoch)
 args["NUM_STEPS"] = 5000 #maximum number of steps to train for (early stopping is used)
-args["SAVE_FREQUENCY"] = 2 #saving the model weights and loss/metric plots after every these many steps
+args["SAVE_FREQUENCY"] = 10 #saving the model weights and loss/metric plots after every these many steps
 
 
 #optimizer, scheduler and modality dropping
