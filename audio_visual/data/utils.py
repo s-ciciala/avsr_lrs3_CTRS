@@ -33,9 +33,9 @@ def prepare_main_input(audioFile, visualFeaturesFile, targetFile, noise, reqInpL
         trgtLen = len(trgt)
 
         #the target length must be less than or equal to 100 characters (restricted space where our model will work)
-        if trgtLen > 100:
-            print("Target length more than 100 characters. Exiting")
-            exit()
+        # if trgtLen > 100:
+        #     print("Target length more than 100 characters. Exiting")
+        #     exit()
 
 
     #STFT feature extraction

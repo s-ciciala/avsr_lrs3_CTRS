@@ -58,14 +58,6 @@ def train(model, trainLoader, optimizer, loss_function, device, trainParams):
                     arry.append(btch)
             new_inputLenBatch = torch.tensor(arry, dtype=torch.int32, device=device)
             loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
-            # if len(outputBatch) < inputLenBatch:
-            #     # print("CATCH")
-            #     # print(outputBatch)
-            #     # print(inputLenBatch)
-            #     new_inputLenBatch = torch.tensor([len(outputBatch)], dtype=torch.int32, device=device)
-            #     loss = loss_function(outputBatch, targetBatch, new_inputLenBatch, targetLenBatch)
-            # else:
-            #     loss = loss_function(outputBatch, targetBatch, inputLenBatch, targetLenBatch)
         loss.backward()
         optimizer.step()
         if loss.item() == math.inf:

@@ -136,7 +136,7 @@ def train_model(model, trainLoader, valLoader, optimizer, loss_function, device)
         }
         # saving the model weights and loss/metric curves in the checkpoints directory after every few steps
         if ((step % args["SAVE_FREQUENCY"] == 0) or (step == args["NUM_STEPS"] - 1)) and (step != 0):
-            savePath = args["CODE_DIRECTORY"] + "/audio_only_checkpoints/models/train-step_{:04d}-wer_{:.3f}.pt".format(
+            savePath = args["CODE_DIRECTORY"] + "/audio_video_checkpoints/models/train-step_{:04d}-wer_{:.3f}.pt".format(
                 step,
                 validationWER)
             torch.save(save_dict, savePath)
@@ -149,7 +149,7 @@ def train_model(model, trainLoader, valLoader, optimizer, loss_function, device)
             plt.plot(list(range(1, len(validationLossCurve) + 1)), validationLossCurve, "red", label="Validation")
             plt.legend()
             plt.savefig(
-                args["CODE_DIRECTORY"] + "/audio_only_checkpoints/plots/train-step_{:04d}-loss.png".format(step))
+                args["CODE_DIRECTORY"] + "/audio_video_checkpoints/plots/train-step_{:04d}-loss.png".format(step))
             plt.close()
 
             plt.figure()
@@ -159,7 +159,7 @@ def train_model(model, trainLoader, valLoader, optimizer, loss_function, device)
             plt.plot(list(range(1, len(trainingWERCurve) + 1)), trainingWERCurve, "blue", label="Train")
             plt.plot(list(range(1, len(validationWERCurve) + 1)), validationWERCurve, "red", label="Validation")
             plt.legend()
-            plt.savefig(args["CODE_DIRECTORY"] + "/audio_only_checkpoints/plots/train-step_{:04d}-wer.png".format(step))
+            plt.savefig(args["CODE_DIRECTORY"] + "/audio_video_checkpoints/plots/train-step_{:04d}-wer.png".format(step))
             plt.close()
 
             plt.figure()
@@ -170,7 +170,7 @@ def train_model(model, trainLoader, valLoader, optimizer, loss_function, device)
             plt.plot(list(range(1, len(validationCERCurve) + 1)), validationCERCurve, "red", label="Validation")
             plt.legend()
             plt.savefig(
-                args["CODE_DIRECTORY"] + "/audio_only_checkpoints/plots/train-step_{:04d}-loss.png".format(step))
+                args["CODE_DIRECTORY"] + "/audio_video_checkpoints/plots/train-step_{:04d}-loss.png".format(step))
             plt.close()
     print("\nTraining Done.\n")
 
