@@ -84,10 +84,12 @@ def get_optimiser_and_checkpoint_dir(model):
     #         else:
     #             print("Invalid input")
     #     shutil.rmtree(args["CODE_DIRECTORY"] + "/checkpoints")
-
-    os.mkdir(args["CODE_DIRECTORY"] + "audio_video_checkpoints")
-    os.mkdir(args["CODE_DIRECTORY"] + "audio_video_checkpoints/models")
-    os.mkdir(args["CODE_DIRECTORY"] + "audio_video_checkpoints/plots")
+    if not os.path.exists(args["CODE_DIRECTORY"] + "audio_video_checkpoints/"):
+        os.makedirs(args["CODE_DIRECTORY"] + "audio_video_checkpoints/")
+    if not os.path.exists(args["CODE_DIRECTORY"] + "audio_video_checkpoints/models"):
+        os.makedirs(args["CODE_DIRECTORY"] + "audio_video_checkpoints/models")
+    if not os.path.exists(args["CODE_DIRECTORY"] + "audio_video_checkpoints/plots"):
+        os.makedirs(args["CODE_DIRECTORY"] + "audio_video_checkpoints/plots")
 
     return optimizer, scheduler, loss_function
 
