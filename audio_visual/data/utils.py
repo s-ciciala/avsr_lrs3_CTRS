@@ -26,7 +26,8 @@ def prepare_main_input(audioFile, visualFeaturesFile, targetFile, noise, reqInpL
         #reading the target from the target file and converting each character to its corresponding index
         with open(targetFile, "r") as f:
             trgt = f.readline().strip()[7:]
-
+        if "{" in trgt:
+            trgt = trgt.split("{")[0]
         trgt = [charToIx[char] for char in trgt]
         trgt.append(charToIx["<EOS>"])
         trgt = np.array(trgt)
