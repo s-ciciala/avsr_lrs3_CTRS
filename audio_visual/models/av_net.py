@@ -84,6 +84,11 @@ class AVNet(nn.Module):
             videoBatch = None
 
         if (audioBatch is not None) and (videoBatch is not None):
+            print("AUDIO BATCH")
+            print(audioBatch)
+            print("videoBatch")
+            print(videoBatch)
+            exit()
             jointBatch = torch.cat([audioBatch, videoBatch], dim=2)
             jointBatch = jointBatch.transpose(0, 1).transpose(1, 2)
             jointBatch = self.jointConv(jointBatch)
